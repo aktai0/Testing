@@ -1,12 +1,6 @@
 ﻿Imports RiotSharp
 
 Public Class MainWindow
-   ' Rounded time used to retrieve games in the API challenge. We use the 
-   '  time from at least 10 minutes ago because anything sooner keeps returning 404s for some reason.
-   Dim PreviousRoundedEpochTime As Integer
-   Dim PreviousRoundedEpochDateTime As DateTime
-   Dim CanUpdate As Boolean = False
-
    Dim WithEvents MyMatches As New MatchCache
    Sub MyMatches_CountChanged() Handles MyMatches.CountChanged
       RefreshMatchListBox()
@@ -29,54 +23,16 @@ Public Class MainWindow
    End Sub
 
 #Region "Time Stuff"
-   Private ReadOnly _UNIX_DATETIME As DateTime
-   Public ReadOnly Property EPOCH_DATETIME() As DateTime
-      Get
-         Return New DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-      End Get
-   End Property
-
-   Private Sub UpdateLastRoundedDateTime()
-      PreviousRoundedEpochTime = DateTimeToEpoch(GetOlderRoundedDateTime(DateTime.UtcNow))
-      PreviousRoundedEpochDateTime = GetOlderRoundedDateTime(DateTime.UtcNow)
-
-      ' Flag the API call if the time is newer
-      CanUpdate = Not DateTimeEquals(MyMatches.LastURFAPICall, PreviousRoundedEpochDateTime)
-   End Sub
-
-   ' Returns a DateTime rounded down to the nearest 5 minute interval (e.g. 11:05) from the given DateTime,
-   '  10 minutes ago
-   Private Function GetOlderRoundedDateTime(ByVal curDT As DateTime) As DateTime
-      ' Subtract the given time's minutes modulo 5 (to get remainder) and seconds.
-      Dim e As New TimeSpan(0, 0, 10, 0, 0)
-      Return curDT.Subtract(New TimeSpan(0, 0, curDT.Minute Mod 5, curDT.Second, curDT.Millisecond)).Subtract(e)
-   End Function
-
-   Private Function DateTimeToEpoch(ByVal curDT As DateTime) As Integer
-      Return (curDT - EPOCH_DATETIME).TotalSeconds
-   End Function
-
-   Private Function EpochToDateTime(ByVal unix As Integer) As DateTime
-      Return EPOCH_DATETIME.AddSeconds(unix)
-   End Function
-
-   ' Soft equality function because the DateTime class's equals method compares by ticks, which was giving
-   '  us weird results.
-   Private Function DateTimeEquals(ByVal a As DateTime, ByVal b As DateTime)
-      Return a.Year = b.Year AndAlso a.Month = b.Month AndAlso a.Day = b.Day AndAlso a.Hour = b.Hour AndAlso a.Minute = b.Minute AndAlso a.Second = b.Second
-   End Function
-#End Region
+   #End Region
 
    Private Sub MainWindow_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-      UpdateLastRoundedDateTime()
-
-      Using reader As New IO.StreamReader(API_KEY_FILE)
-         API_KEY = reader.ReadLine().Trim
-      End Using
+      TimeHelper.UpdateLastRoundedDateTime()
 
       MatchCache.LoadCacheFileInto(MyMatches)
       MyMatches.ForceCountChangedRefresh()
       LastBucketTimeTextBox.Text = MyMatches.LastURFAPICall().ToLocalTime
+
+      APIHelper.API_INIT()
    End Sub
 
    Private Sub MainWindow_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
@@ -84,68 +40,11 @@ Public Class MainWindow
    End Sub
 
 #Region "API Stuff"
-   Private API_KEY As String = ""
-   Private API_KEY_FILE As String = "riot_key"
-
-   Private Function API_GET_URF_MATCHES(ByVal arg1 As String) As List(Of Integer)
-      Dim request As Net.WebRequest = Net.WebRequest.Create("https://na.api.pvp.net/api/lol/na/v4.1/game/ids?beginDate=" & arg1 & "&api_key=" & API_KEY)
-      Dim response As Net.WebResponse
-      Try
-         response = request.GetResponse()
-      Catch ex As Net.WebException
-         Console.WriteLine("Error : " & ex.Message)
-         CurrentStatusLabel.Text = "Error : " & ex.Message
-         Console.WriteLine("URL: " & request.RequestUri.ToString)
-         Return New List(Of Integer)
-      End Try
-
-      Dim reader As New IO.StreamReader(response.GetResponseStream())
-      Dim result As String = reader.ReadToEnd
-
-      Dim gameList As New List(Of Integer)
-      For Each i As String In result.Substring(1, result.Length - 2).Split(",")
-         gameList.Add(CInt(i))
-      Next
-
-      reader.Close()
-      response.Close()
-      Return gameList
-   End Function
-
-   Private Function API_GET_MATCH_INFO(ByVal arg1 As Integer) As MatchEndpoint.MatchDetail
-      Dim api = RiotApi.GetInstance(API_KEY)
-      Try
-         Dim match = api.GetMatch(RiotSharp.Region.na, arg1, False)
-         Return match
-      Catch ex As RiotSharpException
-         Console.WriteLine("Riot Sharp Error: " & ex.Message)
-         Return Nothing
-      End Try
-   End Function
-
-   Private ChampionDict As Dictionary(Of Integer, String)
-   Private Sub API_STATIC_LOAD_CHAMPION_INFO()
-      If ChampionDict IsNot Nothing Then
-         Return
-      End If
-
-      ChampionDict = New Dictionary(Of Integer, String)
-
-      Dim api = StaticRiotApi.GetInstance(API_KEY)
-      Try
-         Dim champions = api.GetChampions(RiotSharp.Region.na, StaticDataEndpoint.ChampionData.info, )
-         For Each c In champions.Champions()
-            ChampionDict.Add(c.Value.Id, c.Key)
-         Next
-      Catch ex As RiotSharpException
-         Console.WriteLine("Riot Sharp Error: " & ex.Message)
-      End Try
-   End Sub
 #End Region
 
    ' This sub does not touch UI (for BackgroundWorker)
    Private Sub LoadInUrfMatches(ByVal epochTime As Integer)
-      Dim matchIDs As List(Of Integer) = API_GET_URF_MATCHES(epochTime)
+      Dim matchIDs As List(Of Integer) = APIHelper.API_GET_URF_MATCHES(epochTime)
 
       If matchIDs.Count = 0 Then
          Console.WriteLine("No matches returned by API-challenge")
@@ -160,9 +59,9 @@ Public Class MainWindow
    End Sub
 
    Private Sub LoadInLatestUrfMatches()
-      UpdateLastRoundedDateTime()
+      TimeHelper.UpdateLastRoundedDateTime()
 
-      If Not CanUpdate Then
+      If Not TimeHelper.CanUpdate(MyMatches.LastURFAPICall) Then
          Console.WriteLine("Not calling API. We already did it for this 5 minutes")
          Return
       Else
@@ -171,8 +70,8 @@ Public Class MainWindow
       CurrentStatusLabel.Text = "Retrieving Recent URF Matches..."
       Dim oldCount As Integer = MyMatches.Count
 
-      LoadInUrfMatches(PreviousRoundedEpochTime)
-      MyMatches.LastURFAPICall = PreviousRoundedEpochDateTime
+      LoadInUrfMatches(TimeHelper.PreviousRoundedEpochTime)
+      MyMatches.LastURFAPICall = TimeHelper.PreviousRoundedEpochDateTime
       LastBucketTimeTextBox.Text = MyMatches.LastURFAPICall().ToLocalTime
       MyMatches.Trim()
       MyMatches.ForceCountChangedRefresh()
@@ -190,7 +89,7 @@ Public Class MainWindow
       Dim progressNum As Integer = 0
       While MyMatches.Count < MatchCache.CACHE_LIMIT
          Console.WriteLine("Loading games from: " & timeIndex.ToString)
-         LoadInUrfMatches(DateTimeToEpoch(timeIndex))
+         LoadInUrfMatches(TimeHelper.DateTimeToEpoch(timeIndex))
          timeIndex = timeIndex.Subtract(New TimeSpan(0, 5, 0))
          progressNum += 1
          CacheBackgroundWorker.ReportProgress(CSng(progressNum) / 12 * 100)
@@ -212,7 +111,7 @@ Public Class MainWindow
       APIChallengeTimer.Enabled = True
       Button4.Enabled = True
       Button3.Enabled = False
-      If CanUpdate Then
+      If TimeHelper.CanUpdate(MyMatches.LastURFAPICall) Then
          LoadInLatestUrfMatches()
       End If
    End Sub
@@ -224,13 +123,13 @@ Public Class MainWindow
    End Sub
 
    Private Sub APIChallengeTimer_Tick(sender As Object, e As EventArgs) Handles APIChallengeTimer.Tick
-      If CanUpdate Then
+      If TimeHelper.CanUpdate(MyMatches.LastURFAPICall) Then
          LoadInLatestUrfMatches()
       End If
    End Sub
 
    Private Sub EpochTimer_Tick(sender As Object, e As EventArgs) Handles EpochTimer.Tick
-      UpdateLastRoundedDateTime()
+      TimeHelper.UpdateLastRoundedDateTime()
    End Sub
 
    Private UpdatedIndex As Integer
@@ -248,7 +147,7 @@ Public Class MainWindow
             Continue For
          End If
 
-         Dim info = API_GET_MATCH_INFO(MyMatches(index).GetMatchID)
+         Dim info = APIHelper.API_GET_MATCH_INFO(MyMatches(index).GetMatchID)
          MyMatches(index).SetMatchInfo(info)
 
          ' If there was an error, try it again (repeat the current loop)
@@ -258,6 +157,7 @@ Public Class MainWindow
 
          UpdatedIndex = index
          MatchLoadingBackgroundWorker.ReportProgress(CSng(index - startingIndex) / (matchCount - startingIndex) * 100)
+         MatchCache.StoreCacheFile(MyMatches)
          ' One API call every 2 seconds
          System.Threading.Thread.Sleep(2000)
       Next
@@ -277,6 +177,9 @@ Public Class MainWindow
    Private Sub MatchLoadingBackgroundWorker_ProgressChanged(sender As Object, e As System.ComponentModel.ProgressChangedEventArgs) Handles MatchLoadingBackgroundWorker.ProgressChanged
       StatusProgressBar.Value = e.ProgressPercentage
       MyMatches.LoadedIndex = UpdatedIndex
+      If e.ProgressPercentage = 100 Then
+         Button5.Enabled = True
+      End If
    End Sub
 
    Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click
@@ -288,8 +191,8 @@ Public Class MainWindow
    End Sub
 
    Private Sub CacheBackgroundWorker_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles CacheBackgroundWorker.DoWork
-      UpdateLastRoundedDateTime()
-      PopulateLatestUrfMatches(PreviousRoundedEpochDateTime)
+      TimeHelper.UpdateLastRoundedDateTime()
+      PopulateLatestUrfMatches(TimeHelper.PreviousRoundedEpochDateTime)
    End Sub
 
    Private Sub CacheBackgroundWorker_ProgressChanged(sender As Object, e As System.ComponentModel.ProgressChangedEventArgs) Handles CacheBackgroundWorker.ProgressChanged
@@ -344,15 +247,10 @@ Public Class MainWindow
          Next
       Next
 
-      TextBox1.Clear()
+      ListBox2.Items.Clear()
       For Each item In a
-         TextBox1.Text += ChampionDict(item.Key) & ": " & item.Value.a & "/" & item.Value.b & vbCrLf
+         ListBox2.Items.Add(APIHelper.ChampionDict(item.Key).Name & ": " & item.Value.a & "/" & item.Value.b)
       Next
-   End Sub
-
-   Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
-      Timer1.Enabled = False
-      API_STATIC_LOAD_CHAMPION_INFO()
    End Sub
 End Class
 
