@@ -1,10 +1,12 @@
 ﻿Imports RiotSharp
 
 Public Class APIHelper
+   Private Const API_KEY_FILE As String = "riot_key"
+   Public Const API_DELAY As Integer = 1250
 
    Private Shared API_KEY As String = ""
-   Private Shared API_KEY_FILE As String = "riot_key"
    Private Shared CDN_URL As String
+
 
    Private Shared Sub API_LOAD_FILE()
       Using reader As New IO.StreamReader(APIHelper.API_KEY_FILE)
@@ -72,6 +74,7 @@ Public Class APIHelper
       Dim api = StaticRiotApi.GetInstance(API_KEY)
 
       Try
+         Dim curTime = DateTime.Now
          Dim champions = api.GetChampions(RiotSharp.Region.na, StaticDataEndpoint.ChampionData.all, )
          For Each c In champions.Champions()
             ChampionDict.Add(c.Value.Id, c.Value)

@@ -106,6 +106,7 @@ Partial Class MainWindow
       'CacheBackgroundWorker
       '
       Me.CacheBackgroundWorker.WorkerReportsProgress = True
+      Me.CacheBackgroundWorker.WorkerSupportsCancellation = True
       '
       'TabPage2
       '

@@ -3,13 +3,52 @@ Imports System.Runtime.Serialization.Formatters.Binary
 Imports RiotSharp
 
 <Serializable()>
-Class MatchCache
-   Inherits List(Of Match)
-   Const CACHE_FILE_NAME As String = "MatchCache.bin"
-   Public Const CACHE_LIMIT As Integer = 100
-   'Shared LastURFAPICall As DateTime
+Class CacheHelper
+   Public Shared Sub LoadCacheFile(Of T As EasyCache)(ByVal cacheFileName As String, ByRef givenCache As T)
+      If File.Exists(cacheFileName) Then
+         Dim TestFileStream As Stream = File.OpenRead(cacheFileName)
+         Dim deserializer As New BinaryFormatter
+         Try
+            givenCache = CType(deserializer.Deserialize(TestFileStream), T)
+         Catch ex As Exception
+            MsgBox("There was an error with the cache. MatchCache.bin will be cleaned. If you want to save a backup of it, do so NOW (before you exit this dialog). Error: " & ex.Message)
+            TestFileStream.Close()
+            MainWindow.Close()
+         End Try
+         TestFileStream.Close()
+      Else
+      End If
+   End Sub
 
-   Private _LoadedIndex As Integer = -1
+   Public Shared Sub StoreCacheFile(Of T As EasyCache)(ByVal cacheFileName As String, ByRef givenCache As T)
+      Dim TestFileStream As Stream = File.Create(cacheFileName)
+      Dim serializer As New BinaryFormatter
+      serializer.Serialize(TestFileStream, givenCache)
+      TestFileStream.Close()
+   End Sub
+End Class
+
+<Serializable()>
+MustInherit Class EasyCache
+   MustOverride ReadOnly Property CACHE_FILE_NAME() As String
+   MustOverride ReadOnly Property CACHE_LIMIT() As Integer
+
+   Sub New()
+
+   End Sub
+End Class
+
+<Serializable()>
+Class ImageCache
+   Inherits Dictionary(Of String, Bitmap)
+End Class
+
+' List class that allows events to be raised when 
+<Serializable>
+Class  _MatchList
+   Inherits List(Of Match)
+
+   Friend _LoadedIndex As Integer = -1
    Property LoadedIndex() As Integer
       Get
          Return _LoadedIndex
@@ -48,7 +87,7 @@ Class MatchCache
          Return
       End If
       MyBase.Add(item)
-      Me.Trim()
+      'Me.Trim()
       RaiseEvent CountChanged()
       RaiseEvent LoadChanged()
    End Sub
@@ -59,20 +98,6 @@ Class MatchCache
          Return
       End If
       MyBase.Add(item)
-   End Sub
-
-   ' Removes earlier items until the cache is at the cache limit
-   Public Sub Trim()
-      If Me.Count > CACHE_LIMIT Then
-         Dim amount As Integer = Me.Count - CACHE_LIMIT
-
-         Me.RemoveRange(0, amount)
-         ' LoadedIndex doesn't necessarily keep up with Me.Count, so we need to check for negatives
-         Me._LoadedIndex -= amount
-         Me.LoadedIndex = Math.Max(Me.LoadedIndex, -1)
-
-         RaiseEvent CountChanged()
-      End If
    End Sub
 
    Public Shadows Sub AddRange(ByVal collection As IEnumerable(Of Match))
@@ -124,24 +149,42 @@ Class MatchCache
    Public Sub ForceLoadChangedRefresh()
       RaiseEvent LoadChanged()
    End Sub
+End Class
 
-   ' Loads a MatchCache object with all the matches in the cache file
-   Shared Sub LoadCacheFileInto(ByRef givenCache As MatchCache)
-      If File.Exists(CACHE_FILE_NAME) Then
-         Dim TestFileStream As Stream = File.OpenRead(CACHE_FILE_NAME)
-         Dim deserializer As New BinaryFormatter
-         givenCache = CType(deserializer.Deserialize(TestFileStream), MatchCache)
-         TestFileStream.Close()
-      Else
+<Serializable()>
+Class MatchCache
+   Inherits EasyCache
+
+   Public WithEvents MatchList As New _MatchList
+
+   Public Overrides ReadOnly Property CACHE_FILE_NAME() As String
+      Get
+         Return "MatchCache.bin"
+      End Get
+   End Property
+
+   Public Overrides ReadOnly Property CACHE_LIMIT() As Integer
+      Get
+         Return 500
+      End Get
+   End Property
+
+   'Shared LastURFAPICall As DateTime
+
+   ' Removes earlier items until the cache is at the cache limit
+   Public Sub Trim()
+      If MatchList.Count > CACHE_LIMIT Then
+         Dim amount As Integer = MatchList.Count - CACHE_LIMIT
+
+         MatchList.RemoveRange(0, amount)
+         ' LoadedIndex doesn't necessarily keep up with Me.Count, so we need to check for negatives
+         MatchList._LoadedIndex -= amount
+         MatchList.LoadedIndex = Math.Max(MatchList.LoadedIndex, -1)
+
+         MatchList.ForceCountChangedRefresh()
       End If
    End Sub
 
-   Shared Sub StoreCacheFile(ByRef givenCache As MatchCache)
-      Dim TestFileStream As Stream = File.Create(CACHE_FILE_NAME)
-      Dim serializer As New BinaryFormatter
-      serializer.Serialize(TestFileStream, givenCache)
-      TestFileStream.Close()
-   End Sub
 End Class
 
 <Serializable()>
