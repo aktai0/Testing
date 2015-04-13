@@ -2,7 +2,7 @@
 
 Public Class MainWindow
    Dim WithEvents MatchCache As MatchCache
-   Dim ImageCache As ImageCache
+   Dim StaticCache As StaticCache
    Sub MyMatches_CountChanged()
       RefreshMatchListBox()
    End Sub
@@ -13,21 +13,22 @@ Public Class MainWindow
    End Sub
 
    Private Sub MainWindow_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-      APIHelper.API_INIT()
+      CacheManager.Init()
+
       TimeHelper.UpdateLastRoundedDateTime()
 
-      CacheManager.Init()
       CacheManager.LoadAllCaches()
+      APIHelper.API_INIT()
 
-      MatchCache = CacheManager.CacheList("Matches")
-      ImageCache = CacheManager.CacheList("Images")
+      MatchCache = CType(CacheManager.CacheList("Matches"), MatchCache)
+      StaticCache = CType(CacheManager.CacheList("Static"), StaticCache)
 
       ' Handlers need to be added after the initial load, because the object is replaced.
       AddHandler MatchCache.MatchList.CountChanged, AddressOf Me.MyMatches_CountChanged
       AddHandler MatchCache.MatchList.LoadChanged, AddressOf Me.MyMatches_LoadChanged
 
       MatchCache.MatchList.ForceCountChangedRefresh()
-      LastBucketTimeTextBox.Text = MatchCache.MatchList.LastURFAPICall().ToLocalTime
+      LastBucketTimeTextBox.Text = MatchCache.MatchList.LastURFAPICall().ToLocalTime.ToString
    End Sub
 
    Sub RefreshMatchListBox()
@@ -47,7 +48,7 @@ Public Class MainWindow
 
    ' This sub does not touch UI (for BackgroundWorker)
    Private Sub LoadInUrfMatches(ByVal epochTime As Integer)
-      Dim matchIDs As List(Of Integer) = APIHelper.API_GET_URF_MATCHES(epochTime)
+      Dim matchIDs As List(Of Integer) = APIHelper.API_GET_URF_MATCHES(epochTime.ToString)
 
       If matchIDs.Count = 0 Then
          Console.WriteLine("No matches returned by API-challenge")
@@ -59,7 +60,7 @@ Public Class MainWindow
       Next
 
       SyncLock MatchCache
-         CacheManager.StoreCacheFile(MatchCache.CACHE_FILE_NAME, MatchCache)
+         CacheManager.StoreCacheFile(MatchCache.CACHE_FILE_NAME, CType(MatchCache, EasyCache))
       End SyncLock
    End Sub
 
@@ -77,7 +78,7 @@ Public Class MainWindow
 
       LoadInUrfMatches(TimeHelper.PreviousRoundedEpochTime)
       MatchCache.MatchList.LastURFAPICall = TimeHelper.PreviousRoundedEpochDateTime
-      LastBucketTimeTextBox.Text = MatchCache.MatchList.LastURFAPICall().ToLocalTime
+      LastBucketTimeTextBox.Text = MatchCache.MatchList.LastURFAPICall().ToLocalTime.ToString
       MatchCache.Trim()
       MatchCache.MatchList.ForceCountChangedRefresh()
 
@@ -97,7 +98,7 @@ Public Class MainWindow
          LoadInUrfMatches(TimeHelper.DateTimeToEpoch(timeIndex))
          timeIndex = timeIndex.Subtract(New TimeSpan(0, 5, 0))
          progressNum += 1
-         CacheBackgroundWorker.ReportProgress(100 - CSng(MatchCache.CACHE_LIMIT - Math.Min(MatchCache.CACHE_LIMIT, MatchCache.MatchList.Count)) / MatchCache.CACHE_LIMIT * 100)
+         CacheBackgroundWorker.ReportProgress(CInt(100 - CSng(MatchCache.CACHE_LIMIT - Math.Min(MatchCache.CACHE_LIMIT, MatchCache.MatchList.Count)) / MatchCache.CACHE_LIMIT * 100))
          If CacheBackgroundWorker.CancellationPending Then
             Exit While
          End If
@@ -112,7 +113,7 @@ Public Class MainWindow
    End Sub
 
    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
-      ImageCache.GetImagesAsync()
+      StaticCache.RebuildCache()
    End Sub
 
    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
@@ -164,9 +165,9 @@ Public Class MainWindow
          End If
 
          UpdatedIndex = index
-         MatchLoadingBackgroundWorker.ReportProgress(Math.Min(CSng(index - startingIndex) / (matchCount - startingIndex) * 100, 100))
+         MatchLoadingBackgroundWorker.ReportProgress(CInt(Math.Min(CSng(index - startingIndex) / (matchCount - startingIndex) * 100, 100)))
          SyncLock MatchCache
-            CacheManager.StoreCacheFile(MatchCache.CACHE_FILE_NAME, MatchCache)
+            CacheManager.StoreCacheFile(MatchCache.CACHE_FILE_NAME, CType(MatchCache, EasyCache))
          End SyncLock
 
          If MatchLoadingBackgroundWorker.CancellationPending Then
@@ -265,35 +266,41 @@ Public Class MainWindow
 
       ListBox2.Items.Clear()
       For Each item In a
-         ListBox2.Items.Add(APIHelper.ChampionDict(item.Key).Name & ": " & item.Value.a & "/" & item.Value.b)
+         ListBox2.Items.Add(APIHelper.Champions(item.Key).Name & ": " & item.Value.a & "/" & item.Value.b)
       Next
    End Sub
 
    Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
-      'Dim query = From champs In APIHelper.ChampionDict.Values
-      '            Where champs.Name = TextBox1.Text
-      '            Select champs.Id
-      PictureBox1.Image = ImageCache.Images(CInt(TextBox1.Text))
+      PictureBox1.Image = StaticCache.Images(CInt(TextBox1.Text))
+
+      Dim totalGames = (From champs In MatchCache.MatchList
+                        Where champs.GetMatchInfo.Participants.ContainsChamp(CInt(TextBox1.Text))
+                        Select champs.GetMatchID)
+      For Each item In totalGames
+         Console.WriteLine(item)
+      Next
+      Console.WriteLine("---")
+      GetMatchupData()
 
       'Console.WriteLine(GetWinRateOfChamp(CInt(TextBox1.Text)).ToString)
-      Dim i As Integer = 0
-      Dim results = GetWinRatesForAllChampions()
-      For Each item In results
-         i += 1
-         If i >= 10 Then
-            Return
-         End If
-         Console.WriteLine(item.ToString())
-      Next
+      'Dim i As Integer = 0
+      'Dim results = GetWinRatesForAllChampions()
+      'For Each item In results
+      '   i += 1
+      '   If i >= 10 Then
+      '      Return
+      '   End If
+      '   Console.WriteLine(item.ToString())
+      'Next
    End Sub
 
    Public Function GetWinRatesForAllChampions() As IEnumerable(Of ChampHistory)
       Dim champHistoryList As New List(Of ChampHistory)
-      For Each champ In APIHelper.ChampionDict.Keys
+      For Each champ In APIHelper.Champions.Keys
          champHistoryList.Add(GetWinRateOfChamp(champ))
       Next
 
-      Dim query = From c In champHistoryList, names In APIHelper.ChampionDict.Values
+      Dim query = From c In champHistoryList, names In APIHelper.Champions.Values
                   Where c.champID = names.Id
                   Order By c.GetWinRate() Descending
                   Select c
@@ -318,7 +325,7 @@ Public Class MainWindow
             .gamesWon = won
             .gamesPlayed = played
          End With
-         champName = APIHelper.ChampionDict(champID).Name
+         champName = APIHelper.Champions(champID).Name
          _WinRate = CSng(gamesWon) / gamesPlayed
       End Sub
 
@@ -397,7 +404,7 @@ Public Class MainWindow
       End Function
    End Class
 
-   ' A list class that adds 1 to totalGames if it exists, or else adds it to the list
+   ' A list class that adds 1 to totalGames if it exists already
    Class CountingList
       Inherits List(Of Matchup)
 
@@ -415,22 +422,42 @@ Public Class MainWindow
       End Sub
    End Class
 
+   ' Riot's Lane Data is Shitty. Abort Mission!
    ' Compute comprehensive matchup data
-   Public Function GetMatchupData()
-
+   Public Function GetMatchupData() As IEnumerable
+      Dim q = From match In MatchCache.MatchList, p In match.GetMatchInfo.Participants,
+               match2 In MatchCache.MatchList, p2 In match2.GetMatchInfo.Participants
+              Where match.GetMatchID = match2.GetMatchID AndAlso p.ParticipantId <> p2.ParticipantId AndAlso p.Timeline.Lane = p2.Timeline.Lane AndAlso p.ChampionId = CInt(TextBox1.Text) AndAlso p.TeamId <> p2.TeamId
+              Select match.GetMatchID, p2.ChampionId, p.Timeline.Lane
+      For Each item In q
+         Console.WriteLine(item.GetMatchID & ": " & APIHelper.GetChampName(CInt(TextBox1.Text)) & " v. " & APIHelper.GetChampName(item.ChampionId) & " in " & item.Lane)
+      Next
+      Return Nothing
    End Function
+
+   Private Sub MainWindow_SizeChanged(sender As Object, e As EventArgs) Handles MyBase.SizeChanged
+      'TabControl1.ItemSize = New Point(Me.Width / (TabControl1.TabCount) - (7 - TabControl1.TabCount), TabControl1.ItemSize.Height)
+   End Sub
+
+   Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click
+      Dim champs = APIHelper.Champions.Values
+      ComboBox1.Items.Clear()
+      For Each c In champs
+         ComboBox1.Items.Add(c.Name)
+      Next
+   End Sub
 End Class
 
 Module LINQExtension
    <System.Runtime.CompilerServices.Extension()>
-   Function Average(query As IEnumerable(Of TimeSpan))
+   Function Average(query As IEnumerable(Of TimeSpan)) As TimeSpan
       Dim totalTime As New TimeSpan(0, 0, 0)
 
       For Each t As TimeSpan In query
          totalTime += t
       Next
 
-      Return New TimeSpan(totalTime.Ticks / query.Count)
+      Return New TimeSpan(CLng(CSng(totalTime.Ticks) / query.Count))
    End Function
 
    <System.Runtime.CompilerServices.Extension()>
@@ -454,5 +481,6 @@ Module LINQExtension
       Next
       Return False
    End Function
+
 End Module
 

@@ -18,7 +18,7 @@
    End Sub
 
    ' Flag the API call if the time is newer
-   Public Shared ReadOnly Property CanUpdate(ByVal givenDT As DateTime)
+   Public Shared ReadOnly Property CanUpdate(ByVal givenDT As DateTime) As Boolean
       Get
          Return Not DateTimeEquals(givenDT, PreviousRoundedEpochDateTime)
       End Get
@@ -33,7 +33,7 @@
    End Function
 
    Public Shared Function DateTimeToEpoch(ByVal curDT As DateTime) As Integer
-      Return (curDT - EPOCH_DATETIME).TotalSeconds
+      Return CInt((curDT - EPOCH_DATETIME).TotalSeconds)
    End Function
 
    Public Shared Function EpochToDateTime(ByVal unix As Integer) As DateTime
@@ -42,7 +42,7 @@
 
    ' Soft equality function because the DateTime class's equals method compares by ticks, which was giving
    '  us weird results.
-   Public Shared Function DateTimeEquals(ByVal a As DateTime, ByVal b As DateTime)
+   Public Shared Function DateTimeEquals(ByVal a As DateTime, ByVal b As DateTime) As Boolean
       Return a.Year = b.Year AndAlso a.Month = b.Month AndAlso a.Day = b.Day AndAlso a.Hour = b.Hour AndAlso a.Minute = b.Minute AndAlso a.Second = b.Second
    End Function
 

@@ -34,9 +34,14 @@ Partial Class MainWindow
       Me.MatchLoadingBackgroundWorker = New System.ComponentModel.BackgroundWorker()
       Me.CacheBackgroundWorker = New System.ComponentModel.BackgroundWorker()
       Me.TabPage2 = New System.Windows.Forms.TabPage()
+      Me.Button9 = New System.Windows.Forms.Button()
+      Me.ComboBox1 = New System.Windows.Forms.ComboBox()
       Me.ListBox2 = New System.Windows.Forms.ListBox()
       Me.Button7 = New System.Windows.Forms.Button()
       Me.TabPage1 = New System.Windows.Forms.TabPage()
+      Me.PictureBox1 = New System.Windows.Forms.PictureBox()
+      Me.TextBox1 = New System.Windows.Forms.TextBox()
+      Me.Button8 = New System.Windows.Forms.Button()
       Me.Button6 = New System.Windows.Forms.Button()
       Me.Button1 = New System.Windows.Forms.Button()
       Me.Button5 = New System.Windows.Forms.Button()
@@ -47,14 +52,11 @@ Partial Class MainWindow
       Me.Button4 = New System.Windows.Forms.Button()
       Me.Button3 = New System.Windows.Forms.Button()
       Me.TabControl1 = New System.Windows.Forms.TabControl()
-      Me.Button8 = New System.Windows.Forms.Button()
-      Me.TextBox1 = New System.Windows.Forms.TextBox()
-      Me.PictureBox1 = New System.Windows.Forms.PictureBox()
       Me.StatusStrip1.SuspendLayout()
       Me.TabPage2.SuspendLayout()
       Me.TabPage1.SuspendLayout()
-      Me.TabControl1.SuspendLayout()
       CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
+      Me.TabControl1.SuspendLayout()
       Me.SuspendLayout()
       '
       'APIChallengeTimer
@@ -114,6 +116,8 @@ Partial Class MainWindow
       '
       'TabPage2
       '
+      Me.TabPage2.Controls.Add(Me.Button9)
+      Me.TabPage2.Controls.Add(Me.ComboBox1)
       Me.TabPage2.Controls.Add(Me.ListBox2)
       Me.TabPage2.Controls.Add(Me.Button7)
       Me.TabPage2.Location = New System.Drawing.Point(4, 25)
@@ -123,6 +127,25 @@ Partial Class MainWindow
       Me.TabPage2.TabIndex = 1
       Me.TabPage2.Text = "Basic Info"
       Me.TabPage2.UseVisualStyleBackColor = True
+      '
+      'Button9
+      '
+      Me.Button9.Location = New System.Drawing.Point(9, 37)
+      Me.Button9.Name = "Button9"
+      Me.Button9.Size = New System.Drawing.Size(75, 23)
+      Me.Button9.TabIndex = 4
+      Me.Button9.Text = "Button9"
+      Me.Button9.UseVisualStyleBackColor = True
+      '
+      'ComboBox1
+      '
+      Me.ComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+      Me.ComboBox1.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+      Me.ComboBox1.FormattingEnabled = True
+      Me.ComboBox1.Location = New System.Drawing.Point(8, 6)
+      Me.ComboBox1.Name = "ComboBox1"
+      Me.ComboBox1.Size = New System.Drawing.Size(121, 24)
+      Me.ComboBox1.TabIndex = 3
       '
       'ListBox2
       '
@@ -163,6 +186,32 @@ Partial Class MainWindow
       Me.TabPage1.TabIndex = 0
       Me.TabPage1.Text = "Match Data"
       Me.TabPage1.UseVisualStyleBackColor = True
+      '
+      'PictureBox1
+      '
+      Me.PictureBox1.Location = New System.Drawing.Point(160, 189)
+      Me.PictureBox1.Name = "PictureBox1"
+      Me.PictureBox1.Size = New System.Drawing.Size(156, 108)
+      Me.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize
+      Me.PictureBox1.TabIndex = 23
+      Me.PictureBox1.TabStop = False
+      '
+      'TextBox1
+      '
+      Me.TextBox1.Location = New System.Drawing.Point(333, 228)
+      Me.TextBox1.Name = "TextBox1"
+      Me.TextBox1.Size = New System.Drawing.Size(100, 22)
+      Me.TextBox1.TabIndex = 22
+      Me.TextBox1.Text = "0"
+      '
+      'Button8
+      '
+      Me.Button8.Location = New System.Drawing.Point(334, 256)
+      Me.Button8.Name = "Button8"
+      Me.Button8.Size = New System.Drawing.Size(75, 23)
+      Me.Button8.TabIndex = 21
+      Me.Button8.Text = "Button8"
+      Me.Button8.UseVisualStyleBackColor = True
       '
       'Button6
       '
@@ -254,33 +303,8 @@ Partial Class MainWindow
       Me.TabControl1.Name = "TabControl1"
       Me.TabControl1.SelectedIndex = 0
       Me.TabControl1.Size = New System.Drawing.Size(900, 362)
+      Me.TabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed
       Me.TabControl1.TabIndex = 21
-      '
-      'Button8
-      '
-      Me.Button8.Location = New System.Drawing.Point(334, 256)
-      Me.Button8.Name = "Button8"
-      Me.Button8.Size = New System.Drawing.Size(75, 23)
-      Me.Button8.TabIndex = 21
-      Me.Button8.Text = "Button8"
-      Me.Button8.UseVisualStyleBackColor = True
-      '
-      'TextBox1
-      '
-      Me.TextBox1.Location = New System.Drawing.Point(333, 228)
-      Me.TextBox1.Name = "TextBox1"
-      Me.TextBox1.Size = New System.Drawing.Size(100, 22)
-      Me.TextBox1.TabIndex = 22
-      Me.TextBox1.Text = "10"
-      '
-      'PictureBox1
-      '
-      Me.PictureBox1.Location = New System.Drawing.Point(160, 189)
-      Me.PictureBox1.Name = "PictureBox1"
-      Me.PictureBox1.Size = New System.Drawing.Size(156, 108)
-      Me.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize
-      Me.PictureBox1.TabIndex = 23
-      Me.PictureBox1.TabStop = False
       '
       'MainWindow
       '
@@ -296,8 +320,8 @@ Partial Class MainWindow
       Me.TabPage2.ResumeLayout(False)
       Me.TabPage1.ResumeLayout(False)
       Me.TabPage1.PerformLayout()
-      Me.TabControl1.ResumeLayout(False)
       CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
+      Me.TabControl1.ResumeLayout(False)
       Me.ResumeLayout(False)
       Me.PerformLayout()
 
@@ -329,5 +353,7 @@ Partial Class MainWindow
    Friend WithEvents TextBox1 As System.Windows.Forms.TextBox
    Friend WithEvents Button8 As System.Windows.Forms.Button
    Friend WithEvents PictureBox1 As System.Windows.Forms.PictureBox
+   Friend WithEvents ComboBox1 As System.Windows.Forms.ComboBox
+   Friend WithEvents Button9 As System.Windows.Forms.Button
 
 End Class

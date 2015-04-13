@@ -21,7 +21,7 @@ Module CacheManager
    '  to replace the entry in the original dictionary (if we're only using one), use a different
    '  dictionary, or use a container class.
    Public Sub Init()
-      CacheTypeNames.Add("Images", New ImageCache)
+      CacheTypeNames.Add("Static", New StaticCache)
       CacheTypeNames.Add("Matches", New MatchCache)
    End Sub
 
@@ -33,6 +33,10 @@ Module CacheManager
             loadedCache = kvpair.Value
          End If
          CacheList.Add(kvpair.Key, loadedCache)
+         If loadedCache.ShouldRebuildCache Then
+            loadedCache.RebuildCacheAsync()
+         End If
+         loadedCache.FinishedLoading()
       Next
    End Sub
 
@@ -53,7 +57,7 @@ Module CacheManager
             MsgBox("There was an error with the cache. " & cacheFileName & " will be deleted. All cache data in that file will be lost. If you want to save a backup of it, do so NOW (before you exit this dialog). Error: " & ex.Message)
             TestFileStream.Close()
             File.Delete(cacheFileName)
-            MainWindow.Close()
+            'MainWindow.Close()
          End Try
          TestFileStream.Close()
       End If
@@ -76,19 +80,35 @@ MustInherit Class EasyCache
    MustOverride ReadOnly Property CACHE_FILE_NAME() As String
    MustOverride ReadOnly Property CACHE_LIMIT() As Integer
 
+   Overridable ReadOnly Property ShouldRebuildCache() As Boolean
+      Get
+         Return False
+      End Get
+   End Property
+
+   Overridable Sub RebuildCache()
+      Throw New InvalidOperationException
+   End Sub
+
+   Overridable Sub RebuildCacheAsync()
+      Throw New InvalidOperationException
+   End Sub
+
    Sub New()
    End Sub
+
+   Overridable Sub FinishedLoading()
+   End Sub
+
 End Class
 
 <Serializable()>
-Class ImageCache
+Class StaticCache
    Inherits EasyCache
-
-   Public Images As New Dictionary(Of Integer, Bitmap)
 
    Public Overrides ReadOnly Property CACHE_FILE_NAME As String
       Get
-         Return "ImageCache.bin"
+         Return "StaticCache.bin"
       End Get
    End Property
 
@@ -98,24 +118,48 @@ Class ImageCache
       End Get
    End Property
 
-   <NonSerialized>
-   Private WithEvents AsynchronousImageLoader As New System.ComponentModel.BackgroundWorker
+   Public Overrides ReadOnly Property ShouldRebuildCache As Boolean
+      Get
+         Return Images.Count = 0 'Or Champions.Count = 0
+      End Get
+   End Property
 
-   Public Sub GetImagesAsync()
-      ' Don't look if we already have our image cache.
-      If Images.Count < APIHelper.ChampionDict.Count Then
-         AsynchronousImageLoader.RunWorkerAsync()
-      End If
+   Public Images As New Dictionary(Of Integer, Bitmap)
+
+   Public Overrides Sub RebuildCache()
+      Throw New InvalidOperationException
    End Sub
 
-   Private Sub AsynchronousImageLoader_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles AsynchronousImageLoader.DoWork
-      For Each champ As StaticDataEndpoint.ChampionStatic In APIHelper.ChampionDict.Values
+   Public Overrides Sub RebuildCacheAsync()
+      APIHelper.API_INIT()
+      AsynchronousStaticLoader = New System.ComponentModel.BackgroundWorker
+      AddHandler AsynchronousStaticLoader.DoWork, AddressOf AsynchronousStaticLoaderc_DoWork
+      AsynchronousStaticLoader.RunWorkerAsync()
+   End Sub
+
+   Public Overrides Sub FinishedLoading()
+      MyBase.FinishedLoading()
+
+      APIHelper.Champions = Champions
+   End Sub
+
+   <NonSerialized>
+   Private WithEvents AsynchronousStaticLoader As System.ComponentModel.BackgroundWorker
+
+   Public Champions As Dictionary(Of Integer, StaticDataEndpoint.ChampionStatic)
+
+   Private Sub AsynchronousStaticLoaderc_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs)
+      Console.Write("Fetching static champion data...")
+      APIHelper.API_STATIC_LOAD_CHAMPION_INFO()
+      Champions = APIHelper.Champions
+      Console.WriteLine(" Done!")
+
+      For Each champ As StaticDataEndpoint.ChampionStatic In APIHelper.Champions.Values
          Console.Write("Fetching image for " & champ.Name & "...")
          Images.Add(champ.Id, APIHelper.API_GET_IMAGE_FOR(champ.Id))
          Console.WriteLine(" Done!")
       Next
    End Sub
-
 End Class
 
 <Serializable()>
@@ -260,7 +304,6 @@ Class _MatchList
       RaiseEvent LoadChanged()
    End Sub
 End Class
-
 
 <Serializable()>
 Class Match

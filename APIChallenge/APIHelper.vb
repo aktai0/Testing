@@ -5,7 +5,7 @@ Public Class APIHelper
    Public Const API_DELAY As Integer = 1250
 
    Private Shared API_KEY As String = ""
-   Private Shared CDN_URL As String
+   Private Shared CDN_URL As String = ""
 
 
    Private Shared Sub API_LOAD_FILE()
@@ -30,7 +30,7 @@ Public Class APIHelper
       Dim result As String = reader.ReadToEnd
 
       Dim gameList As New List(Of Integer)
-      For Each i As String In result.Substring(1, result.Length - 2).Split(",")
+      For Each i As String In result.Substring(1, result.Length - 2).Split(","c)
          gameList.Add(CInt(i))
       Next
 
@@ -51,9 +51,10 @@ Public Class APIHelper
    End Function
 
    Public Shared Sub API_INIT()
-      API_LOAD_FILE()
-      API_STATIC_LOAD_CDN_URL()
-      API_STATIC_LOAD_CHAMPION_INFO()
+      If API_KEY = "" Or CDN_URL = "" Then
+         API_LOAD_FILE()
+         API_STATIC_LOAD_CDN_URL()
+      End If
    End Sub
 
    Private Shared Sub API_STATIC_LOAD_CDN_URL()
@@ -62,23 +63,39 @@ Public Class APIHelper
       CDN_URL = realm.Cdn & "/" & realm.Dd & "/img/champion/"
    End Sub
 
-   Public Shared ChampionDict As Dictionary(Of Integer, StaticDataEndpoint.ChampionStatic)
-   Public Shared ChampionImgDict As New Dictionary(Of Integer, Bitmap)
+   Public Shared Champions As Dictionary(Of Integer, StaticDataEndpoint.ChampionStatic)
+   Public Shared ChampionsRaw As StaticDataEndpoint.ChampionListStatic
+   Public Shared Function GetChampName(ByVal n As Integer) As String
+      Return Champions(n).Name
+   End Function
    Public Shared Sub API_STATIC_LOAD_CHAMPION_INFO()
-      If ChampionDict IsNot Nothing Then
+      If Champions IsNot Nothing Then
          Return
       End If
 
-      ChampionDict = New Dictionary(Of Integer, StaticDataEndpoint.ChampionStatic)
+      Champions = New Dictionary(Of Integer, StaticDataEndpoint.ChampionStatic)
 
       Dim api = StaticRiotApi.GetInstance(API_KEY)
 
       Try
          Dim curTime = DateTime.Now
-         Dim champions = api.GetChampions(RiotSharp.Region.na, StaticDataEndpoint.ChampionData.all, )
-         For Each c In champions.Champions()
-            ChampionDict.Add(c.Value.Id, c.Value)
+         Dim championQuery = api.GetChampions(RiotSharp.Region.na, StaticDataEndpoint.ChampionData.all, )
+         ChampionsRaw = championQuery
+         Dim sorted = (From p In championQuery.Champions()
+                      Order By p.Value.Name Ascending
+                      Select p.Value).ToList()
+         For Each c In sorted
+            Champions.Add(c.Id, c)
+
+            ' Workaround hack for serialization error (issue #124 in BenFradet/RiotSharp)
+            For Each s In c.Spells
+               With s
+                  .Range = Nothing
+                  .Vars = Nothing
+               End With
+            Next
          Next
+
       Catch ex As RiotSharpException
          Console.WriteLine("Riot Sharp Error: " & ex.Message)
       End Try
@@ -86,6 +103,15 @@ Public Class APIHelper
 
    ' NOT a cached function! Will probably break if there's an error (?)
    Public Shared Function API_GET_IMAGE_FOR(ByVal champID As Integer) As Bitmap
-      Return New Bitmap(New IO.MemoryStream(New System.Net.WebClient().DownloadData(CDN_URL & ChampionDict(champID).Image.Full)))
+      Return New Bitmap(New IO.MemoryStream(New System.Net.WebClient().DownloadData(CDN_URL & Champions(champID).Image.Full)))
    End Function
 End Class
+
+Module APIExtension
+   <System.Runtime.CompilerServices.Extension()>
+   Function Sort(query As IEnumerable(Of StaticDataEndpoint.ChampionStatic)) As IEnumerable(Of StaticDataEndpoint.ChampionStatic)
+      Return From ret In query
+             Order By ret.Name Descending
+             Select ret
+   End Function
+End Module
