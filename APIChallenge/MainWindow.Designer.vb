@@ -34,23 +34,27 @@ Partial Class MainWindow
       Me.MatchLoadingBackgroundWorker = New System.ComponentModel.BackgroundWorker()
       Me.CacheBackgroundWorker = New System.ComponentModel.BackgroundWorker()
       Me.TabPage2 = New System.Windows.Forms.TabPage()
-      Me.Button7 = New System.Windows.Forms.Button()
       Me.ListBox2 = New System.Windows.Forms.ListBox()
+      Me.Button7 = New System.Windows.Forms.Button()
       Me.TabPage1 = New System.Windows.Forms.TabPage()
-      Me.Button3 = New System.Windows.Forms.Button()
-      Me.Button4 = New System.Windows.Forms.Button()
-      Me.Button2 = New System.Windows.Forms.Button()
-      Me.Label1 = New System.Windows.Forms.Label()
-      Me.ListBox1 = New System.Windows.Forms.ListBox()
-      Me.LastBucketTimeTextBox = New System.Windows.Forms.TextBox()
-      Me.Button5 = New System.Windows.Forms.Button()
-      Me.Button1 = New System.Windows.Forms.Button()
       Me.Button6 = New System.Windows.Forms.Button()
+      Me.Button1 = New System.Windows.Forms.Button()
+      Me.Button5 = New System.Windows.Forms.Button()
+      Me.LastBucketTimeTextBox = New System.Windows.Forms.TextBox()
+      Me.ListBox1 = New System.Windows.Forms.ListBox()
+      Me.Label1 = New System.Windows.Forms.Label()
+      Me.Button2 = New System.Windows.Forms.Button()
+      Me.Button4 = New System.Windows.Forms.Button()
+      Me.Button3 = New System.Windows.Forms.Button()
       Me.TabControl1 = New System.Windows.Forms.TabControl()
+      Me.Button8 = New System.Windows.Forms.Button()
+      Me.TextBox1 = New System.Windows.Forms.TextBox()
+      Me.PictureBox1 = New System.Windows.Forms.PictureBox()
       Me.StatusStrip1.SuspendLayout()
       Me.TabPage2.SuspendLayout()
       Me.TabPage1.SuspendLayout()
       Me.TabControl1.SuspendLayout()
+      CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
       Me.SuspendLayout()
       '
       'APIChallengeTimer
@@ -120,15 +124,6 @@ Partial Class MainWindow
       Me.TabPage2.Text = "Basic Info"
       Me.TabPage2.UseVisualStyleBackColor = True
       '
-      'Button7
-      '
-      Me.Button7.Location = New System.Drawing.Point(271, 6)
-      Me.Button7.Name = "Button7"
-      Me.Button7.Size = New System.Drawing.Size(75, 23)
-      Me.Button7.TabIndex = 1
-      Me.Button7.Text = "Button7"
-      Me.Button7.UseVisualStyleBackColor = True
-      '
       'ListBox2
       '
       Me.ListBox2.FormattingEnabled = True
@@ -138,8 +133,20 @@ Partial Class MainWindow
       Me.ListBox2.Size = New System.Drawing.Size(537, 308)
       Me.ListBox2.TabIndex = 2
       '
+      'Button7
+      '
+      Me.Button7.Location = New System.Drawing.Point(271, 6)
+      Me.Button7.Name = "Button7"
+      Me.Button7.Size = New System.Drawing.Size(75, 23)
+      Me.Button7.TabIndex = 1
+      Me.Button7.Text = "Button7"
+      Me.Button7.UseVisualStyleBackColor = True
+      '
       'TabPage1
       '
+      Me.TabPage1.Controls.Add(Me.PictureBox1)
+      Me.TabPage1.Controls.Add(Me.TextBox1)
+      Me.TabPage1.Controls.Add(Me.Button8)
       Me.TabPage1.Controls.Add(Me.Button6)
       Me.TabPage1.Controls.Add(Me.Button1)
       Me.TabPage1.Controls.Add(Me.Button5)
@@ -157,14 +164,67 @@ Partial Class MainWindow
       Me.TabPage1.Text = "Match Data"
       Me.TabPage1.UseVisualStyleBackColor = True
       '
-      'Button3
+      'Button6
       '
-      Me.Button3.Location = New System.Drawing.Point(2, 34)
-      Me.Button3.Name = "Button3"
-      Me.Button3.Size = New System.Drawing.Size(68, 23)
-      Me.Button3.TabIndex = 13
-      Me.Button3.Text = "Start"
-      Me.Button3.UseVisualStyleBackColor = True
+      Me.Button6.Location = New System.Drawing.Point(3, 124)
+      Me.Button6.Name = "Button6"
+      Me.Button6.Size = New System.Drawing.Size(163, 23)
+      Me.Button6.TabIndex = 20
+      Me.Button6.Text = "Populate Game Cache"
+      Me.Button6.UseVisualStyleBackColor = True
+      '
+      'Button1
+      '
+      Me.Button1.Location = New System.Drawing.Point(380, 160)
+      Me.Button1.Name = "Button1"
+      Me.Button1.Size = New System.Drawing.Size(75, 23)
+      Me.Button1.TabIndex = 10
+      Me.Button1.Text = "Button1"
+      Me.Button1.UseVisualStyleBackColor = True
+      '
+      'Button5
+      '
+      Me.Button5.Location = New System.Drawing.Point(3, 95)
+      Me.Button5.Name = "Button5"
+      Me.Button5.Size = New System.Drawing.Size(163, 23)
+      Me.Button5.TabIndex = 19
+      Me.Button5.Text = "Start Loading Games"
+      Me.Button5.UseVisualStyleBackColor = True
+      '
+      'LastBucketTimeTextBox
+      '
+      Me.LastBucketTimeTextBox.Location = New System.Drawing.Point(141, 6)
+      Me.LastBucketTimeTextBox.Name = "LastBucketTimeTextBox"
+      Me.LastBucketTimeTextBox.ReadOnly = True
+      Me.LastBucketTimeTextBox.Size = New System.Drawing.Size(268, 22)
+      Me.LastBucketTimeTextBox.TabIndex = 0
+      '
+      'ListBox1
+      '
+      Me.ListBox1.FormattingEnabled = True
+      Me.ListBox1.ItemHeight = 16
+      Me.ListBox1.Location = New System.Drawing.Point(542, 6)
+      Me.ListBox1.Name = "ListBox1"
+      Me.ListBox1.Size = New System.Drawing.Size(347, 244)
+      Me.ListBox1.TabIndex = 18
+      '
+      'Label1
+      '
+      Me.Label1.AutoSize = True
+      Me.Label1.Location = New System.Drawing.Point(0, 9)
+      Me.Label1.Name = "Label1"
+      Me.Label1.Size = New System.Drawing.Size(125, 17)
+      Me.Label1.TabIndex = 2
+      Me.Label1.Text = "Last Bucket Time: "
+      '
+      'Button2
+      '
+      Me.Button2.Location = New System.Drawing.Point(461, 160)
+      Me.Button2.Name = "Button2"
+      Me.Button2.Size = New System.Drawing.Size(75, 23)
+      Me.Button2.TabIndex = 11
+      Me.Button2.Text = "Button2"
+      Me.Button2.UseVisualStyleBackColor = True
       '
       'Button4
       '
@@ -176,67 +236,14 @@ Partial Class MainWindow
       Me.Button4.Text = "Stop"
       Me.Button4.UseVisualStyleBackColor = True
       '
-      'Button2
+      'Button3
       '
-      Me.Button2.Location = New System.Drawing.Point(461, 160)
-      Me.Button2.Name = "Button2"
-      Me.Button2.Size = New System.Drawing.Size(75, 23)
-      Me.Button2.TabIndex = 11
-      Me.Button2.Text = "Button2"
-      Me.Button2.UseVisualStyleBackColor = True
-      '
-      'Label1
-      '
-      Me.Label1.AutoSize = True
-      Me.Label1.Location = New System.Drawing.Point(0, 9)
-      Me.Label1.Name = "Label1"
-      Me.Label1.Size = New System.Drawing.Size(125, 17)
-      Me.Label1.TabIndex = 2
-      Me.Label1.Text = "Last Bucket Time: "
-      '
-      'ListBox1
-      '
-      Me.ListBox1.FormattingEnabled = True
-      Me.ListBox1.ItemHeight = 16
-      Me.ListBox1.Location = New System.Drawing.Point(542, 6)
-      Me.ListBox1.Name = "ListBox1"
-      Me.ListBox1.Size = New System.Drawing.Size(347, 244)
-      Me.ListBox1.TabIndex = 18
-      '
-      'LastBucketTimeTextBox
-      '
-      Me.LastBucketTimeTextBox.Location = New System.Drawing.Point(141, 6)
-      Me.LastBucketTimeTextBox.Name = "LastBucketTimeTextBox"
-      Me.LastBucketTimeTextBox.ReadOnly = True
-      Me.LastBucketTimeTextBox.Size = New System.Drawing.Size(268, 22)
-      Me.LastBucketTimeTextBox.TabIndex = 0
-      '
-      'Button5
-      '
-      Me.Button5.Location = New System.Drawing.Point(3, 95)
-      Me.Button5.Name = "Button5"
-      Me.Button5.Size = New System.Drawing.Size(163, 23)
-      Me.Button5.TabIndex = 19
-      Me.Button5.Text = "Start Loading Games"
-      Me.Button5.UseVisualStyleBackColor = True
-      '
-      'Button1
-      '
-      Me.Button1.Location = New System.Drawing.Point(380, 160)
-      Me.Button1.Name = "Button1"
-      Me.Button1.Size = New System.Drawing.Size(75, 23)
-      Me.Button1.TabIndex = 10
-      Me.Button1.Text = "Button1"
-      Me.Button1.UseVisualStyleBackColor = True
-      '
-      'Button6
-      '
-      Me.Button6.Location = New System.Drawing.Point(3, 124)
-      Me.Button6.Name = "Button6"
-      Me.Button6.Size = New System.Drawing.Size(163, 23)
-      Me.Button6.TabIndex = 20
-      Me.Button6.Text = "Populate Game Cache"
-      Me.Button6.UseVisualStyleBackColor = True
+      Me.Button3.Location = New System.Drawing.Point(2, 34)
+      Me.Button3.Name = "Button3"
+      Me.Button3.Size = New System.Drawing.Size(68, 23)
+      Me.Button3.TabIndex = 13
+      Me.Button3.Text = "Start"
+      Me.Button3.UseVisualStyleBackColor = True
       '
       'TabControl1
       '
@@ -248,6 +255,32 @@ Partial Class MainWindow
       Me.TabControl1.SelectedIndex = 0
       Me.TabControl1.Size = New System.Drawing.Size(900, 362)
       Me.TabControl1.TabIndex = 21
+      '
+      'Button8
+      '
+      Me.Button8.Location = New System.Drawing.Point(334, 256)
+      Me.Button8.Name = "Button8"
+      Me.Button8.Size = New System.Drawing.Size(75, 23)
+      Me.Button8.TabIndex = 21
+      Me.Button8.Text = "Button8"
+      Me.Button8.UseVisualStyleBackColor = True
+      '
+      'TextBox1
+      '
+      Me.TextBox1.Location = New System.Drawing.Point(333, 228)
+      Me.TextBox1.Name = "TextBox1"
+      Me.TextBox1.Size = New System.Drawing.Size(100, 22)
+      Me.TextBox1.TabIndex = 22
+      Me.TextBox1.Text = "10"
+      '
+      'PictureBox1
+      '
+      Me.PictureBox1.Location = New System.Drawing.Point(160, 189)
+      Me.PictureBox1.Name = "PictureBox1"
+      Me.PictureBox1.Size = New System.Drawing.Size(156, 108)
+      Me.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize
+      Me.PictureBox1.TabIndex = 23
+      Me.PictureBox1.TabStop = False
       '
       'MainWindow
       '
@@ -264,6 +297,7 @@ Partial Class MainWindow
       Me.TabPage1.ResumeLayout(False)
       Me.TabPage1.PerformLayout()
       Me.TabControl1.ResumeLayout(False)
+      CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
       Me.ResumeLayout(False)
       Me.PerformLayout()
 
@@ -292,5 +326,8 @@ Partial Class MainWindow
    Friend WithEvents Button4 As System.Windows.Forms.Button
    Friend WithEvents Button3 As System.Windows.Forms.Button
    Friend WithEvents TabControl1 As System.Windows.Forms.TabControl
+   Friend WithEvents TextBox1 As System.Windows.Forms.TextBox
+   Friend WithEvents Button8 As System.Windows.Forms.Button
+   Friend WithEvents PictureBox1 As System.Windows.Forms.PictureBox
 
 End Class

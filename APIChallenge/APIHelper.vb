@@ -84,10 +84,8 @@ Public Class APIHelper
       End Try
    End Sub
 
-   Public Shared Function API_GET_IMAGE_FOR(ByVal champID As Integer)
-      If Not APIHelper.ChampionImgDict.ContainsKey(champID) Then
-         APIHelper.ChampionImgDict.Add(champID, New Bitmap(New IO.MemoryStream(New System.Net.WebClient().DownloadData(CDN_URL & ChampionDict(champID).Image.Full))))
-      End If
-      Return APIHelper.ChampionImgDict(champID)
+   ' NOT a cached function! Will probably break if there's an error (?)
+   Public Shared Function API_GET_IMAGE_FOR(ByVal champID As Integer) As Bitmap
+      Return New Bitmap(New IO.MemoryStream(New System.Net.WebClient().DownloadData(CDN_URL & ChampionDict(champID).Image.Full)))
    End Function
 End Class

@@ -3,30 +3,73 @@ Imports System.Runtime.Serialization.Formatters.Binary
 Imports RiotSharp
 
 <Serializable()>
-Class CacheHelper
-   Public Shared Sub LoadCacheFile(Of T As EasyCache)(ByVal cacheFileName As String, ByRef givenCache As T)
+Module CacheManager
+   Private CacheTypeNames As New Dictionary(Of String, EasyCache)
+
+   Private _CacheList As New Dictionary(Of String, EasyCache)
+   Public Property CacheList() As Dictionary(Of String, EasyCache)
+      Get
+         Return _CacheList
+      End Get
+      Set(ByVal value As Dictionary(Of String, EasyCache))
+         _CacheList = value
+      End Set
+   End Property
+
+   ' We use two dicts because A) Dictionary entries are added as (Address, Address) pairs a type
+   '  is not a primitive type and B) Deserialization creates a new object, so we would either need
+   '  to replace the entry in the original dictionary (if we're only using one), use a different
+   '  dictionary, or use a container class.
+   Public Sub Init()
+      CacheTypeNames.Add("Images", New ImageCache)
+      CacheTypeNames.Add("Matches", New MatchCache)
+   End Sub
+
+   Public Sub LoadAllCaches()
+      For Each kvpair As KeyValuePair(Of String, EasyCache) In CacheTypeNames
+         Dim loadedCache As EasyCache = LoadCacheFile(kvpair.Value.CACHE_FILE_NAME)
+         ' If the cache file doesn't exist...
+         If loadedCache Is Nothing Then
+            loadedCache = kvpair.Value
+         End If
+         CacheList.Add(kvpair.Key, loadedCache)
+      Next
+   End Sub
+
+   Public Sub StoreAllCaches()
+      For Each cache As EasyCache In CacheList.Values
+         StoreCacheFile(cache.CACHE_FILE_NAME, cache)
+      Next
+   End Sub
+
+   Private Function LoadCacheFile(ByVal cacheFileName As String) As EasyCache
+      Dim newCache As EasyCache = Nothing
       If File.Exists(cacheFileName) Then
          Dim TestFileStream As Stream = File.OpenRead(cacheFileName)
          Dim deserializer As New BinaryFormatter
          Try
-            givenCache = CType(deserializer.Deserialize(TestFileStream), T)
+            newCache = CType(deserializer.Deserialize(TestFileStream), EasyCache)
          Catch ex As Exception
-            MsgBox("There was an error with the cache. MatchCache.bin will be cleaned. If you want to save a backup of it, do so NOW (before you exit this dialog). Error: " & ex.Message)
+            MsgBox("There was an error with the cache. " & cacheFileName & " will be deleted. All cache data in that file will be lost. If you want to save a backup of it, do so NOW (before you exit this dialog). Error: " & ex.Message)
             TestFileStream.Close()
+            File.Delete(cacheFileName)
             MainWindow.Close()
          End Try
          TestFileStream.Close()
-      Else
       End If
-   End Sub
+      Return newCache
+   End Function
 
-   Public Shared Sub StoreCacheFile(Of T As EasyCache)(ByVal cacheFileName As String, ByRef givenCache As T)
-      Dim TestFileStream As Stream = File.Create(cacheFileName)
-      Dim serializer As New BinaryFormatter
-      serializer.Serialize(TestFileStream, givenCache)
-      TestFileStream.Close()
+   Public Sub StoreCacheFile(ByVal cacheFileName As String, ByRef givenCache As EasyCache)
+      ' SyncLock to avoid corruption.
+      SyncLock givenCache
+         Dim TestFileStream As Stream = File.Create(cacheFileName)
+         Dim serializer As New BinaryFormatter
+         serializer.Serialize(TestFileStream, givenCache)
+         TestFileStream.Close()
+      End SyncLock
    End Sub
-End Class
+End Module
 
 <Serializable()>
 MustInherit Class EasyCache
@@ -34,18 +77,85 @@ MustInherit Class EasyCache
    MustOverride ReadOnly Property CACHE_LIMIT() As Integer
 
    Sub New()
-
    End Sub
 End Class
 
 <Serializable()>
 Class ImageCache
-   Inherits Dictionary(Of String, Bitmap)
+   Inherits EasyCache
+
+   Public Images As New Dictionary(Of Integer, Bitmap)
+
+   Public Overrides ReadOnly Property CACHE_FILE_NAME As String
+      Get
+         Return "ImageCache.bin"
+      End Get
+   End Property
+
+   Public Overrides ReadOnly Property CACHE_LIMIT As Integer
+      Get
+         Return 0
+      End Get
+   End Property
+
+   <NonSerialized>
+   Private WithEvents AsynchronousImageLoader As New System.ComponentModel.BackgroundWorker
+
+   Public Sub GetImagesAsync()
+      ' Don't look if we already have our image cache.
+      If Images.Count < APIHelper.ChampionDict.Count Then
+         AsynchronousImageLoader.RunWorkerAsync()
+      End If
+   End Sub
+
+   Private Sub AsynchronousImageLoader_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles AsynchronousImageLoader.DoWork
+      For Each champ As StaticDataEndpoint.ChampionStatic In APIHelper.ChampionDict.Values
+         Console.Write("Fetching image for " & champ.Name & "...")
+         Images.Add(champ.Id, APIHelper.API_GET_IMAGE_FOR(champ.Id))
+         Console.WriteLine(" Done!")
+      Next
+   End Sub
+
+End Class
+
+<Serializable()>
+Class MatchCache
+   Inherits EasyCache
+
+   Public WithEvents MatchList As New _MatchList
+
+   Public Overrides ReadOnly Property CACHE_FILE_NAME() As String
+      Get
+         Return "MatchCache.bin"
+      End Get
+   End Property
+
+   Public Overrides ReadOnly Property CACHE_LIMIT() As Integer
+      Get
+         Return 500
+      End Get
+   End Property
+
+   'Shared LastURFAPICall As DateTime
+
+   ' Removes earlier items until the cache is at the cache limit
+   Public Sub Trim()
+      If MatchList.Count > CACHE_LIMIT Then
+         Dim amount As Integer = MatchList.Count - CACHE_LIMIT
+
+         MatchList.RemoveRange(0, amount)
+         ' LoadedIndex doesn't necessarily keep up with Me.Count, so we need to check for negatives
+         MatchList._LoadedIndex -= amount
+         MatchList.LoadedIndex = Math.Max(MatchList.LoadedIndex, -1)
+
+         MatchList.ForceCountChangedRefresh()
+      End If
+   End Sub
 End Class
 
 ' List class that allows events to be raised when 
 <Serializable>
-Class  _MatchList
+Class _MatchList
    Inherits List(Of Match)
 
    Friend _LoadedIndex As Integer = -1
@@ -151,41 +261,6 @@ Class  _MatchList
    End Sub
 End Class
 
-<Serializable()>
-Class MatchCache
-   Inherits EasyCache
-
-   Public WithEvents MatchList As New _MatchList
-
-   Public Overrides ReadOnly Property CACHE_FILE_NAME() As String
-      Get
-         Return "MatchCache.bin"
-      End Get
-   End Property
-
-   Public Overrides ReadOnly Property CACHE_LIMIT() As Integer
-      Get
-         Return 500
-      End Get
-   End Property
-
-   'Shared LastURFAPICall As DateTime
-
-   ' Removes earlier items until the cache is at the cache limit
-   Public Sub Trim()
-      If MatchList.Count > CACHE_LIMIT Then
-         Dim amount As Integer = MatchList.Count - CACHE_LIMIT
-
-         MatchList.RemoveRange(0, amount)
-         ' LoadedIndex doesn't necessarily keep up with Me.Count, so we need to check for negatives
-         MatchList._LoadedIndex -= amount
-         MatchList.LoadedIndex = Math.Max(MatchList.LoadedIndex, -1)
-
-         MatchList.ForceCountChangedRefresh()
-      End If
-   End Sub
-
-End Class
 
 <Serializable()>
 Class Match
