@@ -23,353 +23,375 @@ Partial Class MainWindow
    <System.Diagnostics.DebuggerStepThrough()> _
    Private Sub InitializeComponent()
       Me.components = New System.ComponentModel.Container()
-      Me.APIChallengeTimer = New System.Windows.Forms.Timer(Me.components)
-      Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
-      Me.CurrentStatusLabel = New System.Windows.Forms.ToolStripStatusLabel()
-      Me._FillerLabel = New System.Windows.Forms.ToolStripStatusLabel()
-      Me.ProgressBarLabel = New System.Windows.Forms.ToolStripStatusLabel()
-      Me.StatusProgressBar = New System.Windows.Forms.ToolStripProgressBar()
-      Me.CacheCountLabel = New System.Windows.Forms.ToolStripStatusLabel()
-      Me.EpochTimer = New System.Windows.Forms.Timer(Me.components)
-      Me.MatchLoadingBackgroundWorker = New System.ComponentModel.BackgroundWorker()
-      Me.CacheBackgroundWorker = New System.ComponentModel.BackgroundWorker()
-      Me.TabPage2 = New System.Windows.Forms.TabPage()
       Me.ChampionImageList2 = New System.Windows.Forms.ImageList(Me.components)
       Me.ChampionImageList1 = New System.Windows.Forms.ImageList(Me.components)
-      Me.TabPage1 = New System.Windows.Forms.TabPage()
-      Me.PictureBox1 = New System.Windows.Forms.PictureBox()
-      Me.TextBox1 = New System.Windows.Forms.TextBox()
-      Me.Button8 = New System.Windows.Forms.Button()
-      Me.Button6 = New System.Windows.Forms.Button()
-      Me.Button1 = New System.Windows.Forms.Button()
-      Me.Button5 = New System.Windows.Forms.Button()
-      Me.LastBucketTimeTextBox = New System.Windows.Forms.TextBox()
-      Me.ListBox1 = New System.Windows.Forms.ListBox()
-      Me.Label1 = New System.Windows.Forms.Label()
-      Me.Button2 = New System.Windows.Forms.Button()
-      Me.Button4 = New System.Windows.Forms.Button()
-      Me.Button3 = New System.Windows.Forms.Button()
-      Me.TabControl1 = New System.Windows.Forms.TabControl()
       Me.ImageComboBox2 = New ImageComboBox.ImageComboBox()
       Me.ImageComboBox1 = New ImageComboBox.ImageComboBox()
-      Me.PictureBox2 = New System.Windows.Forms.PictureBox()
-      Me.StatusStrip1.SuspendLayout()
-      Me.TabPage2.SuspendLayout()
-      Me.TabPage1.SuspendLayout()
-      CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
-      Me.TabControl1.SuspendLayout()
-      CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
+      Me.SettingsButton = New System.Windows.Forms.Button()
+      Me.MatchupFlowLayoutPanel = New System.Windows.Forms.FlowLayoutPanel()
+      Me.SelectorPanel = New System.Windows.Forms.Panel()
+      Me.LeftSidePanel = New System.Windows.Forms.Panel()
+      Me.EnemyLabel = New System.Windows.Forms.Label()
+      Me.EnemyPictureBox = New System.Windows.Forms.PictureBox()
+      Me.ChampionLabel = New System.Windows.Forms.Label()
+      Me.ChampionPictureBox = New System.Windows.Forms.PictureBox()
+      Me.VSLabel = New System.Windows.Forms.Label()
+      Me.WinRateLabel = New System.Windows.Forms.Label()
+      Me.ChampVsChampWinRatePanel = New System.Windows.Forms.Panel()
+      Me.ChampWinRatePanel = New System.Windows.Forms.Panel()
+      Me.ChampionPictureBoxInitial = New System.Windows.Forms.PictureBox()
+      Me.ChampionLabelInitial = New System.Windows.Forms.Label()
+      Me.WinRateLabelInitial = New System.Windows.Forms.Label()
+      Me.WinRateFlowLayoutPanel = New System.Windows.Forms.FlowLayoutPanel()
+      Me.TopWinRateLabel = New System.Windows.Forms.Label()
+      Me.TopRightPanel = New System.Windows.Forms.Panel()
+      Me.BottomRightPanel = New System.Windows.Forms.Panel()
+      Me.LossRateFlowLayoutPanel = New System.Windows.Forms.FlowLayoutPanel()
+      Me.LowestWinRateLabel = New System.Windows.Forms.Label()
+      Me.SelectorPanel.SuspendLayout()
+      Me.LeftSidePanel.SuspendLayout()
+      CType(Me.EnemyPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
+      CType(Me.ChampionPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
+      Me.ChampVsChampWinRatePanel.SuspendLayout()
+      Me.ChampWinRatePanel.SuspendLayout()
+      CType(Me.ChampionPictureBoxInitial, System.ComponentModel.ISupportInitialize).BeginInit()
+      Me.WinRateFlowLayoutPanel.SuspendLayout()
+      Me.TopRightPanel.SuspendLayout()
+      Me.BottomRightPanel.SuspendLayout()
+      Me.LossRateFlowLayoutPanel.SuspendLayout()
       Me.SuspendLayout()
-      '
-      'APIChallengeTimer
-      '
-      Me.APIChallengeTimer.Interval = 30000
-      '
-      'StatusStrip1
-      '
-      Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CurrentStatusLabel, Me._FillerLabel, Me.ProgressBarLabel, Me.StatusProgressBar, Me.CacheCountLabel})
-      Me.StatusStrip1.Location = New System.Drawing.Point(0, 337)
-      Me.StatusStrip1.Name = "StatusStrip1"
-      Me.StatusStrip1.Size = New System.Drawing.Size(900, 25)
-      Me.StatusStrip1.TabIndex = 17
-      Me.StatusStrip1.Text = "StatusStrip1"
-      '
-      'CurrentStatusLabel
-      '
-      Me.CurrentStatusLabel.Name = "CurrentStatusLabel"
-      Me.CurrentStatusLabel.Size = New System.Drawing.Size(59, 20)
-      Me.CurrentStatusLabel.Text = "Loaded"
-      '
-      '_FillerLabel
-      '
-      Me._FillerLabel.Name = "_FillerLabel"
-      Me._FillerLabel.Size = New System.Drawing.Size(547, 20)
-      Me._FillerLabel.Spring = True
-      '
-      'ProgressBarLabel
-      '
-      Me.ProgressBarLabel.Name = "ProgressBarLabel"
-      Me.ProgressBarLabel.Size = New System.Drawing.Size(0, 20)
-      '
-      'StatusProgressBar
-      '
-      Me.StatusProgressBar.Name = "StatusProgressBar"
-      Me.StatusProgressBar.Size = New System.Drawing.Size(100, 19)
-      '
-      'CacheCountLabel
-      '
-      Me.CacheCountLabel.Name = "CacheCountLabel"
-      Me.CacheCountLabel.Size = New System.Drawing.Size(177, 20)
-      Me.CacheCountLabel.Text = "Total Matches In Cache: 0"
-      '
-      'EpochTimer
-      '
-      Me.EpochTimer.Enabled = True
-      Me.EpochTimer.Interval = 50
-      '
-      'MatchLoadingBackgroundWorker
-      '
-      Me.MatchLoadingBackgroundWorker.WorkerReportsProgress = True
-      '
-      'CacheBackgroundWorker
-      '
-      Me.CacheBackgroundWorker.WorkerReportsProgress = True
-      Me.CacheBackgroundWorker.WorkerSupportsCancellation = True
-      '
-      'TabPage2
-      '
-      Me.TabPage2.Controls.Add(Me.PictureBox2)
-      Me.TabPage2.Controls.Add(Me.ImageComboBox2)
-      Me.TabPage2.Controls.Add(Me.ImageComboBox1)
-      Me.TabPage2.Location = New System.Drawing.Point(4, 25)
-      Me.TabPage2.Name = "TabPage2"
-      Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-      Me.TabPage2.Size = New System.Drawing.Size(892, 333)
-      Me.TabPage2.TabIndex = 1
-      Me.TabPage2.Text = "Basic Info"
-      Me.TabPage2.UseVisualStyleBackColor = True
       '
       'ChampionImageList2
       '
       Me.ChampionImageList2.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit
-      Me.ChampionImageList2.ImageSize = New System.Drawing.Size(16, 16)
+      Me.ChampionImageList2.ImageSize = New System.Drawing.Size(60, 60)
       Me.ChampionImageList2.TransparentColor = System.Drawing.Color.Transparent
       '
       'ChampionImageList1
       '
       Me.ChampionImageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit
-      Me.ChampionImageList1.ImageSize = New System.Drawing.Size(48, 48)
+      Me.ChampionImageList1.ImageSize = New System.Drawing.Size(60, 60)
       Me.ChampionImageList1.TransparentColor = System.Drawing.Color.Transparent
-      '
-      'TabPage1
-      '
-      Me.TabPage1.Controls.Add(Me.PictureBox1)
-      Me.TabPage1.Controls.Add(Me.TextBox1)
-      Me.TabPage1.Controls.Add(Me.Button8)
-      Me.TabPage1.Controls.Add(Me.Button6)
-      Me.TabPage1.Controls.Add(Me.Button1)
-      Me.TabPage1.Controls.Add(Me.Button5)
-      Me.TabPage1.Controls.Add(Me.LastBucketTimeTextBox)
-      Me.TabPage1.Controls.Add(Me.ListBox1)
-      Me.TabPage1.Controls.Add(Me.Label1)
-      Me.TabPage1.Controls.Add(Me.Button2)
-      Me.TabPage1.Controls.Add(Me.Button4)
-      Me.TabPage1.Controls.Add(Me.Button3)
-      Me.TabPage1.Location = New System.Drawing.Point(4, 25)
-      Me.TabPage1.Name = "TabPage1"
-      Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-      Me.TabPage1.Size = New System.Drawing.Size(892, 333)
-      Me.TabPage1.TabIndex = 0
-      Me.TabPage1.Text = "Match Data"
-      Me.TabPage1.UseVisualStyleBackColor = True
-      '
-      'PictureBox1
-      '
-      Me.PictureBox1.Location = New System.Drawing.Point(160, 189)
-      Me.PictureBox1.Name = "PictureBox1"
-      Me.PictureBox1.Size = New System.Drawing.Size(156, 108)
-      Me.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize
-      Me.PictureBox1.TabIndex = 23
-      Me.PictureBox1.TabStop = False
-      '
-      'TextBox1
-      '
-      Me.TextBox1.Location = New System.Drawing.Point(333, 228)
-      Me.TextBox1.Name = "TextBox1"
-      Me.TextBox1.Size = New System.Drawing.Size(100, 22)
-      Me.TextBox1.TabIndex = 22
-      Me.TextBox1.Text = "0"
-      '
-      'Button8
-      '
-      Me.Button8.Location = New System.Drawing.Point(334, 256)
-      Me.Button8.Name = "Button8"
-      Me.Button8.Size = New System.Drawing.Size(75, 23)
-      Me.Button8.TabIndex = 21
-      Me.Button8.Text = "Button8"
-      Me.Button8.UseVisualStyleBackColor = True
-      '
-      'Button6
-      '
-      Me.Button6.Location = New System.Drawing.Point(8, 124)
-      Me.Button6.Name = "Button6"
-      Me.Button6.Size = New System.Drawing.Size(323, 59)
-      Me.Button6.TabIndex = 20
-      Me.Button6.Text = "Populate Game Cache With URF API"
-      Me.Button6.UseVisualStyleBackColor = True
-      '
-      'Button1
-      '
-      Me.Button1.Location = New System.Drawing.Point(380, 160)
-      Me.Button1.Name = "Button1"
-      Me.Button1.Size = New System.Drawing.Size(75, 23)
-      Me.Button1.TabIndex = 10
-      Me.Button1.Text = "Button1"
-      Me.Button1.UseVisualStyleBackColor = True
-      '
-      'Button5
-      '
-      Me.Button5.Location = New System.Drawing.Point(3, 95)
-      Me.Button5.Name = "Button5"
-      Me.Button5.Size = New System.Drawing.Size(163, 23)
-      Me.Button5.TabIndex = 19
-      Me.Button5.Text = "Start Loading Games"
-      Me.Button5.UseVisualStyleBackColor = True
-      '
-      'LastBucketTimeTextBox
-      '
-      Me.LastBucketTimeTextBox.Location = New System.Drawing.Point(141, 6)
-      Me.LastBucketTimeTextBox.Name = "LastBucketTimeTextBox"
-      Me.LastBucketTimeTextBox.ReadOnly = True
-      Me.LastBucketTimeTextBox.Size = New System.Drawing.Size(268, 22)
-      Me.LastBucketTimeTextBox.TabIndex = 0
-      '
-      'ListBox1
-      '
-      Me.ListBox1.FormattingEnabled = True
-      Me.ListBox1.ItemHeight = 16
-      Me.ListBox1.Location = New System.Drawing.Point(542, 6)
-      Me.ListBox1.Name = "ListBox1"
-      Me.ListBox1.Size = New System.Drawing.Size(347, 244)
-      Me.ListBox1.TabIndex = 18
-      '
-      'Label1
-      '
-      Me.Label1.AutoSize = True
-      Me.Label1.Location = New System.Drawing.Point(0, 9)
-      Me.Label1.Name = "Label1"
-      Me.Label1.Size = New System.Drawing.Size(125, 17)
-      Me.Label1.TabIndex = 2
-      Me.Label1.Text = "Last Bucket Time: "
-      '
-      'Button2
-      '
-      Me.Button2.Location = New System.Drawing.Point(461, 160)
-      Me.Button2.Name = "Button2"
-      Me.Button2.Size = New System.Drawing.Size(75, 23)
-      Me.Button2.TabIndex = 11
-      Me.Button2.Text = "Button2"
-      Me.Button2.UseVisualStyleBackColor = True
-      '
-      'Button4
-      '
-      Me.Button4.Enabled = False
-      Me.Button4.Location = New System.Drawing.Point(76, 34)
-      Me.Button4.Name = "Button4"
-      Me.Button4.Size = New System.Drawing.Size(68, 23)
-      Me.Button4.TabIndex = 14
-      Me.Button4.Text = "Stop"
-      Me.Button4.UseVisualStyleBackColor = True
-      '
-      'Button3
-      '
-      Me.Button3.Location = New System.Drawing.Point(2, 34)
-      Me.Button3.Name = "Button3"
-      Me.Button3.Size = New System.Drawing.Size(68, 23)
-      Me.Button3.TabIndex = 13
-      Me.Button3.Text = "Start"
-      Me.Button3.UseVisualStyleBackColor = True
-      '
-      'TabControl1
-      '
-      Me.TabControl1.Controls.Add(Me.TabPage1)
-      Me.TabControl1.Controls.Add(Me.TabPage2)
-      Me.TabControl1.Dock = System.Windows.Forms.DockStyle.Fill
-      Me.TabControl1.Location = New System.Drawing.Point(0, 0)
-      Me.TabControl1.Name = "TabControl1"
-      Me.TabControl1.SelectedIndex = 0
-      Me.TabControl1.Size = New System.Drawing.Size(900, 362)
-      Me.TabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed
-      Me.TabControl1.TabIndex = 21
       '
       'ImageComboBox2
       '
       Me.ImageComboBox2.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
-      Me.ImageComboBox2.DropDownHeight = 500
+      Me.ImageComboBox2.DropDownHeight = 720
       Me.ImageComboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
       Me.ImageComboBox2.FlatStyle = System.Windows.Forms.FlatStyle.Flat
       Me.ImageComboBox2.ImageList = Me.ChampionImageList2
       Me.ImageComboBox2.Indent = 20
       Me.ImageComboBox2.IntegralHeight = False
-      Me.ImageComboBox2.ItemHeight = 60
-      Me.ImageComboBox2.Location = New System.Drawing.Point(314, 6)
+      Me.ImageComboBox2.ItemHeight = 30
+      Me.ImageComboBox2.Location = New System.Drawing.Point(315, 8)
       Me.ImageComboBox2.MaxDropDownItems = 12
       Me.ImageComboBox2.Name = "ImageComboBox2"
-      Me.ImageComboBox2.Size = New System.Drawing.Size(300, 66)
-      Me.ImageComboBox2.TabIndex = 9
+      Me.ImageComboBox2.Size = New System.Drawing.Size(300, 36)
+      Me.ImageComboBox2.TabIndex = 19
       '
       'ImageComboBox1
       '
       Me.ImageComboBox1.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
+      Me.ImageComboBox1.DropDownHeight = 720
       Me.ImageComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+      Me.ImageComboBox1.DropDownWidth = 300
       Me.ImageComboBox1.FlatStyle = System.Windows.Forms.FlatStyle.Flat
       Me.ImageComboBox1.ImageList = Me.ChampionImageList1
       Me.ImageComboBox1.Indent = 20
-      Me.ImageComboBox1.ItemHeight = 60
-      Me.ImageComboBox1.Location = New System.Drawing.Point(8, 6)
+      Me.ImageComboBox1.IntegralHeight = False
+      Me.ImageComboBox1.ItemHeight = 30
+      Me.ImageComboBox1.Location = New System.Drawing.Point(9, 8)
       Me.ImageComboBox1.MaxDropDownItems = 12
       Me.ImageComboBox1.Name = "ImageComboBox1"
-      Me.ImageComboBox1.Size = New System.Drawing.Size(300, 66)
-      Me.ImageComboBox1.TabIndex = 8
+      Me.ImageComboBox1.Size = New System.Drawing.Size(300, 36)
+      Me.ImageComboBox1.TabIndex = 18
       '
-      'PictureBox2
+      'SettingsButton
       '
-      Me.PictureBox2.Location = New System.Drawing.Point(91, 78)
-      Me.PictureBox2.Name = "PictureBox2"
-      Me.PictureBox2.Size = New System.Drawing.Size(120, 120)
-      Me.PictureBox2.TabIndex = 10
-      Me.PictureBox2.TabStop = False
+      Me.SettingsButton.Dock = System.Windows.Forms.DockStyle.Right
+      Me.SettingsButton.Location = New System.Drawing.Point(843, 0)
+      Me.SettingsButton.Name = "SettingsButton"
+      Me.SettingsButton.Size = New System.Drawing.Size(97, 129)
+      Me.SettingsButton.TabIndex = 20
+      Me.SettingsButton.Text = "Settings"
+      Me.SettingsButton.UseVisualStyleBackColor = True
+      '
+      'MatchupFlowLayoutPanel
+      '
+      Me.MatchupFlowLayoutPanel.AutoScroll = True
+      Me.MatchupFlowLayoutPanel.AutoSize = True
+      Me.MatchupFlowLayoutPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+      Me.MatchupFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill
+      Me.MatchupFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
+      Me.MatchupFlowLayoutPanel.Location = New System.Drawing.Point(0, 56)
+      Me.MatchupFlowLayoutPanel.Name = "MatchupFlowLayoutPanel"
+      Me.MatchupFlowLayoutPanel.Padding = New System.Windows.Forms.Padding(32, 20, 0, 0)
+      Me.MatchupFlowLayoutPanel.Size = New System.Drawing.Size(629, 658)
+      Me.MatchupFlowLayoutPanel.TabIndex = 21
+      Me.MatchupFlowLayoutPanel.WrapContents = False
+      '
+      'SelectorPanel
+      '
+      Me.SelectorPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+      Me.SelectorPanel.Controls.Add(Me.ImageComboBox2)
+      Me.SelectorPanel.Controls.Add(Me.ImageComboBox1)
+      Me.SelectorPanel.Dock = System.Windows.Forms.DockStyle.Top
+      Me.SelectorPanel.Location = New System.Drawing.Point(0, 0)
+      Me.SelectorPanel.Name = "SelectorPanel"
+      Me.SelectorPanel.Size = New System.Drawing.Size(629, 56)
+      Me.SelectorPanel.TabIndex = 22
+      '
+      'LeftSidePanel
+      '
+      Me.LeftSidePanel.Controls.Add(Me.MatchupFlowLayoutPanel)
+      Me.LeftSidePanel.Controls.Add(Me.SelectorPanel)
+      Me.LeftSidePanel.Dock = System.Windows.Forms.DockStyle.Left
+      Me.LeftSidePanel.Location = New System.Drawing.Point(0, 0)
+      Me.LeftSidePanel.Name = "LeftSidePanel"
+      Me.LeftSidePanel.Size = New System.Drawing.Size(629, 714)
+      Me.LeftSidePanel.TabIndex = 0
+      '
+      'EnemyLabel
+      '
+      Me.EnemyLabel.AutoSize = True
+      Me.EnemyLabel.Font = New System.Drawing.Font("Garamond", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+      Me.EnemyLabel.Location = New System.Drawing.Point(348, 29)
+      Me.EnemyLabel.Name = "EnemyLabel"
+      Me.EnemyLabel.Size = New System.Drawing.Size(84, 29)
+      Me.EnemyLabel.TabIndex = 12
+      Me.EnemyLabel.Text = "Testing"
+      Me.EnemyLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+      '
+      'EnemyPictureBox
+      '
+      Me.EnemyPictureBox.Location = New System.Drawing.Point(282, 14)
+      Me.EnemyPictureBox.Name = "EnemyPictureBox"
+      Me.EnemyPictureBox.Size = New System.Drawing.Size(60, 60)
+      Me.EnemyPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
+      Me.EnemyPictureBox.TabIndex = 11
+      Me.EnemyPictureBox.TabStop = False
+      '
+      'ChampionLabel
+      '
+      Me.ChampionLabel.Font = New System.Drawing.Font("Garamond", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+      Me.ChampionLabel.Location = New System.Drawing.Point(18, 29)
+      Me.ChampionLabel.Name = "ChampionLabel"
+      Me.ChampionLabel.Size = New System.Drawing.Size(155, 29)
+      Me.ChampionLabel.TabIndex = 10
+      Me.ChampionLabel.Text = "Testing"
+      Me.ChampionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+      '
+      'ChampionPictureBox
+      '
+      Me.ChampionPictureBox.Location = New System.Drawing.Point(177, 14)
+      Me.ChampionPictureBox.Name = "ChampionPictureBox"
+      Me.ChampionPictureBox.Size = New System.Drawing.Size(60, 60)
+      Me.ChampionPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
+      Me.ChampionPictureBox.TabIndex = 9
+      Me.ChampionPictureBox.TabStop = False
+      '
+      'VSLabel
+      '
+      Me.VSLabel.AutoSize = True
+      Me.VSLabel.Font = New System.Drawing.Font("Algerian", 14.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+      Me.VSLabel.Location = New System.Drawing.Point(239, 31)
+      Me.VSLabel.Name = "VSLabel"
+      Me.VSLabel.Size = New System.Drawing.Size(40, 26)
+      Me.VSLabel.TabIndex = 13
+      Me.VSLabel.Text = "VS"
+      '
+      'WinRateLabel
+      '
+      Me.WinRateLabel.Font = New System.Drawing.Font("Garamond", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+      Me.WinRateLabel.Location = New System.Drawing.Point(89, 73)
+      Me.WinRateLabel.Name = "WinRateLabel"
+      Me.WinRateLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes
+      Me.WinRateLabel.Size = New System.Drawing.Size(343, 60)
+      Me.WinRateLabel.TabIndex = 14
+      Me.WinRateLabel.Text = "Testing"
+      Me.WinRateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+      '
+      'ChampVsChampWinRatePanel
+      '
+      Me.ChampVsChampWinRatePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+      Me.ChampVsChampWinRatePanel.Controls.Add(Me.WinRateLabel)
+      Me.ChampVsChampWinRatePanel.Controls.Add(Me.VSLabel)
+      Me.ChampVsChampWinRatePanel.Controls.Add(Me.EnemyLabel)
+      Me.ChampVsChampWinRatePanel.Controls.Add(Me.ChampionPictureBox)
+      Me.ChampVsChampWinRatePanel.Controls.Add(Me.EnemyPictureBox)
+      Me.ChampVsChampWinRatePanel.Controls.Add(Me.ChampionLabel)
+      Me.ChampVsChampWinRatePanel.Dock = System.Windows.Forms.DockStyle.Fill
+      Me.ChampVsChampWinRatePanel.Location = New System.Drawing.Point(335, 0)
+      Me.ChampVsChampWinRatePanel.Name = "ChampVsChampWinRatePanel"
+      Me.ChampVsChampWinRatePanel.Size = New System.Drawing.Size(605, 129)
+      Me.ChampVsChampWinRatePanel.TabIndex = 15
+      '
+      'ChampWinRatePanel
+      '
+      Me.ChampWinRatePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+      Me.ChampWinRatePanel.Controls.Add(Me.ChampionPictureBoxInitial)
+      Me.ChampWinRatePanel.Controls.Add(Me.ChampionLabelInitial)
+      Me.ChampWinRatePanel.Controls.Add(Me.WinRateLabelInitial)
+      Me.ChampWinRatePanel.Dock = System.Windows.Forms.DockStyle.Left
+      Me.ChampWinRatePanel.Location = New System.Drawing.Point(0, 0)
+      Me.ChampWinRatePanel.Name = "ChampWinRatePanel"
+      Me.ChampWinRatePanel.Size = New System.Drawing.Size(335, 129)
+      Me.ChampWinRatePanel.TabIndex = 16
+      '
+      'ChampionPictureBoxInitial
+      '
+      Me.ChampionPictureBoxInitial.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+      Me.ChampionPictureBoxInitial.Location = New System.Drawing.Point(173, 13)
+      Me.ChampionPictureBoxInitial.Name = "ChampionPictureBoxInitial"
+      Me.ChampionPictureBoxInitial.Size = New System.Drawing.Size(60, 60)
+      Me.ChampionPictureBoxInitial.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
+      Me.ChampionPictureBoxInitial.TabIndex = 15
+      Me.ChampionPictureBoxInitial.TabStop = False
+      '
+      'ChampionLabelInitial
+      '
+      Me.ChampionLabelInitial.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+      Me.ChampionLabelInitial.Font = New System.Drawing.Font("Garamond", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+      Me.ChampionLabelInitial.Location = New System.Drawing.Point(-46, 28)
+      Me.ChampionLabelInitial.Name = "ChampionLabelInitial"
+      Me.ChampionLabelInitial.Size = New System.Drawing.Size(215, 29)
+      Me.ChampionLabelInitial.TabIndex = 16
+      Me.ChampionLabelInitial.Text = "Testing"
+      Me.ChampionLabelInitial.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+      '
+      'WinRateLabelInitial
+      '
+      Me.WinRateLabelInitial.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+      Me.WinRateLabelInitial.Font = New System.Drawing.Font("Garamond", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+      Me.WinRateLabelInitial.Location = New System.Drawing.Point(5, 65)
+      Me.WinRateLabelInitial.Name = "WinRateLabelInitial"
+      Me.WinRateLabelInitial.RightToLeft = System.Windows.Forms.RightToLeft.Yes
+      Me.WinRateLabelInitial.Size = New System.Drawing.Size(325, 60)
+      Me.WinRateLabelInitial.TabIndex = 17
+      Me.WinRateLabelInitial.Text = "Testing"
+      Me.WinRateLabelInitial.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+      '
+      'WinRateFlowLayoutPanel
+      '
+      Me.WinRateFlowLayoutPanel.AutoScroll = True
+      Me.WinRateFlowLayoutPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+      Me.WinRateFlowLayoutPanel.Controls.Add(Me.TopWinRateLabel)
+      Me.WinRateFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Left
+      Me.WinRateFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
+      Me.WinRateFlowLayoutPanel.Location = New System.Drawing.Point(0, 0)
+      Me.WinRateFlowLayoutPanel.Name = "WinRateFlowLayoutPanel"
+      Me.WinRateFlowLayoutPanel.Size = New System.Drawing.Size(470, 585)
+      Me.WinRateFlowLayoutPanel.TabIndex = 17
+      Me.WinRateFlowLayoutPanel.WrapContents = False
+      '
+      'TopWinRateLabel
+      '
+      Me.TopWinRateLabel.Dock = System.Windows.Forms.DockStyle.Top
+      Me.TopWinRateLabel.Font = New System.Drawing.Font("Garamond", 18.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+      Me.TopWinRateLabel.Location = New System.Drawing.Point(3, 0)
+      Me.TopWinRateLabel.Name = "TopWinRateLabel"
+      Me.TopWinRateLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes
+      Me.TopWinRateLabel.Size = New System.Drawing.Size(0, 45)
+      Me.TopWinRateLabel.TabIndex = 18
+      Me.TopWinRateLabel.Text = "Top Win Rates"
+      Me.TopWinRateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+      '
+      'TopRightPanel
+      '
+      Me.TopRightPanel.Controls.Add(Me.SettingsButton)
+      Me.TopRightPanel.Controls.Add(Me.ChampVsChampWinRatePanel)
+      Me.TopRightPanel.Controls.Add(Me.ChampWinRatePanel)
+      Me.TopRightPanel.Dock = System.Windows.Forms.DockStyle.Top
+      Me.TopRightPanel.Location = New System.Drawing.Point(629, 0)
+      Me.TopRightPanel.Name = "TopRightPanel"
+      Me.TopRightPanel.Size = New System.Drawing.Size(940, 129)
+      Me.TopRightPanel.TabIndex = 18
+      '
+      'BottomRightPanel
+      '
+      Me.BottomRightPanel.Controls.Add(Me.LossRateFlowLayoutPanel)
+      Me.BottomRightPanel.Controls.Add(Me.WinRateFlowLayoutPanel)
+      Me.BottomRightPanel.Dock = System.Windows.Forms.DockStyle.Fill
+      Me.BottomRightPanel.Location = New System.Drawing.Point(629, 129)
+      Me.BottomRightPanel.Name = "BottomRightPanel"
+      Me.BottomRightPanel.Size = New System.Drawing.Size(940, 585)
+      Me.BottomRightPanel.TabIndex = 19
+      '
+      'LossRateFlowLayoutPanel
+      '
+      Me.LossRateFlowLayoutPanel.AutoScroll = True
+      Me.LossRateFlowLayoutPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+      Me.LossRateFlowLayoutPanel.Controls.Add(Me.LowestWinRateLabel)
+      Me.LossRateFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill
+      Me.LossRateFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
+      Me.LossRateFlowLayoutPanel.Location = New System.Drawing.Point(470, 0)
+      Me.LossRateFlowLayoutPanel.Name = "LossRateFlowLayoutPanel"
+      Me.LossRateFlowLayoutPanel.Size = New System.Drawing.Size(470, 585)
+      Me.LossRateFlowLayoutPanel.TabIndex = 19
+      Me.LossRateFlowLayoutPanel.WrapContents = False
+      '
+      'LowestWinRateLabel
+      '
+      Me.LowestWinRateLabel.Dock = System.Windows.Forms.DockStyle.Top
+      Me.LowestWinRateLabel.Font = New System.Drawing.Font("Garamond", 18.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+      Me.LowestWinRateLabel.Location = New System.Drawing.Point(3, 0)
+      Me.LowestWinRateLabel.Name = "LowestWinRateLabel"
+      Me.LowestWinRateLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes
+      Me.LowestWinRateLabel.Size = New System.Drawing.Size(0, 45)
+      Me.LowestWinRateLabel.TabIndex = 18
+      Me.LowestWinRateLabel.Text = "Lowest Win Rates"
+      Me.LowestWinRateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
       '
       'MainWindow
       '
       Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
       Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-      Me.ClientSize = New System.Drawing.Size(900, 362)
-      Me.Controls.Add(Me.StatusStrip1)
-      Me.Controls.Add(Me.TabControl1)
+      Me.ClientSize = New System.Drawing.Size(1569, 714)
+      Me.Controls.Add(Me.BottomRightPanel)
+      Me.Controls.Add(Me.TopRightPanel)
+      Me.Controls.Add(Me.LeftSidePanel)
       Me.Name = "MainWindow"
       Me.Text = "Main Window"
-      Me.StatusStrip1.ResumeLayout(False)
-      Me.StatusStrip1.PerformLayout()
-      Me.TabPage2.ResumeLayout(False)
-      Me.TabPage1.ResumeLayout(False)
-      Me.TabPage1.PerformLayout()
-      CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
-      Me.TabControl1.ResumeLayout(False)
-      CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).EndInit()
+      Me.SelectorPanel.ResumeLayout(False)
+      Me.LeftSidePanel.ResumeLayout(False)
+      Me.LeftSidePanel.PerformLayout()
+      CType(Me.EnemyPictureBox, System.ComponentModel.ISupportInitialize).EndInit()
+      CType(Me.ChampionPictureBox, System.ComponentModel.ISupportInitialize).EndInit()
+      Me.ChampVsChampWinRatePanel.ResumeLayout(False)
+      Me.ChampVsChampWinRatePanel.PerformLayout()
+      Me.ChampWinRatePanel.ResumeLayout(False)
+      CType(Me.ChampionPictureBoxInitial, System.ComponentModel.ISupportInitialize).EndInit()
+      Me.WinRateFlowLayoutPanel.ResumeLayout(False)
+      Me.TopRightPanel.ResumeLayout(False)
+      Me.BottomRightPanel.ResumeLayout(False)
+      Me.LossRateFlowLayoutPanel.ResumeLayout(False)
       Me.ResumeLayout(False)
-      Me.PerformLayout()
 
    End Sub
-   Friend WithEvents APIChallengeTimer As System.Windows.Forms.Timer
-   Friend WithEvents StatusStrip1 As System.Windows.Forms.StatusStrip
-   Friend WithEvents CacheCountLabel As System.Windows.Forms.ToolStripStatusLabel
-   Friend WithEvents _FillerLabel As System.Windows.Forms.ToolStripStatusLabel
-   Friend WithEvents CurrentStatusLabel As System.Windows.Forms.ToolStripStatusLabel
-   Friend WithEvents EpochTimer As System.Windows.Forms.Timer
-   Friend WithEvents MatchLoadingBackgroundWorker As System.ComponentModel.BackgroundWorker
-   Friend WithEvents ProgressBarLabel As System.Windows.Forms.ToolStripStatusLabel
-   Friend WithEvents StatusProgressBar As System.Windows.Forms.ToolStripProgressBar
-   Friend WithEvents CacheBackgroundWorker As System.ComponentModel.BackgroundWorker
-   Friend WithEvents TabPage2 As System.Windows.Forms.TabPage
-   Friend WithEvents TabPage1 As System.Windows.Forms.TabPage
-   Friend WithEvents Button6 As System.Windows.Forms.Button
-   Friend WithEvents Button1 As System.Windows.Forms.Button
-   Friend WithEvents Button5 As System.Windows.Forms.Button
-   Friend WithEvents LastBucketTimeTextBox As System.Windows.Forms.TextBox
-   Friend WithEvents ListBox1 As System.Windows.Forms.ListBox
-   Friend WithEvents Label1 As System.Windows.Forms.Label
-   Friend WithEvents Button2 As System.Windows.Forms.Button
-   Friend WithEvents Button4 As System.Windows.Forms.Button
-   Friend WithEvents Button3 As System.Windows.Forms.Button
-   Friend WithEvents TabControl1 As System.Windows.Forms.TabControl
-   Friend WithEvents TextBox1 As System.Windows.Forms.TextBox
-   Friend WithEvents Button8 As System.Windows.Forms.Button
-   Friend WithEvents PictureBox1 As System.Windows.Forms.PictureBox
    Friend WithEvents ChampionImageList1 As System.Windows.Forms.ImageList
-   Private WithEvents ImageComboBox1 As ImageComboBox.ImageComboBox
-   Private WithEvents ImageComboBox2 As ImageComboBox.ImageComboBox
    Friend WithEvents ChampionImageList2 As System.Windows.Forms.ImageList
-   Friend WithEvents PictureBox2 As System.Windows.Forms.PictureBox
+   Private WithEvents ImageComboBox2 As ImageComboBox.ImageComboBox
+   Private WithEvents ImageComboBox1 As ImageComboBox.ImageComboBox
+   Friend WithEvents SettingsButton As System.Windows.Forms.Button
+   Friend WithEvents MatchupFlowLayoutPanel As System.Windows.Forms.FlowLayoutPanel
+   Friend WithEvents SelectorPanel As System.Windows.Forms.Panel
+   Friend WithEvents LeftSidePanel As System.Windows.Forms.Panel
+   Friend WithEvents EnemyLabel As System.Windows.Forms.Label
+   Friend WithEvents EnemyPictureBox As System.Windows.Forms.PictureBox
+   Friend WithEvents ChampionLabel As System.Windows.Forms.Label
+   Friend WithEvents ChampionPictureBox As System.Windows.Forms.PictureBox
+   Friend WithEvents VSLabel As System.Windows.Forms.Label
+   Friend WithEvents WinRateLabel As System.Windows.Forms.Label
+   Friend WithEvents ChampVsChampWinRatePanel As System.Windows.Forms.Panel
+   Friend WithEvents ChampWinRatePanel As System.Windows.Forms.Panel
+   Friend WithEvents WinRateLabelInitial As System.Windows.Forms.Label
+   Friend WithEvents ChampionPictureBoxInitial As System.Windows.Forms.PictureBox
+   Friend WithEvents ChampionLabelInitial As System.Windows.Forms.Label
+   Friend WithEvents WinRateFlowLayoutPanel As System.Windows.Forms.FlowLayoutPanel
+   Friend WithEvents TopWinRateLabel As System.Windows.Forms.Label
+   Friend WithEvents TopRightPanel As System.Windows.Forms.Panel
+   Friend WithEvents BottomRightPanel As System.Windows.Forms.Panel
+   Friend WithEvents LossRateFlowLayoutPanel As System.Windows.Forms.FlowLayoutPanel
+   Friend WithEvents LowestWinRateLabel As System.Windows.Forms.Label
 
 End Class

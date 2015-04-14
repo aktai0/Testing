@@ -58,17 +58,24 @@ Public Class Matchup
       Return Nothing
    End Function
 
+   Public Shared RawMatches As IEnumerable(Of MatchEndpoint.MatchDetail)
+
    ' Compute comprehensive matchup data for a given champion.
    Public Shared Function GetMatchupDataFor(ByVal champName As String) As List(Of Matchup)
       Dim MatchupList As New List(Of Matchup)
 
       Dim champID As Integer = APIHelper.GetChampID(champName)
       Dim now As DateTime = DateTime.Now
-      Dim q = From match In CacheManager.RetrieveCache(Of MatchCache).MatchList, p In match.GetMatchInfo.Participants,
+      Dim allChampMatches = From match In CacheManager.RetrieveCache(Of MatchCache).MatchList, p In match.GetMatchInfo.Participants,
                match2 In CacheManager.RetrieveCache(Of MatchCache).MatchList, p2 In match2.GetMatchInfo.Participants
                Where match.GetMatchID = match2.GetMatchID AndAlso p.ParticipantId <> p2.ParticipantId AndAlso p.Timeline.Lane = p2.Timeline.Lane AndAlso p.ChampionId = champID AndAlso p.TeamId <> p2.TeamId
-               Select match.GetMatchID, p.TeamId, BlueWon = match.GetMatchInfo().Teams(0).Winner, BlueTeamID = match.GetMatchInfo().Teams(0).TeamId, OtherChamp = p2.ChampionId, p.Timeline.Lane
-      For Each item In q
+               Select match, match.GetMatchID, p.TeamId, BlueWon = match.GetMatchInfo().Teams(0).Winner, BlueTeamID = match.GetMatchInfo().Teams(0).TeamId, OtherChamp = p2.ChampionId, p.Timeline.Lane
+
+      RawMatches = From m In allChampMatches Select m.match.GetMatchInfo()
+
+      Dim filteredMatches = From m In allChampMatches Select m.GetMatchID, m.TeamId, m.BlueTeamID, m.BlueWon, m.OtherChamp, m.Lane
+
+      For Each item In filteredMatches
          Dim wonGame As Boolean = False
          If item.TeamId = item.BlueTeamID Then
             If item.BlueWon Then
@@ -109,5 +116,53 @@ Public Class Matchup
       Next
       Console.WriteLine("That took: " & DateTime.Now.Subtract(now).ToString & " to complete")
       Return MatchupList
+   End Function
+End Class
+
+Public Class WinRateMatchup
+   Public ChampionID As Integer
+   Public EnemyChampionID As Integer
+
+   Public WinNum As Integer
+   Public TotalGames As Integer
+
+   Public WinRate As Single
+
+   Sub New(ByVal cID As Integer, ByVal eID As Integer, ByVal wins As Integer, ByVal gms As Integer)
+      With Me
+         .ChampionID = cID
+         .EnemyChampionID = eID
+         .WinNum = wins
+         .TotalGames = gms
+      End With
+
+      WinRate = CSng(WinNum) / TotalGames
+   End Sub
+
+   Public Shared Function GetWinRateDataFor(ByVal champID As Integer, ByRef currentMatchups As List(Of Matchup), Optional ByVal orderDesc As Boolean = True) As IEnumerable(Of WinRateMatchup)
+      Dim winRates As New List(Of WinRateMatchup)
+
+      Dim groupedMatches = From m In currentMatchups
+              Group m By OtherChampID = m.EnemyChampionID Into groups = Group
+              Select OtherChampID, groups
+
+      For Each championGroup In groupedMatches
+         Dim wonGames = Aggregate m In championGroup.groups
+                        Where m.WonLane
+                        Into Count()
+         Dim totalGames = championGroup.groups.Count()
+
+         winRates.Add(New WinRateMatchup(champID, championGroup.OtherChampID, wonGames, totalGames))
+      Next
+
+      If orderDesc Then
+         Return (From w In winRates
+                 Order By w.WinRate Descending, w.TotalGames Descending, APIHelper.GetChampName(w.EnemyChampionID) Ascending
+                 Select w)
+      Else
+         Return (From w In winRates
+                 Order By w.WinRate Ascending, w.TotalGames Descending, APIHelper.GetChampName(w.EnemyChampionID) Ascending
+                 Select w)
+      End If
    End Function
 End Class

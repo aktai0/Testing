@@ -32,6 +32,7 @@ Module CacheManager
    Public Sub Init()
       CacheTypeNames.Add("Static", New StaticCache)
       CacheTypeNames.Add("Matches", New MatchCache)
+      CacheTypeNames.Add("Data", New DataCache)
    End Sub
 
    Public Sub LoadAllCaches()
@@ -51,7 +52,9 @@ Module CacheManager
 
    Public Sub StoreAllCaches()
       For Each cache As EasyCache In CacheList.Values
-         StoreCacheFile(cache.CACHE_FILE_NAME, cache)
+         If cache.CacheChanged Then
+            StoreCacheFile(cache.CACHE_FILE_NAME, cache)
+         End If
       Next
    End Sub
 
@@ -89,9 +92,17 @@ MustInherit Class EasyCache
    MustOverride ReadOnly Property CACHE_FILE_NAME() As String
    MustOverride ReadOnly Property CACHE_LIMIT() As Integer
 
+   ' Always reuse old cache by default.
    Overridable ReadOnly Property ShouldRebuildCache() As Boolean
       Get
          Return False
+      End Get
+   End Property
+
+   ' Always save by default.
+   Overridable ReadOnly Property CacheChanged() As Boolean
+      Get
+         Return True
       End Get
    End Property
 
@@ -127,9 +138,17 @@ Class StaticCache
       End Get
    End Property
 
+   <NonSerialized>
+   Dim _CacheChanged As Boolean = False
+   Public Overrides ReadOnly Property CacheChanged As Boolean
+      Get
+         Return _CacheChanged
+      End Get
+   End Property
+
    Public Overrides ReadOnly Property ShouldRebuildCache As Boolean
       Get
-         Return Images.Count = 0 'Or Champions.Count = 0
+         Return Images.Count = 0 Or Champions.Count = 0
       End Get
    End Property
 
@@ -142,7 +161,7 @@ Class StaticCache
    Public Overrides Sub RebuildCacheAsync()
       APIHelper.API_INIT()
       AsynchronousStaticLoader = New System.ComponentModel.BackgroundWorker
-      AddHandler AsynchronousStaticLoader.DoWork, AddressOf AsynchronousStaticLoaderc_DoWork
+      AddHandler AsynchronousStaticLoader.DoWork, AddressOf AsynchronousStaticLoader_DoWork
       AsynchronousStaticLoader.RunWorkerAsync()
    End Sub
 
@@ -159,7 +178,7 @@ Class StaticCache
    Public Champions As Dictionary(Of Integer, StaticDataEndpoint.ChampionStatic)
    Public ChampionsRaw As StaticDataEndpoint.ChampionListStatic
 
-   Private Sub AsynchronousStaticLoaderc_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs)
+   Private Sub AsynchronousStaticLoader_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs)
       Console.Write("Fetching static champion data...")
       APIHelper.API_STATIC_LOAD_CHAMPION_INFO()
       Champions = APIHelper.Champions
@@ -171,6 +190,8 @@ Class StaticCache
          Images.Add(champ.Id, APIHelper.API_GET_IMAGE_FOR(champ.Id))
          Console.WriteLine(" Done!")
       Next
+
+      _CacheChanged = True
    End Sub
 End Class
 
@@ -189,6 +210,14 @@ Class MatchCache
    Public Overrides ReadOnly Property CACHE_LIMIT() As Integer
       Get
          Return 500
+      End Get
+   End Property
+
+   <NonSerialized>
+   Private _CacheChanged As Boolean = False
+   Public Overrides ReadOnly Property CacheChanged As Boolean
+      Get
+         Return _CacheChanged
       End Get
    End Property
 
@@ -362,4 +391,66 @@ Class Match
    Public Overrides Function ToString() As String
       Return MatchID.ToString & " (" & If(InfoLoaded, "Loaded", "Not Loaded") & ")"
    End Function
+End Class
+
+
+<Serializable>
+Class DataCache
+   Inherits EasyCache
+
+   Public Overrides ReadOnly Property CACHE_FILE_NAME As String
+      Get
+         Return "DataCache.bin"
+      End Get
+   End Property
+
+   Public Overrides ReadOnly Property CACHE_LIMIT As Integer
+      Get
+         Return 0
+      End Get
+   End Property
+
+   Private FirstMatchID As Integer = 0
+   Private LastMatchID As Integer = 0
+   Private LoadIndex As Integer = -1
+
+   ' Always reuse old cache by default.
+   Overrides ReadOnly Property ShouldRebuildCache() As Boolean
+      Get
+         Dim MatchCache = RetrieveCache(Of MatchCache)()
+         Return LoadIndex = MatchCache.MatchList.LoadedIndex AndAlso FirstMatchID = MatchCache.MatchList(0).GetMatchID AndAlso LastMatchID = MatchCache.MatchList(MatchCache.MatchList.Count - 1).GetMatchID
+      End Get
+   End Property
+
+   <NonSerialized>
+   Private _CacheChanged As Boolean = False
+   ' Always save by default.
+   Overrides ReadOnly Property CacheChanged() As Boolean
+      Get
+         Return _CacheChanged
+      End Get
+   End Property
+
+   Overrides Sub RebuildCacheAsync()
+      AsyncBackgroundWorker = New System.ComponentModel.BackgroundWorker()
+
+   End Sub
+
+   <NonSerialized>
+   Private AsyncBackgroundWorker As System.ComponentModel.BackgroundWorker
+
+   Private Sub AsyncBackgroundWorker_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs)
+
+   End Sub
+
+   Private Function SelectFirstChamp(ByVal name As String) As IEnumerable(Of String)
+
+   End Function
+
+   Sub New()
+   End Sub
+
+   Overrides Sub FinishedLoading()
+   End Sub
+
 End Class

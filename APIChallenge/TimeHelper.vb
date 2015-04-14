@@ -45,5 +45,17 @@
    Public Shared Function DateTimeEquals(ByVal a As DateTime, ByVal b As DateTime) As Boolean
       Return a.Year = b.Year AndAlso a.Month = b.Month AndAlso a.Day = b.Day AndAlso a.Hour = b.Hour AndAlso a.Minute = b.Minute AndAlso a.Second = b.Second
    End Function
-
 End Class
+
+Module TimeExtension
+   <System.Runtime.CompilerServices.Extension()>
+   Function Average(query As IEnumerable(Of TimeSpan)) As TimeSpan
+      Dim totalTime As New TimeSpan(0, 0, 0)
+
+      For Each t As TimeSpan In query
+         totalTime += t
+      Next
+
+      Return New TimeSpan(CLng(CSng(totalTime.Ticks) / query.Count))
+   End Function
+End Module
