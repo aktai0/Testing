@@ -29,6 +29,15 @@ Public Class MainWindow
 
       MatchCache.MatchList.ForceCountChangedRefresh()
       LastBucketTimeTextBox.Text = MatchCache.MatchList.LastURFAPICall().ToLocalTime.ToString
+
+      ImageComboBox1.Items.Clear()
+      ChampionImageList1.Images.Clear()
+      For Each c In APIHelper.Champions.Values
+         ChampionImageList1.Images.Add(StaticCache.Images(c.Id))
+         Dim comboBoxItem As New ImageComboBox.ImageComboBoxItem(ChampionImageList1.Images.Count - 1, c.Name, New Font("Microsoft Sans Serif", 18.0), 0)
+         ImageComboBox1.Items.Add(comboBoxItem)
+      Next
+      ImageComboBox1.SelectedIndex = 0
    End Sub
 
    Sub RefreshMatchListBox()
@@ -236,40 +245,6 @@ Public Class MainWindow
       End Sub
    End Class
 
-   Private Sub Button7_Click_1(sender As Object, e As EventArgs) Handles Button7.Click
-      Dim totalGames As Integer = MatchCache.MatchList.Count
-      Dim totalBlueSideWins As Integer = 0
-      Dim totalWinnerFirstWins As Integer = 0
-      Dim a As New Dictionary(Of Integer, Tuple)
-      For Each m As Match In MatchCache.MatchList
-         Dim matchInfo = m.GetMatchInfo()
-         Dim winningTeamID = If(matchInfo.Teams(0).Winner, matchInfo.Teams(0).TeamId, matchInfo.Teams(1).TeamId)
-
-         For Each participant As MatchEndpoint.Participant In matchInfo.Participants
-            If Not a.ContainsKey(participant.ChampionId) Then
-               a.Add(participant.ChampionId, New Tuple(0, 0))
-            End If
-
-            If participant.TeamId = winningTeamID Then
-               a(participant.ChampionId).a += 1
-               a(participant.ChampionId).b += 1
-            Else
-               a(participant.ChampionId).b += 1
-            End If
-
-            'If (m.GetMatchInfo.Teams(0).FirstBlood AndAlso m.GetMatchInfo.Teams(0).Winner) Or _
-            '   (m.GetMatchInfo.Teams(1).FirstBlood AndAlso m.GetMatchInfo.Teams(1).Winner) Then
-            '   totalWinnerFirstWins += 1
-            'End If
-         Next
-      Next
-
-      ListBox2.Items.Clear()
-      For Each item In a
-         ListBox2.Items.Add(APIHelper.Champions(item.Key).Name & ": " & item.Value.a & "/" & item.Value.b)
-      Next
-   End Sub
-
    Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
       PictureBox1.Image = StaticCache.Images(CInt(TextBox1.Text))
 
@@ -280,7 +255,6 @@ Public Class MainWindow
          Console.WriteLine(item)
       Next
       Console.WriteLine("---")
-      GetMatchupData()
 
       'Console.WriteLine(GetWinRateOfChamp(CInt(TextBox1.Text)).ToString)
       'Dim i As Integer = 0
@@ -347,104 +321,182 @@ Public Class MainWindow
       Return New ChampHistory(champID, winNum, totalGames)
    End Function
 
-   Class Against
-      Inherits Tuple(Of Integer, Integer)
-
-      Sub New(ByVal a As Integer, ByVal b As Integer)
-         MyBase.New(Math.Min(a, b), Math.Max(a, b))
-      End Sub
-
-      Public Overrides Function Equals(obj As Object) As Boolean
-         If obj Is Nothing Then
-            Return False
-         End If
-
-         If Not TypeOf (obj) Is Against Then
-            Return False
-         End If
-
-         Return MyBase.Item1 = CType(obj, Against).Item1 AndAlso MyBase.Item2 = CType(obj, Against).Item2
-      End Function
-   End Class
-
    Class Matchup
-      Inherits Tuple(Of Against, MatchEndpoint.Lane) ' Matchup of two champs in a specific lane
+      Public MatchID As Integer
 
-      Public gamesFirstChampWon As Integer
-      Public totalGames As Integer = 0
+      Public ChampionID As Integer
+      Public AllyChampionID As Integer
+      Public EnemyChampionID As Integer
+      Public EnemyChampionID2 As Integer
 
-      Private _WinRate As Single
-      Public Function GetWinRate() As Single
-         Return _WinRate
+      Public Team As Integer
+      Public Lane As MatchEndpoint.Lane
+      Public WonLane As Boolean
+
+      Public Sub New(ByVal match As Integer, ByVal cID As Integer, ByVal acID As Integer, ByVal eID As Integer, ByVal eID2 As Integer, ByVal ln As MatchEndpoint.Lane, ByVal won As Boolean, ByVal tm As Integer)
+         With Me
+            .MatchID = match
+            .ChampionID = cID
+            .AllyChampionID = acID
+            .EnemyChampionID = eID
+            .EnemyChampionID2 = eID2
+            .Lane = ln
+            .WonLane = won
+            .Team = tm
+         End With
+      End Sub
+
+      Private Sub OrganizeEnemies()
+         If EnemyChampionID > EnemyChampionID2 AndAlso EnemyChampionID2 <> 0 Then
+            Dim t As Integer = EnemyChampionID
+            EnemyChampionID = EnemyChampionID2
+            EnemyChampionID2 = t
+         End If
+      End Sub
+
+      Public Overrides Function ToString() As String
+         Dim allyStr As String = ""
+         If AllyChampionID <> 0 Then
+            allyStr = " and " & APIHelper.GetChampName(AllyChampionID)
+         End If
+
+         Dim enemy2Str As String = ""
+         If EnemyChampionID2 <> 0 Then
+            enemy2Str = " and " & APIHelper.GetChampName(EnemyChampionID2)
+         End If
+
+         Return APIHelper.GetChampName(ChampionID) & allyStr & " vs " & APIHelper.GetChampName(EnemyChampionID) & enemy2Str & " in " & Lane.ToString & ": " & If(WonLane, "Won!", "Lost!") & " (Match: " & MatchID & ")"
       End Function
 
-      Private Sub UpdateWinRate()
-         _WinRate = CSng(gamesFirstChampWon) / totalGames
-      End Sub
-
-      Sub New(ByVal a As Against, ByVal b As MatchEndpoint.Lane)
-         MyBase.New(a, b)
-      End Sub
-
-      Sub New(ByVal a As Integer, ByVal b As Integer, ByVal c As MatchEndpoint.Lane)
-         MyBase.New(New Against(a, b), c)
-      End Sub
-
-      Public Overrides Function Equals(obj As Object) As Boolean
-         If obj Is Nothing Then
-            Return False
+      ' Returns a copy of the Matchup with enemies reversed if there's a match, and also sets
+      '  the enemy2 in this matchup
+      Public Function SetEnemy2IfSameMatch(ByVal givenMatchID As Integer, ByVal e2 As Integer, ByVal tm As Integer) As Matchup
+         If (givenMatchID = Me.MatchID AndAlso Me.Team = tm) Then
+            EnemyChampionID2 = e2
+            OrganizeEnemies()
+            Return New Matchup(Me.MatchID, Me.ChampionID, Me.AllyChampionID, EnemyChampionID2, Me.EnemyChampionID, Me.Lane, Me.WonLane, Me.Team)
          End If
-
-         If Not TypeOf (obj) Is Matchup Then
-            Return False
-         End If
-
-         ' Lane is an integer, so shallow compare
-         Return Me.Item1.Equals(CType(obj, Matchup).Item1) AndAlso Me.Item2 = CType(obj, Matchup).Item2
+         Return Nothing
       End Function
-   End Class
 
-   ' A list class that adds 1 to totalGames if it exists already
-   Class CountingList
-      Inherits List(Of Matchup)
-
-      Public Shadows Sub Add(ByVal a As Matchup, ByVal whoWon As Integer)
-         If Not Me.Contains(a) Then
-            MyBase.Add(a)
-         End If
-
-         Dim q = From item In Me
-                 Where item.Equals(a)
-                 Select item
-
-         q(0).totalGames += 1
-         q(0).gamesFirstChampWon += -whoWon + 2 ' 1 -> 1, 2 -> 0
-      End Sub
+      'Public Overrides Function Equals(obj As Object) As Boolean
+      '   If obj Is Nothing Then
+      '      Return False
+      '   End If
+      '   If TypeOf (obj) Is Integer Then
+      '      Return Me.MatchID = CInt(obj)
+      '   End If
+      '   If TypeOf (obj) Is Matchup Then
+      '      Return Me.MatchID = CType(obj, Matchup).MatchID
+      '   End If
+      '   Return False
+      'End Function
    End Class
 
    ' Riot's Lane Data is Shitty. Abort Mission!
    ' Compute comprehensive matchup data
-   Public Function GetMatchupData() As IEnumerable
+   Public Function GetMatchupDataFor(ByVal champName As String) As List(Of Matchup)
+      Dim MatchupList As New List(Of Matchup)
+
+      Dim champID As Integer = APIHelper.GetChampID(champName)
+      Dim now As DateTime = DateTime.Now
       Dim q = From match In MatchCache.MatchList, p In match.GetMatchInfo.Participants,
                match2 In MatchCache.MatchList, p2 In match2.GetMatchInfo.Participants
-              Where match.GetMatchID = match2.GetMatchID AndAlso p.ParticipantId <> p2.ParticipantId AndAlso p.Timeline.Lane = p2.Timeline.Lane AndAlso p.ChampionId = CInt(TextBox1.Text) AndAlso p.TeamId <> p2.TeamId
-              Select match.GetMatchID, p2.ChampionId, p.Timeline.Lane
+               Where match.GetMatchID = match2.GetMatchID AndAlso p.ParticipantId <> p2.ParticipantId AndAlso p.Timeline.Lane = p2.Timeline.Lane AndAlso p.ChampionId = champID AndAlso p.TeamId <> p2.TeamId
+               Select match.GetMatchID, p.TeamId, BlueWon = match.GetMatchInfo().Teams(0).Winner, BlueTeamID = match.GetMatchInfo().Teams(0).TeamId, OtherChamp = p2.ChampionId, p.Timeline.Lane
       For Each item In q
-         Console.WriteLine(item.GetMatchID & ": " & APIHelper.GetChampName(CInt(TextBox1.Text)) & " v. " & APIHelper.GetChampName(item.ChampionId) & " in " & item.Lane)
+         Dim wonGame As Boolean = False
+         If item.TeamId = item.BlueTeamID Then
+            If item.BlueWon Then
+               wonGame = True
+            Else
+            End If
+         ElseIf Not item.BlueWon Then
+            wonGame = True
+         End If
+
+         'If item.GetMatchID = 1791704542 Then
+         '   Console.WriteLine("Here")
+         'End If
+
+         Dim setSecondEnemy As Boolean = False
+         Dim result As Matchup = Nothing
+         For Each m In MatchupList
+            result = m.SetEnemy2IfSameMatch(item.GetMatchID, item.OtherChamp, item.TeamId)
+            If result IsNot Nothing Then
+               setSecondEnemy = True
+               Exit For
+            End If
+         Next
+         If setSecondEnemy Then
+            MatchupList.Add(result)
+            Continue For
+         End If
+
+         Dim q2 = From match In MatchCache.MatchList, p In match.GetMatchInfo.Participants
+                  Where match.GetMatchID = item.GetMatchID AndAlso p.ChampionId <> champID AndAlso p.TeamId = item.TeamId AndAlso p.Timeline.Lane = item.Lane
+                  Select p.ChampionId
+         Dim allyChamp = 0
+         If q2.Count > 0 Then
+            allyChamp = q2(0)
+         End If
+
+         MatchupList.Add(New Matchup(item.GetMatchID, champID, allyChamp, item.OtherChamp, 0, item.Lane, wonGame, item.TeamId))
       Next
-      Return Nothing
+      Console.WriteLine("That took: " & DateTime.Now.Subtract(now).ToString & " to complete")
+      Return MatchupList
    End Function
 
    Private Sub MainWindow_SizeChanged(sender As Object, e As EventArgs) Handles MyBase.SizeChanged
       'TabControl1.ItemSize = New Point(Me.Width / (TabControl1.TabCount) - (7 - TabControl1.TabCount), TabControl1.ItemSize.Height)
    End Sub
 
-   Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click
-      Dim champs = APIHelper.Champions.Values
-      ComboBox1.Items.Clear()
-      For Each c In champs
-         ComboBox1.Items.Add(c.Name)
+   Dim CurrentMatchups As List(Of Matchup)
+
+   Private Sub ImageComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ImageComboBox1.SelectedIndexChanged
+      CurrentMatchups = GetMatchupDataFor(ImageComboBox1.Text)
+      Dim names = (From m In CurrentMatchups
+                   Order By APIHelper.GetChampName(m.EnemyChampionID)
+                   Select APIHelper.GetChampName(m.EnemyChampionID)).Distinct()
+
+      'For Each m In CurrentMatchups
+      '   Console.WriteLine(m.ToString)
+      'Next
+
+      ImageComboBox2.Items.Clear()
+      ChampionImageList2.Images.Clear()
+      For Each c In names
+         ChampionImageList2.Images.Add(StaticCache.Images(APIHelper.GetChampID(c)))
+         Dim comboBoxItem As New ImageComboBox.ImageComboBoxItem(ChampionImageList2.Images.Count - 1, c, New Font("Microsoft Sans Serif", 18.0), 0)
+         ImageComboBox2.Items.Add(comboBoxItem)
       Next
+      ImageComboBox2.SelectedIndex = -1
+
+      Console.WriteLine("Ready")
+   End Sub
+
+   Private Sub ImageComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ImageComboBox2.SelectedIndexChanged
+      If ImageComboBox2.Text = Nothing Then
+         Return
+      End If
+
+      Dim enemyChampID As Integer = APIHelper.GetChampID(CStr(ImageComboBox2.Text))
+      Dim q = From m In CurrentMatchups
+              Where m.ChampionID = APIHelper.GetChampID(ImageComboBox1.Text) AndAlso m.EnemyChampionID = enemyChampID
+              Select m
+      For Each m In q
+         Console.WriteLine(m.ToString)
+      Next
+
+      Dim c = Aggregate m In q
+              Where m.WonLane
+              Into Count()
+
+      Dim c2 = Aggregate m In q
+              Into Count()
+
+      Console.WriteLine("Total Won: " & c)
+      Console.WriteLine("Total Games: " & c2)
    End Sub
 End Class
 
@@ -458,6 +510,10 @@ Module LINQExtension
       Next
 
       Return New TimeSpan(CLng(CSng(totalTime.Ticks) / query.Count))
+   End Function
+
+   Function Count(query As IEnumerable(Of MainWindow.Matchup)) As Integer
+      Return query.Count
    End Function
 
    <System.Runtime.CompilerServices.Extension()>

@@ -65,9 +65,18 @@ Public Class APIHelper
 
    Public Shared Champions As Dictionary(Of Integer, StaticDataEndpoint.ChampionStatic)
    Public Shared ChampionsRaw As StaticDataEndpoint.ChampionListStatic
+
    Public Shared Function GetChampName(ByVal n As Integer) As String
       Return Champions(n).Name
    End Function
+
+   Public Shared Function GetChampID(ByVal name As String) As Integer
+      Dim q = From c In Champions
+              Where c.Value.Name = name
+              Select c.Key
+      Return q(0)
+   End Function
+
    Public Shared Sub API_STATIC_LOAD_CHAMPION_INFO()
       If Champions IsNot Nothing Then
          Return

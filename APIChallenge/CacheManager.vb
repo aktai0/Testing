@@ -141,17 +141,20 @@ Class StaticCache
       MyBase.FinishedLoading()
 
       APIHelper.Champions = Champions
+      APIHelper.ChampionsRaw = ChampionsRaw
    End Sub
 
    <NonSerialized>
    Private WithEvents AsynchronousStaticLoader As System.ComponentModel.BackgroundWorker
 
    Public Champions As Dictionary(Of Integer, StaticDataEndpoint.ChampionStatic)
+   Public ChampionsRaw As StaticDataEndpoint.ChampionListStatic
 
    Private Sub AsynchronousStaticLoaderc_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs)
       Console.Write("Fetching static champion data...")
       APIHelper.API_STATIC_LOAD_CHAMPION_INFO()
       Champions = APIHelper.Champions
+      ChampionsRaw = APIHelper.ChampionsRaw
       Console.WriteLine(" Done!")
 
       For Each champ As StaticDataEndpoint.ChampionStatic In APIHelper.Champions.Values

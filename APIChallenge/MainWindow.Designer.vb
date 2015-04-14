@@ -34,10 +34,8 @@ Partial Class MainWindow
       Me.MatchLoadingBackgroundWorker = New System.ComponentModel.BackgroundWorker()
       Me.CacheBackgroundWorker = New System.ComponentModel.BackgroundWorker()
       Me.TabPage2 = New System.Windows.Forms.TabPage()
-      Me.Button9 = New System.Windows.Forms.Button()
-      Me.ComboBox1 = New System.Windows.Forms.ComboBox()
-      Me.ListBox2 = New System.Windows.Forms.ListBox()
-      Me.Button7 = New System.Windows.Forms.Button()
+      Me.ChampionImageList2 = New System.Windows.Forms.ImageList(Me.components)
+      Me.ChampionImageList1 = New System.Windows.Forms.ImageList(Me.components)
       Me.TabPage1 = New System.Windows.Forms.TabPage()
       Me.PictureBox1 = New System.Windows.Forms.PictureBox()
       Me.TextBox1 = New System.Windows.Forms.TextBox()
@@ -52,11 +50,15 @@ Partial Class MainWindow
       Me.Button4 = New System.Windows.Forms.Button()
       Me.Button3 = New System.Windows.Forms.Button()
       Me.TabControl1 = New System.Windows.Forms.TabControl()
+      Me.ImageComboBox2 = New ImageComboBox.ImageComboBox()
+      Me.ImageComboBox1 = New ImageComboBox.ImageComboBox()
+      Me.PictureBox2 = New System.Windows.Forms.PictureBox()
       Me.StatusStrip1.SuspendLayout()
       Me.TabPage2.SuspendLayout()
       Me.TabPage1.SuspendLayout()
       CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
       Me.TabControl1.SuspendLayout()
+      CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
       Me.SuspendLayout()
       '
       'APIChallengeTimer
@@ -116,10 +118,9 @@ Partial Class MainWindow
       '
       'TabPage2
       '
-      Me.TabPage2.Controls.Add(Me.Button9)
-      Me.TabPage2.Controls.Add(Me.ComboBox1)
-      Me.TabPage2.Controls.Add(Me.ListBox2)
-      Me.TabPage2.Controls.Add(Me.Button7)
+      Me.TabPage2.Controls.Add(Me.PictureBox2)
+      Me.TabPage2.Controls.Add(Me.ImageComboBox2)
+      Me.TabPage2.Controls.Add(Me.ImageComboBox1)
       Me.TabPage2.Location = New System.Drawing.Point(4, 25)
       Me.TabPage2.Name = "TabPage2"
       Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
@@ -128,42 +129,17 @@ Partial Class MainWindow
       Me.TabPage2.Text = "Basic Info"
       Me.TabPage2.UseVisualStyleBackColor = True
       '
-      'Button9
+      'ChampionImageList2
       '
-      Me.Button9.Location = New System.Drawing.Point(9, 37)
-      Me.Button9.Name = "Button9"
-      Me.Button9.Size = New System.Drawing.Size(75, 23)
-      Me.Button9.TabIndex = 4
-      Me.Button9.Text = "Button9"
-      Me.Button9.UseVisualStyleBackColor = True
+      Me.ChampionImageList2.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit
+      Me.ChampionImageList2.ImageSize = New System.Drawing.Size(16, 16)
+      Me.ChampionImageList2.TransparentColor = System.Drawing.Color.Transparent
       '
-      'ComboBox1
+      'ChampionImageList1
       '
-      Me.ComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-      Me.ComboBox1.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-      Me.ComboBox1.FormattingEnabled = True
-      Me.ComboBox1.Location = New System.Drawing.Point(8, 6)
-      Me.ComboBox1.Name = "ComboBox1"
-      Me.ComboBox1.Size = New System.Drawing.Size(121, 24)
-      Me.ComboBox1.TabIndex = 3
-      '
-      'ListBox2
-      '
-      Me.ListBox2.FormattingEnabled = True
-      Me.ListBox2.ItemHeight = 16
-      Me.ListBox2.Location = New System.Drawing.Point(352, 3)
-      Me.ListBox2.Name = "ListBox2"
-      Me.ListBox2.Size = New System.Drawing.Size(537, 308)
-      Me.ListBox2.TabIndex = 2
-      '
-      'Button7
-      '
-      Me.Button7.Location = New System.Drawing.Point(271, 6)
-      Me.Button7.Name = "Button7"
-      Me.Button7.Size = New System.Drawing.Size(75, 23)
-      Me.Button7.TabIndex = 1
-      Me.Button7.Text = "Button7"
-      Me.Button7.UseVisualStyleBackColor = True
+      Me.ChampionImageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit
+      Me.ChampionImageList1.ImageSize = New System.Drawing.Size(48, 48)
+      Me.ChampionImageList1.TransparentColor = System.Drawing.Color.Transparent
       '
       'TabPage1
       '
@@ -215,11 +191,11 @@ Partial Class MainWindow
       '
       'Button6
       '
-      Me.Button6.Location = New System.Drawing.Point(3, 124)
+      Me.Button6.Location = New System.Drawing.Point(8, 124)
       Me.Button6.Name = "Button6"
-      Me.Button6.Size = New System.Drawing.Size(163, 23)
+      Me.Button6.Size = New System.Drawing.Size(323, 59)
       Me.Button6.TabIndex = 20
-      Me.Button6.Text = "Populate Game Cache"
+      Me.Button6.Text = "Populate Game Cache With URF API"
       Me.Button6.UseVisualStyleBackColor = True
       '
       'Button1
@@ -306,6 +282,44 @@ Partial Class MainWindow
       Me.TabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed
       Me.TabControl1.TabIndex = 21
       '
+      'ImageComboBox2
+      '
+      Me.ImageComboBox2.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
+      Me.ImageComboBox2.DropDownHeight = 500
+      Me.ImageComboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+      Me.ImageComboBox2.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+      Me.ImageComboBox2.ImageList = Me.ChampionImageList2
+      Me.ImageComboBox2.Indent = 20
+      Me.ImageComboBox2.IntegralHeight = False
+      Me.ImageComboBox2.ItemHeight = 60
+      Me.ImageComboBox2.Location = New System.Drawing.Point(314, 6)
+      Me.ImageComboBox2.MaxDropDownItems = 12
+      Me.ImageComboBox2.Name = "ImageComboBox2"
+      Me.ImageComboBox2.Size = New System.Drawing.Size(300, 66)
+      Me.ImageComboBox2.TabIndex = 9
+      '
+      'ImageComboBox1
+      '
+      Me.ImageComboBox1.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
+      Me.ImageComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+      Me.ImageComboBox1.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+      Me.ImageComboBox1.ImageList = Me.ChampionImageList1
+      Me.ImageComboBox1.Indent = 20
+      Me.ImageComboBox1.ItemHeight = 60
+      Me.ImageComboBox1.Location = New System.Drawing.Point(8, 6)
+      Me.ImageComboBox1.MaxDropDownItems = 12
+      Me.ImageComboBox1.Name = "ImageComboBox1"
+      Me.ImageComboBox1.Size = New System.Drawing.Size(300, 66)
+      Me.ImageComboBox1.TabIndex = 8
+      '
+      'PictureBox2
+      '
+      Me.PictureBox2.Location = New System.Drawing.Point(91, 78)
+      Me.PictureBox2.Name = "PictureBox2"
+      Me.PictureBox2.Size = New System.Drawing.Size(120, 120)
+      Me.PictureBox2.TabIndex = 10
+      Me.PictureBox2.TabStop = False
+      '
       'MainWindow
       '
       Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
@@ -322,6 +336,7 @@ Partial Class MainWindow
       Me.TabPage1.PerformLayout()
       CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
       Me.TabControl1.ResumeLayout(False)
+      CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).EndInit()
       Me.ResumeLayout(False)
       Me.PerformLayout()
 
@@ -337,8 +352,6 @@ Partial Class MainWindow
    Friend WithEvents StatusProgressBar As System.Windows.Forms.ToolStripProgressBar
    Friend WithEvents CacheBackgroundWorker As System.ComponentModel.BackgroundWorker
    Friend WithEvents TabPage2 As System.Windows.Forms.TabPage
-   Friend WithEvents ListBox2 As System.Windows.Forms.ListBox
-   Friend WithEvents Button7 As System.Windows.Forms.Button
    Friend WithEvents TabPage1 As System.Windows.Forms.TabPage
    Friend WithEvents Button6 As System.Windows.Forms.Button
    Friend WithEvents Button1 As System.Windows.Forms.Button
@@ -353,7 +366,10 @@ Partial Class MainWindow
    Friend WithEvents TextBox1 As System.Windows.Forms.TextBox
    Friend WithEvents Button8 As System.Windows.Forms.Button
    Friend WithEvents PictureBox1 As System.Windows.Forms.PictureBox
-   Friend WithEvents ComboBox1 As System.Windows.Forms.ComboBox
-   Friend WithEvents Button9 As System.Windows.Forms.Button
+   Friend WithEvents ChampionImageList1 As System.Windows.Forms.ImageList
+   Private WithEvents ImageComboBox1 As ImageComboBox.ImageComboBox
+   Private WithEvents ImageComboBox2 As ImageComboBox.ImageComboBox
+   Friend WithEvents ChampionImageList2 As System.Windows.Forms.ImageList
+   Friend WithEvents PictureBox2 As System.Windows.Forms.PictureBox
 
 End Class
