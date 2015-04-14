@@ -16,6 +16,15 @@ Module CacheManager
       End Set
    End Property
 
+   Public Function RetrieveCache(Of T As EasyCache)() As T
+      For Each cache As EasyCache In CacheList.Values
+         If TypeOf (cache) Is T Then
+            Return CType(cache, T)
+         End If
+      Next
+      Return Nothing
+   End Function
+
    ' We use two dicts because A) Dictionary entries are added as (Address, Address) pairs a type
    '  is not a primitive type and B) Deserialization creates a new object, so we would either need
    '  to replace the entry in the original dictionary (if we're only using one), use a different
