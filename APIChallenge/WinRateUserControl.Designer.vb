@@ -35,10 +35,10 @@ Partial Class WinRateUserControl
       'WinRateLabel
       '
       Me.WinRateLabel.Font = New System.Drawing.Font("Garamond", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-      Me.WinRateLabel.Location = New System.Drawing.Point(51, 74)
+      Me.WinRateLabel.Location = New System.Drawing.Point(3, 74)
       Me.WinRateLabel.Name = "WinRateLabel"
       Me.WinRateLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes
-      Me.WinRateLabel.Size = New System.Drawing.Size(343, 39)
+      Me.WinRateLabel.Size = New System.Drawing.Size(434, 39)
       Me.WinRateLabel.TabIndex = 20
       Me.WinRateLabel.Text = "Testing"
       Me.WinRateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter

@@ -417,7 +417,7 @@ Class DataCache
    Overrides ReadOnly Property ShouldRebuildCache() As Boolean
       Get
          Dim MatchCache = RetrieveCache(Of MatchCache)()
-         Return Not (LoadIndex = MatchCache.MatchList.LoadedIndex AndAlso FirstMatchID = MatchCache.MatchList(0).GetMatchID AndAlso LastMatchID = MatchCache.MatchList(MatchCache.MatchList.Count - 1).GetMatchID)
+         Return Not (LoadIndex = MatchCache.MatchList.LoadedIndex AndAlso FirstMatchID = MatchCache.MatchList(0).GetMatchID AndAlso LastMatchID = MatchCache.MatchList(MatchCache.MatchList.Count - 1).GetMatchID AndAlso MatchupData.Count = RetrieveCache(Of StaticCache).Champions.Count)
       End Get
    End Property
 
@@ -442,12 +442,28 @@ Class DataCache
 
    Private Sub AsyncBackgroundWorker_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs)
       _CacheChanged = True
-      Console.WriteLine("Cache changed")
+      Dim MatchCache = RetrieveCache(Of MatchCache)()
+
+      If Not (LoadIndex = MatchCache.MatchList.LoadedIndex AndAlso FirstMatchID = MatchCache.MatchList(0).GetMatchID AndAlso LastMatchID = MatchCache.MatchList(MatchCache.MatchList.Count - 1).GetMatchID) Then
+         FirstMatchID = MatchCache.MatchList(0).GetMatchID()
+         LastMatchID = MatchCache.MatchList(RetrieveCache(Of MatchCache).MatchList.Count - 1).GetMatchID()
+         LoadIndex = MatchCache.MatchList.LoadedIndex
+
+         MatchupData.Clear()
+      End If
+
+      Dim champList As IEnumerable(Of String) = From c In RetrieveCache(Of StaticCache).Champions
+                                                Select c.Value.Name
+
+      For Each champ As String In champList
+         If MatchupData.ContainsKey(champ) Then
+            Continue For
+         End If
+         Console.Write("Loading " & champ & "...")
+         GetMatchupDataFor(champ)
+         Console.WriteLine(" Done!")
+      Next
    End Sub
-
-   Private Function SelectFirstChamp(ByVal name As String) As IEnumerable(Of String)
-
-   End Function
 
    Sub New()
    End Sub
@@ -455,4 +471,78 @@ Class DataCache
    Overrides Sub FinishedLoading()
    End Sub
 
+   Private MatchupData As New Dictionary(Of String, List(Of Matchup))
+
+   ' Compute comprehensive matchup data for a given champion.
+   Public Function GetMatchupDataFor(ByVal champName As String) As List(Of Matchup)
+      If MatchupData.ContainsKey(champName) Then
+         Return MatchupData(champName)
+      End If
+
+      Dim MatchupList As New List(Of Matchup)
+
+      Dim champID As Integer = APIHelper.GetChampID(champName)
+      Dim now As DateTime = DateTime.Now
+      Dim allChampMatches = From match In CacheManager.RetrieveCache(Of MatchCache).MatchList, p In match.GetMatchInfo.Participants,
+               match2 In CacheManager.RetrieveCache(Of MatchCache).MatchList, p2 In match2.GetMatchInfo.Participants
+               Where match.GetMatchID = match2.GetMatchID AndAlso p.ParticipantId <> p2.ParticipantId AndAlso p.Timeline.Lane = p2.Timeline.Lane AndAlso p.ChampionId = champID AndAlso p.TeamId <> p2.TeamId
+               Select match, match.GetMatchID, p.TeamId, BlueWon = match.GetMatchInfo().Teams(0).Winner, BlueTeamID = match.GetMatchInfo().Teams(0).TeamId, OtherChamp = p2.ChampionId, p.Timeline.Lane
+
+      Dim filteredMatches = From m In allChampMatches Select m.GetMatchID, m.TeamId, m.BlueTeamID, m.BlueWon, m.OtherChamp, m.Lane
+
+      For Each item In filteredMatches
+         Dim wonGame As Boolean = False
+         If item.TeamId = item.BlueTeamID Then
+            If item.BlueWon Then
+               wonGame = True
+            Else
+            End If
+         ElseIf Not item.BlueWon Then
+            wonGame = True
+         End If
+
+         'If item.GetMatchID = 1791704542 Then
+         '   Console.WriteLine("Here")
+         'End If
+
+         Dim setSecondEnemy As Boolean = False
+         Dim result As Matchup = Nothing
+         For Each m In MatchupList
+            result = m.SetEnemy2IfSameMatch(item.GetMatchID, item.OtherChamp, item.TeamId)
+            If result IsNot Nothing Then
+               setSecondEnemy = True
+               Exit For
+            End If
+         Next
+         If setSecondEnemy Then
+            MatchupList.Add(result)
+            Continue For
+         End If
+
+         Dim q2 = From match In CacheManager.RetrieveCache(Of MatchCache).MatchList, p In match.GetMatchInfo.Participants
+                  Where match.GetMatchID = item.GetMatchID AndAlso p.ChampionId <> champID AndAlso p.TeamId = item.TeamId AndAlso p.Timeline.Lane = item.Lane
+                  Select p.ChampionId
+         Dim allyChamp = 0
+         If q2.Count > 0 Then
+            allyChamp = q2(0)
+         End If
+
+         MatchupList.Add(New Matchup(item.GetMatchID, champID, allyChamp, item.OtherChamp, 0, item.Lane, wonGame, item.TeamId))
+      Next
+      'Console.WriteLine("That took: " & DateTime.Now.Subtract(now).ToString & " to complete")
+
+      SyncLock MatchupData
+         ' Check for race problem (if both threads check for the same champion, we can just return one).
+         If MatchupData.ContainsKey(champName) Then
+            Return MatchupData(champName)
+         End If
+
+         MatchupData.Add(champName, MatchupList)
+      End SyncLock
+      Return MatchupList
+   End Function
+
+   Class ChampionMatchupData
+
+   End Class
 End Class

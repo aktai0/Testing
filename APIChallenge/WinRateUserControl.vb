@@ -13,7 +13,7 @@
       EnemyLabel.Text = APIHelper.GetChampName(WinRateMatchup.EnemyChampionID)
       EnemyPictureBox.Image = CacheManager.RetrieveCache(Of StaticCache).Images(WinRateMatchup.EnemyChampionID)
 
-      WinRateLabel.Text = "Win Rate: " & String.Format("{0:0.00}", WinRateMatchup.WinRate * 100) & " (from " & WinRateMatchup.TotalGames & " game" & If(WinRateMatchup.TotalGames > 1, "s", "") & ")"
+      WinRateLabel.Text = "Win Rate: " & String.Format("{0:0.00}%", WinRateMatchup.WinRate * 100) & " (from " & WinRateMatchup.TotalGames & " game" & If(WinRateMatchup.TotalGames > 1, "s", "") & ")"
    End Sub
 
 End Class

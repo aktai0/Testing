@@ -17,6 +17,10 @@ Public Class MainWindow
       StaticCache = CType(CacheManager.CacheList("Static"), StaticCache)
       DataCache = CType(CacheManager.CacheList("Data"), DataCache)
 
+      'Dim matchupUC As New MatchupUserControl(New Matchup(0, 17, 60, 33, 0, MatchEndpoint.Lane.Top, True, 100))
+      'matchupUC.Parent = Me
+      'matchupUC.Location = New Point(12, 150)
+
       ImageComboBox1.Items.Clear()
       ChampionImageList1.Images.Clear()
       For Each c In APIHelper.Champions.Values
@@ -25,10 +29,9 @@ Public Class MainWindow
          ImageComboBox1.Items.Add(comboBoxItem)
       Next
       ImageComboBox1.SelectedIndex = 23
+   End Sub
 
-      'Dim matchupUC As New MatchupUserControl(New Matchup(0, 17, 60, 33, 0, MatchEndpoint.Lane.Top, True, 100))
-      'matchupUC.Parent = Me
-      'matchupUC.Location = New Point(12, 150)
+   Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
    End Sub
 
    Private Sub MainWindow_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
@@ -92,11 +95,8 @@ Public Class MainWindow
       '    Console.WriteLine(Me.Size)
    End Sub
 
-   Dim CurrentMatchups As List(Of Matchup)
-
-
    Private Sub ImageComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ImageComboBox1.SelectedIndexChanged
-      CurrentMatchups = Matchup.GetMatchupDataFor(ImageComboBox1.Text)
+      Dim CurrentMatchups = DataCache.GetMatchupDataFor(ImageComboBox1.Text)
       Dim names = (From m In CurrentMatchups
                    Order By APIHelper.GetChampName(m.EnemyChampionID)
                    Select APIHelper.GetChampName(m.EnemyChampionID)).Distinct()
@@ -141,7 +141,6 @@ Public Class MainWindow
 
       WinRateLabelInitial.Text = "Overall Win Rate: " & String.Format("{0:0.00}%", CSng(wins) * 100 / games)
 
-
       WinRateLabel.Text = ""
 
       ChampionLabel.Text = ""
@@ -156,6 +155,7 @@ Public Class MainWindow
    Private MatchupUCList As New List(Of MatchupUserControl)
 
    Private Sub ImageComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ImageComboBox2.SelectedIndexChanged
+      Dim CurrentMatchups = DataCache.GetMatchupDataFor(ImageComboBox1.Text)
       If ImageComboBox2.Text = Nothing Then
          Return
       End If

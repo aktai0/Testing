@@ -1,5 +1,6 @@
 ﻿Imports RiotSharp
 
+<Serializable>
 Public Class Matchup
    Public MatchID As Integer
 
@@ -58,67 +59,9 @@ Public Class Matchup
       Return Nothing
    End Function
 
-   Public Shared RawMatches As IEnumerable(Of MatchEndpoint.MatchDetail)
-
-   ' Compute comprehensive matchup data for a given champion.
-   Public Shared Function GetMatchupDataFor(ByVal champName As String) As List(Of Matchup)
-      Dim MatchupList As New List(Of Matchup)
-
-      Dim champID As Integer = APIHelper.GetChampID(champName)
-      Dim now As DateTime = DateTime.Now
-      Dim allChampMatches = From match In CacheManager.RetrieveCache(Of MatchCache).MatchList, p In match.GetMatchInfo.Participants,
-               match2 In CacheManager.RetrieveCache(Of MatchCache).MatchList, p2 In match2.GetMatchInfo.Participants
-               Where match.GetMatchID = match2.GetMatchID AndAlso p.ParticipantId <> p2.ParticipantId AndAlso p.Timeline.Lane = p2.Timeline.Lane AndAlso p.ChampionId = champID AndAlso p.TeamId <> p2.TeamId
-               Select match, match.GetMatchID, p.TeamId, BlueWon = match.GetMatchInfo().Teams(0).Winner, BlueTeamID = match.GetMatchInfo().Teams(0).TeamId, OtherChamp = p2.ChampionId, p.Timeline.Lane
-
-      RawMatches = From m In allChampMatches Select m.match.GetMatchInfo()
-
-      Dim filteredMatches = From m In allChampMatches Select m.GetMatchID, m.TeamId, m.BlueTeamID, m.BlueWon, m.OtherChamp, m.Lane
-
-      For Each item In filteredMatches
-         Dim wonGame As Boolean = False
-         If item.TeamId = item.BlueTeamID Then
-            If item.BlueWon Then
-               wonGame = True
-            Else
-            End If
-         ElseIf Not item.BlueWon Then
-            wonGame = True
-         End If
-
-         'If item.GetMatchID = 1791704542 Then
-         '   Console.WriteLine("Here")
-         'End If
-
-         Dim setSecondEnemy As Boolean = False
-         Dim result As Matchup = Nothing
-         For Each m In MatchupList
-            result = m.SetEnemy2IfSameMatch(item.GetMatchID, item.OtherChamp, item.TeamId)
-            If result IsNot Nothing Then
-               setSecondEnemy = True
-               Exit For
-            End If
-         Next
-         If setSecondEnemy Then
-            MatchupList.Add(result)
-            Continue For
-         End If
-
-         Dim q2 = From match In CacheManager.RetrieveCache(Of MatchCache).MatchList, p In match.GetMatchInfo.Participants
-                  Where match.GetMatchID = item.GetMatchID AndAlso p.ChampionId <> champID AndAlso p.TeamId = item.TeamId AndAlso p.Timeline.Lane = item.Lane
-                  Select p.ChampionId
-         Dim allyChamp = 0
-         If q2.Count > 0 Then
-            allyChamp = q2(0)
-         End If
-
-         MatchupList.Add(New Matchup(item.GetMatchID, champID, allyChamp, item.OtherChamp, 0, item.Lane, wonGame, item.TeamId))
-      Next
-      Console.WriteLine("That took: " & DateTime.Now.Subtract(now).ToString & " to complete")
-      Return MatchupList
-   End Function
 End Class
 
+<Serializable>
 Public Class WinRateMatchup
    Public ChampionID As Integer
    Public EnemyChampionID As Integer

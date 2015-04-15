@@ -48,6 +48,7 @@ Partial Class MainWindow
       Me.BottomRightPanel = New System.Windows.Forms.Panel()
       Me.LossRateFlowLayoutPanel = New System.Windows.Forms.FlowLayoutPanel()
       Me.LowestWinRateLabel = New System.Windows.Forms.Label()
+      Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
       Me.SelectorPanel.SuspendLayout()
       Me.LeftSidePanel.SuspendLayout()
       CType(Me.EnemyPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -342,6 +343,10 @@ Partial Class MainWindow
       Me.LowestWinRateLabel.Text = "Lowest Win Rates"
       Me.LowestWinRateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
       '
+      'Timer1
+      '
+      Me.Timer1.Enabled = True
+      '
       'MainWindow
       '
       Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
@@ -393,5 +398,6 @@ Partial Class MainWindow
    Friend WithEvents BottomRightPanel As System.Windows.Forms.Panel
    Friend WithEvents LossRateFlowLayoutPanel As System.Windows.Forms.FlowLayoutPanel
    Friend WithEvents LowestWinRateLabel As System.Windows.Forms.Label
+   Friend WithEvents Timer1 As System.Windows.Forms.Timer
 
 End Class
