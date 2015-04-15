@@ -1,7 +1,6 @@
 ﻿Imports RiotSharp
 
 Public Class MainWindow
-   Dim WithEvents MatchCache As MatchCache
    Dim StaticCache As StaticCache
    Dim DataCache As DataCache
 
@@ -13,7 +12,6 @@ Public Class MainWindow
       CacheManager.LoadAllCaches()
       APIHelper.API_INIT()
 
-      MatchCache = CType(CacheManager.CacheList("Matches"), MatchCache)
       StaticCache = CType(CacheManager.CacheList("Static"), StaticCache)
       DataCache = CType(CacheManager.CacheList("Data"), DataCache)
 
@@ -80,14 +78,11 @@ Public Class MainWindow
 
    Public Function GetWinRateOfChamp(ByVal champID As Integer) As ChampHistory
       ' Count how many matches the champion won in
-      Dim winNum = (From matches In MatchCache.MatchList
-                    Where matches.GetMatchInfo.ChampWon(CInt(champID))
-                    Select matches.GetMatchID).Count()
-      ' Count how many matches the champion was in
-      Dim totalGames = (From champs In MatchCache.MatchList
-                        Where champs.GetMatchInfo.Participants.ContainsChamp(CInt(champID))
-                        Select champs.GetMatchID).Count()
-      Dim a = MatchCache.MatchList(0).GetMatchInfo.Participants(0).Timeline.Lane
+      Dim winNum = (From matches In DataCache.GetMatchupDataFor(APIHelper.GetChampName(champID))
+                    Where matches.WonLane
+                    Select matches).Count()
+         ' Count how many matches the champion was in
+      Dim totalGames = DataCache.GetMatchupDataFor(APIHelper.GetChampName(champID)).Count
       Return New ChampHistory(champID, winNum, totalGames)
    End Function
 
@@ -97,6 +92,7 @@ Public Class MainWindow
 
    Private Sub ImageComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ImageComboBox1.SelectedIndexChanged
       Dim CurrentMatchups = DataCache.GetMatchupDataFor(ImageComboBox1.Text)
+
       Dim names = (From m In CurrentMatchups
                    Order By APIHelper.GetChampName(m.EnemyChampionID)
                    Select APIHelper.GetChampName(m.EnemyChampionID)).Distinct()
@@ -148,8 +144,6 @@ Public Class MainWindow
       ChampionPictureBox.Image = Nothing
       EnemyPictureBox.Image = Nothing
       VSLabel.Visible = False
-
-      Console.WriteLine("Ready")
    End Sub
 
    Private MatchupUCList As New List(Of MatchupUserControl)

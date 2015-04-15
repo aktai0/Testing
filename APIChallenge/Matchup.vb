@@ -13,6 +13,18 @@ Public Class Matchup
    Public Lane As MatchEndpoint.Lane
    Public WonLane As Boolean
 
+   Public Overrides Function Equals(obj As Object) As Boolean
+      If obj Is Nothing Then
+         Return False
+      End If
+      If Not TypeOf (obj) Is Matchup Then
+         Return Nothing
+      End If
+
+      Dim other As Matchup = CType(obj, Matchup)
+      Return Me.MatchID = other.MatchID AndAlso Me.ChampionID = other.ChampionID AndAlso Me.AllyChampionID = other.AllyChampionID AndAlso Me.EnemyChampionID = other.EnemyChampionID
+   End Function
+
    Public Sub New(ByVal match As Integer, ByVal cID As Integer, ByVal acID As Integer, ByVal eID As Integer, ByVal eID2 As Integer, ByVal ln As MatchEndpoint.Lane, ByVal won As Boolean, ByVal tm As Integer)
       With Me
          .MatchID = match

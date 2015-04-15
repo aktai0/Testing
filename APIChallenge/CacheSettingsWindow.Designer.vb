@@ -23,14 +23,12 @@ Partial Class CacheSettingsWindow
    <System.Diagnostics.DebuggerStepThrough()> _
    Private Sub InitializeComponent()
       Me.components = New System.ComponentModel.Container()
-      Me.APIChallengeTimer = New System.Windows.Forms.Timer(Me.components)
       Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
       Me.CurrentStatusLabel = New System.Windows.Forms.ToolStripStatusLabel()
       Me._FillerLabel = New System.Windows.Forms.ToolStripStatusLabel()
       Me.ProgressBarLabel = New System.Windows.Forms.ToolStripStatusLabel()
       Me.StatusProgressBar = New System.Windows.Forms.ToolStripProgressBar()
       Me.CacheCountLabel = New System.Windows.Forms.ToolStripStatusLabel()
-      Me.EpochTimer = New System.Windows.Forms.Timer(Me.components)
       Me.MatchLoadingBackgroundWorker = New System.ComponentModel.BackgroundWorker()
       Me.CacheBackgroundWorker = New System.ComponentModel.BackgroundWorker()
       Me.ChampionImageList1 = New System.Windows.Forms.ImageList(Me.components)
@@ -38,12 +36,9 @@ Partial Class CacheSettingsWindow
       Me.Button6 = New System.Windows.Forms.Button()
       Me.Button5 = New System.Windows.Forms.Button()
       Me.ListBox1 = New System.Windows.Forms.ListBox()
+      Me.Button1 = New System.Windows.Forms.Button()
       Me.StatusStrip1.SuspendLayout()
       Me.SuspendLayout()
-      '
-      'APIChallengeTimer
-      '
-      Me.APIChallengeTimer.Interval = 30000
       '
       'StatusStrip1
       '
@@ -82,11 +77,6 @@ Partial Class CacheSettingsWindow
       Me.CacheCountLabel.Size = New System.Drawing.Size(177, 20)
       Me.CacheCountLabel.Text = "Total Matches In Cache: 0"
       '
-      'EpochTimer
-      '
-      Me.EpochTimer.Enabled = True
-      Me.EpochTimer.Interval = 50
-      '
       'MatchLoadingBackgroundWorker
       '
       Me.MatchLoadingBackgroundWorker.WorkerReportsProgress = True
@@ -110,7 +100,7 @@ Partial Class CacheSettingsWindow
       '
       'Button6
       '
-      Me.Button6.Location = New System.Drawing.Point(104, 227)
+      Me.Button6.Location = New System.Drawing.Point(99, 241)
       Me.Button6.Name = "Button6"
       Me.Button6.Size = New System.Drawing.Size(323, 59)
       Me.Button6.TabIndex = 25
@@ -130,16 +120,26 @@ Partial Class CacheSettingsWindow
       '
       Me.ListBox1.FormattingEnabled = True
       Me.ListBox1.ItemHeight = 16
-      Me.ListBox1.Location = New System.Drawing.Point(638, 109)
+      Me.ListBox1.Location = New System.Drawing.Point(725, 12)
       Me.ListBox1.Name = "ListBox1"
       Me.ListBox1.Size = New System.Drawing.Size(347, 244)
       Me.ListBox1.TabIndex = 23
+      '
+      'Button1
+      '
+      Me.Button1.Location = New System.Drawing.Point(265, 56)
+      Me.Button1.Name = "Button1"
+      Me.Button1.Size = New System.Drawing.Size(75, 23)
+      Me.Button1.TabIndex = 26
+      Me.Button1.Text = "Button1"
+      Me.Button1.UseVisualStyleBackColor = True
       '
       'CacheSettingsWindow
       '
       Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
       Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
       Me.ClientSize = New System.Drawing.Size(1084, 463)
+      Me.Controls.Add(Me.Button1)
       Me.Controls.Add(Me.Button6)
       Me.Controls.Add(Me.Button5)
       Me.Controls.Add(Me.ListBox1)
@@ -152,14 +152,12 @@ Partial Class CacheSettingsWindow
       Me.PerformLayout()
 
    End Sub
-   Friend WithEvents APIChallengeTimer As System.Windows.Forms.Timer
    Friend WithEvents StatusStrip1 As System.Windows.Forms.StatusStrip
    Friend WithEvents CurrentStatusLabel As System.Windows.Forms.ToolStripStatusLabel
    Friend WithEvents _FillerLabel As System.Windows.Forms.ToolStripStatusLabel
    Friend WithEvents ProgressBarLabel As System.Windows.Forms.ToolStripStatusLabel
    Friend WithEvents StatusProgressBar As System.Windows.Forms.ToolStripProgressBar
    Friend WithEvents CacheCountLabel As System.Windows.Forms.ToolStripStatusLabel
-   Friend WithEvents EpochTimer As System.Windows.Forms.Timer
    Friend WithEvents MatchLoadingBackgroundWorker As System.ComponentModel.BackgroundWorker
    Friend WithEvents CacheBackgroundWorker As System.ComponentModel.BackgroundWorker
    Friend WithEvents ChampionImageList1 As System.Windows.Forms.ImageList
@@ -167,4 +165,5 @@ Partial Class CacheSettingsWindow
    Friend WithEvents Button6 As System.Windows.Forms.Button
    Friend WithEvents Button5 As System.Windows.Forms.Button
    Friend WithEvents ListBox1 As System.Windows.Forms.ListBox
+   Friend WithEvents Button1 As System.Windows.Forms.Button
 End Class
