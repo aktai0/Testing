@@ -51,7 +51,7 @@ Module CacheManager
    End Sub
 
    Public Sub StoreAllCaches()
-      For Each cache As EasyCache In CacheList.Values
+      For Each cache In CacheList.Values
          If cache.CacheChanged Then
             StoreCacheFile(cache.CACHE_FILE_NAME, cache)
          End If
@@ -414,11 +414,10 @@ Class DataCache
    Private LastMatchID As Integer = 0
    Private LoadIndex As Integer = -1
 
-   ' Always reuse old cache by default.
    Overrides ReadOnly Property ShouldRebuildCache() As Boolean
       Get
          Dim MatchCache = RetrieveCache(Of MatchCache)()
-         Return LoadIndex = MatchCache.MatchList.LoadedIndex AndAlso FirstMatchID = MatchCache.MatchList(0).GetMatchID AndAlso LastMatchID = MatchCache.MatchList(MatchCache.MatchList.Count - 1).GetMatchID
+         Return Not (LoadIndex = MatchCache.MatchList.LoadedIndex AndAlso FirstMatchID = MatchCache.MatchList(0).GetMatchID AndAlso LastMatchID = MatchCache.MatchList(MatchCache.MatchList.Count - 1).GetMatchID)
       End Get
    End Property
 
@@ -433,14 +432,17 @@ Class DataCache
 
    Overrides Sub RebuildCacheAsync()
       AsyncBackgroundWorker = New System.ComponentModel.BackgroundWorker()
+      AddHandler AsyncBackgroundWorker.DoWork, AddressOf AsyncBackgroundWorker_DoWork
 
+      AsyncBackgroundWorker.RunWorkerAsync()
    End Sub
 
    <NonSerialized>
    Private AsyncBackgroundWorker As System.ComponentModel.BackgroundWorker
 
    Private Sub AsyncBackgroundWorker_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs)
-
+      _CacheChanged = True
+      Console.WriteLine("Cache changed")
    End Sub
 
    Private Function SelectFirstChamp(ByVal name As String) As IEnumerable(Of String)

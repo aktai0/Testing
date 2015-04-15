@@ -200,6 +200,16 @@ Public Class MainWindow
    Private Sub SettingsButton_Click(sender As Object, e As EventArgs) Handles SettingsButton.Click
       CacheSettingsWindow.Show()
    End Sub
+
+   'Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+   '   Dim uEncode As New System.Text.UnicodeEncoding
+   '   Dim ClearString As String = "asdf"
+   '   Dim bytClearString() As Byte = uEncode.GetBytes(ClearString)
+   '   Dim sha As New  _
+   '   System.Security.Cryptography.SHA256Managed()
+   '   Dim hash() As Byte = sha.ComputeHash(bytClearString)
+   '   Console.WriteLine(Convert.ToBase64String(hash))
+   'End Sub
 End Class
 
 Module LINQExtension
