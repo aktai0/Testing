@@ -3,6 +3,7 @@
 Public Class APIHelper
    Private Const API_KEY_FILE As String = "riot_key"
    Public Const API_DELAY As Integer = 1250
+   Public Const API_FULL_DELAY As Integer = 12500
 
    Private Shared API_KEY As String = ""
    Private Shared CDN_URL As String = ""
@@ -14,7 +15,7 @@ Public Class APIHelper
       End Using
    End Sub
 
-   Public Shared Function API_GET_URF_MATCHES(ByVal arg1 As String) As List(Of Integer)
+   Public Shared Function API_GET_URF_MATCHES(ByVal arg1 As String) As IEnumerable(Of Integer)
       Dim request As Net.WebRequest = Net.WebRequest.Create("https://na.api.pvp.net/api/lol/na/v4.1/game/ids?beginDate=" & arg1 & "&api_key=" & API_KEY)
       Dim response As Net.WebResponse
       Try
@@ -23,7 +24,7 @@ Public Class APIHelper
          Console.WriteLine("Error : " & ex.Message)
          'CurrentStatusLabel.Text = "Error : " & ex.Message
          Console.WriteLine("URL: " & request.RequestUri.ToString)
-         Return New List(Of Integer)
+         Return Nothing
       End Try
 
       Dim reader As New IO.StreamReader(response.GetResponseStream())
@@ -31,7 +32,9 @@ Public Class APIHelper
 
       Dim gameList As New List(Of Integer)
       For Each i As String In result.Substring(1, result.Length - 2).Split(","c)
-         gameList.Add(CInt(i))
+         If i.Length > 0 Then
+            gameList.Add(CInt(i))
+         End If
       Next
 
       reader.Close()

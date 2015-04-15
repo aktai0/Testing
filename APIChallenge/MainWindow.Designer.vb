@@ -27,9 +27,9 @@ Partial Class MainWindow
       Me.ChampionImageList1 = New System.Windows.Forms.ImageList(Me.components)
       Me.ImageComboBox2 = New ImageComboBox.ImageComboBox()
       Me.ImageComboBox1 = New ImageComboBox.ImageComboBox()
-      Me.SettingsButton = New System.Windows.Forms.Button()
       Me.MatchupFlowLayoutPanel = New System.Windows.Forms.FlowLayoutPanel()
       Me.SelectorPanel = New System.Windows.Forms.Panel()
+      Me.ShowMatchesButton = New System.Windows.Forms.Button()
       Me.LeftSidePanel = New System.Windows.Forms.Panel()
       Me.EnemyLabel = New System.Windows.Forms.Label()
       Me.EnemyPictureBox = New System.Windows.Forms.PictureBox()
@@ -49,6 +49,7 @@ Partial Class MainWindow
       Me.LossRateFlowLayoutPanel = New System.Windows.Forms.FlowLayoutPanel()
       Me.LowestWinRateLabel = New System.Windows.Forms.Label()
       Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
+      Me.Button1 = New System.Windows.Forms.Button()
       Me.SelectorPanel.SuspendLayout()
       Me.LeftSidePanel.SuspendLayout()
       CType(Me.EnemyPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -84,7 +85,7 @@ Partial Class MainWindow
       Me.ImageComboBox2.Indent = 20
       Me.ImageComboBox2.IntegralHeight = False
       Me.ImageComboBox2.ItemHeight = 30
-      Me.ImageComboBox2.Location = New System.Drawing.Point(315, 8)
+      Me.ImageComboBox2.Location = New System.Drawing.Point(315, 45)
       Me.ImageComboBox2.MaxDropDownItems = 12
       Me.ImageComboBox2.Name = "ImageComboBox2"
       Me.ImageComboBox2.Size = New System.Drawing.Size(300, 36)
@@ -101,21 +102,11 @@ Partial Class MainWindow
       Me.ImageComboBox1.Indent = 20
       Me.ImageComboBox1.IntegralHeight = False
       Me.ImageComboBox1.ItemHeight = 30
-      Me.ImageComboBox1.Location = New System.Drawing.Point(9, 8)
+      Me.ImageComboBox1.Location = New System.Drawing.Point(9, 45)
       Me.ImageComboBox1.MaxDropDownItems = 12
       Me.ImageComboBox1.Name = "ImageComboBox1"
       Me.ImageComboBox1.Size = New System.Drawing.Size(300, 36)
       Me.ImageComboBox1.TabIndex = 18
-      '
-      'SettingsButton
-      '
-      Me.SettingsButton.Dock = System.Windows.Forms.DockStyle.Right
-      Me.SettingsButton.Location = New System.Drawing.Point(843, 0)
-      Me.SettingsButton.Name = "SettingsButton"
-      Me.SettingsButton.Size = New System.Drawing.Size(97, 129)
-      Me.SettingsButton.TabIndex = 20
-      Me.SettingsButton.Text = "Settings"
-      Me.SettingsButton.UseVisualStyleBackColor = True
       '
       'MatchupFlowLayoutPanel
       '
@@ -124,23 +115,35 @@ Partial Class MainWindow
       Me.MatchupFlowLayoutPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
       Me.MatchupFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill
       Me.MatchupFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-      Me.MatchupFlowLayoutPanel.Location = New System.Drawing.Point(0, 56)
+      Me.MatchupFlowLayoutPanel.Location = New System.Drawing.Point(0, 129)
       Me.MatchupFlowLayoutPanel.Name = "MatchupFlowLayoutPanel"
       Me.MatchupFlowLayoutPanel.Padding = New System.Windows.Forms.Padding(32, 20, 0, 0)
-      Me.MatchupFlowLayoutPanel.Size = New System.Drawing.Size(629, 658)
+      Me.MatchupFlowLayoutPanel.Size = New System.Drawing.Size(629, 585)
       Me.MatchupFlowLayoutPanel.TabIndex = 21
       Me.MatchupFlowLayoutPanel.WrapContents = False
       '
       'SelectorPanel
       '
       Me.SelectorPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+      Me.SelectorPanel.Controls.Add(Me.Button1)
+      Me.SelectorPanel.Controls.Add(Me.ShowMatchesButton)
       Me.SelectorPanel.Controls.Add(Me.ImageComboBox2)
       Me.SelectorPanel.Controls.Add(Me.ImageComboBox1)
       Me.SelectorPanel.Dock = System.Windows.Forms.DockStyle.Top
       Me.SelectorPanel.Location = New System.Drawing.Point(0, 0)
       Me.SelectorPanel.Name = "SelectorPanel"
-      Me.SelectorPanel.Size = New System.Drawing.Size(629, 56)
+      Me.SelectorPanel.Size = New System.Drawing.Size(629, 129)
       Me.SelectorPanel.TabIndex = 22
+      '
+      'ShowMatchesButton
+      '
+      Me.ShowMatchesButton.Dock = System.Windows.Forms.DockStyle.Top
+      Me.ShowMatchesButton.Location = New System.Drawing.Point(0, 0)
+      Me.ShowMatchesButton.Name = "ShowMatchesButton"
+      Me.ShowMatchesButton.Size = New System.Drawing.Size(627, 35)
+      Me.ShowMatchesButton.TabIndex = 21
+      Me.ShowMatchesButton.Text = "Load Matches"
+      Me.ShowMatchesButton.UseVisualStyleBackColor = True
       '
       'LeftSidePanel
       '
@@ -158,9 +161,8 @@ Partial Class MainWindow
       Me.EnemyLabel.Font = New System.Drawing.Font("Garamond", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
       Me.EnemyLabel.Location = New System.Drawing.Point(348, 29)
       Me.EnemyLabel.Name = "EnemyLabel"
-      Me.EnemyLabel.Size = New System.Drawing.Size(84, 29)
+      Me.EnemyLabel.Size = New System.Drawing.Size(0, 29)
       Me.EnemyLabel.TabIndex = 12
-      Me.EnemyLabel.Text = "Testing"
       Me.EnemyLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
       '
       'EnemyPictureBox
@@ -179,7 +181,6 @@ Partial Class MainWindow
       Me.ChampionLabel.Name = "ChampionLabel"
       Me.ChampionLabel.Size = New System.Drawing.Size(155, 29)
       Me.ChampionLabel.TabIndex = 10
-      Me.ChampionLabel.Text = "Testing"
       Me.ChampionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
       '
       'ChampionPictureBox
@@ -200,6 +201,7 @@ Partial Class MainWindow
       Me.VSLabel.Size = New System.Drawing.Size(40, 26)
       Me.VSLabel.TabIndex = 13
       Me.VSLabel.Text = "VS"
+      Me.VSLabel.Visible = False
       '
       'WinRateLabel
       '
@@ -209,7 +211,6 @@ Partial Class MainWindow
       Me.WinRateLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes
       Me.WinRateLabel.Size = New System.Drawing.Size(343, 60)
       Me.WinRateLabel.TabIndex = 14
-      Me.WinRateLabel.Text = "Testing"
       Me.WinRateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
       '
       'ChampVsChampWinRatePanel
@@ -257,7 +258,6 @@ Partial Class MainWindow
       Me.ChampionLabelInitial.Name = "ChampionLabelInitial"
       Me.ChampionLabelInitial.Size = New System.Drawing.Size(215, 29)
       Me.ChampionLabelInitial.TabIndex = 16
-      Me.ChampionLabelInitial.Text = "Testing"
       Me.ChampionLabelInitial.TextAlign = System.Drawing.ContentAlignment.MiddleRight
       '
       'WinRateLabelInitial
@@ -269,7 +269,6 @@ Partial Class MainWindow
       Me.WinRateLabelInitial.RightToLeft = System.Windows.Forms.RightToLeft.Yes
       Me.WinRateLabelInitial.Size = New System.Drawing.Size(325, 60)
       Me.WinRateLabelInitial.TabIndex = 17
-      Me.WinRateLabelInitial.Text = "Testing"
       Me.WinRateLabelInitial.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
       '
       'WinRateFlowLayoutPanel
@@ -299,7 +298,6 @@ Partial Class MainWindow
       '
       'TopRightPanel
       '
-      Me.TopRightPanel.Controls.Add(Me.SettingsButton)
       Me.TopRightPanel.Controls.Add(Me.ChampVsChampWinRatePanel)
       Me.TopRightPanel.Controls.Add(Me.ChampWinRatePanel)
       Me.TopRightPanel.Dock = System.Windows.Forms.DockStyle.Top
@@ -347,6 +345,16 @@ Partial Class MainWindow
       '
       Me.Timer1.Enabled = True
       '
+      'Button1
+      '
+      Me.Button1.Dock = System.Windows.Forms.DockStyle.Bottom
+      Me.Button1.Location = New System.Drawing.Point(0, 92)
+      Me.Button1.Name = "Button1"
+      Me.Button1.Size = New System.Drawing.Size(627, 35)
+      Me.Button1.TabIndex = 22
+      Me.Button1.Text = "Clear"
+      Me.Button1.UseVisualStyleBackColor = True
+      '
       'MainWindow
       '
       Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
@@ -377,7 +385,6 @@ Partial Class MainWindow
    Friend WithEvents ChampionImageList2 As System.Windows.Forms.ImageList
    Private WithEvents ImageComboBox2 As ImageComboBox.ImageComboBox
    Private WithEvents ImageComboBox1 As ImageComboBox.ImageComboBox
-   Friend WithEvents SettingsButton As System.Windows.Forms.Button
    Friend WithEvents MatchupFlowLayoutPanel As System.Windows.Forms.FlowLayoutPanel
    Friend WithEvents SelectorPanel As System.Windows.Forms.Panel
    Friend WithEvents LeftSidePanel As System.Windows.Forms.Panel
@@ -399,5 +406,7 @@ Partial Class MainWindow
    Friend WithEvents LossRateFlowLayoutPanel As System.Windows.Forms.FlowLayoutPanel
    Friend WithEvents LowestWinRateLabel As System.Windows.Forms.Label
    Friend WithEvents Timer1 As System.Windows.Forms.Timer
+   Friend WithEvents ShowMatchesButton As System.Windows.Forms.Button
+   Friend WithEvents Button1 As System.Windows.Forms.Button
 
 End Class

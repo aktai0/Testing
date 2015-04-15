@@ -12,8 +12,8 @@ Public Class MainWindow
       CacheManager.LoadAllCaches()
       APIHelper.API_INIT()
 
-      StaticCache = CType(CacheManager.CacheList("Static"), StaticCache)
-      DataCache = CType(CacheManager.CacheList("Data"), DataCache)
+      StaticCache = RetrieveCache(Of StaticCache)()
+      DataCache = RetrieveCache(Of DataCache)()
 
       'Dim matchupUC As New MatchupUserControl(New Matchup(0, 17, 60, 33, 0, MatchEndpoint.Lane.Top, True, 100))
       'matchupUC.Parent = Me
@@ -21,6 +21,9 @@ Public Class MainWindow
 
       ImageComboBox1.Items.Clear()
       ChampionImageList1.Images.Clear()
+      Dim temp = New ImageComboBox.ImageComboBoxItem("", 0)
+      temp.Text = " "
+      ImageComboBox1.Items.Add(temp)
       For Each c In APIHelper.Champions.Values
          ChampionImageList1.Images.Add(StaticCache.Images(c.Id))
          Dim comboBoxItem As New ImageComboBox.ImageComboBoxItem(ChampionImageList1.Images.Count - 1, c.Name, New Font("Microsoft Sans Serif", 18.0), 0)
@@ -36,16 +39,24 @@ Public Class MainWindow
       CacheManager.StoreAllCaches()
    End Sub
 
-   Public Function GetWinRatesForAllChampions() As IEnumerable(Of ChampHistory)
+   Public Function GetWinRatesForAllChampions(Optional ByVal sortDescending As Boolean = True) As IEnumerable(Of ChampHistory)
       Dim champHistoryList As New List(Of ChampHistory)
       For Each champ In APIHelper.Champions.Keys
          champHistoryList.Add(GetWinRateOfChamp(champ))
       Next
 
-      Dim query = From c In champHistoryList, names In APIHelper.Champions.Values
-                  Where c.champID = names.Id
-                  Order By c.GetWinRate() Descending
-                  Select c
+      Dim query As IEnumerable(Of ChampHistory)
+      If sortDescending Then
+         query = From c In champHistoryList, names In APIHelper.Champions.Values
+                     Where c.champID = names.Id
+                     Order By c.GetWinRate() Descending, c.gamesPlayed Descending, c.champName Ascending
+                     Select c
+      Else
+         query = From c In champHistoryList, names In APIHelper.Champions.Values
+                     Where c.champID = names.Id
+                     Order By c.GetWinRate() Ascending, c.gamesPlayed Descending, c.champName Ascending
+                     Select c
+      End If
       Return query
    End Function
 
@@ -68,7 +79,7 @@ Public Class MainWindow
             .gamesPlayed = played
          End With
          champName = APIHelper.Champions(champID).Name
-         _WinRate = CSng(gamesWon) / gamesPlayed
+         _WinRate = CSng(gamesWon) / If(gamesPlayed > 0, gamesPlayed, 1)
       End Sub
 
       Public Overrides Function ToString() As String
@@ -77,11 +88,14 @@ Public Class MainWindow
    End Class
 
    Public Function GetWinRateOfChamp(ByVal champID As Integer) As ChampHistory
+      If DataCache.GetMatchupDataFor(APIHelper.GetChampName(champID)) Is Nothing Then
+         Return New ChampHistory(champID, 0, 0)
+      End If
       ' Count how many matches the champion won in
       Dim winNum = (From matches In DataCache.GetMatchupDataFor(APIHelper.GetChampName(champID))
                     Where matches.WonLane
                     Select matches).Count()
-         ' Count how many matches the champion was in
+      ' Count how many matches the champion was in
       Dim totalGames = DataCache.GetMatchupDataFor(APIHelper.GetChampName(champID)).Count
       Return New ChampHistory(champID, winNum, totalGames)
    End Function
@@ -91,7 +105,32 @@ Public Class MainWindow
    End Sub
 
    Private Sub ImageComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ImageComboBox1.SelectedIndexChanged
+      If ImageComboBox1.Text = "" Or ImageComboBox1.Text = " " Then
+         Dim allWinRates = GetWinRatesForAllChampions()
+
+         WinRateFlowLayoutPanel.Controls.Clear()
+         TopWinRateLabel.Parent = WinRateFlowLayoutPanel
+         For i = 0 To Math.Min(9, allWinRates.Count - 1)
+            Dim wR As New WinRateMatchup(allWinRates(i).champID, 0, allWinRates(i).gamesWon, allWinRates(i).gamesPlayed)
+            WinRateFlowLayoutPanel.Controls.Add(New WinRateUserControl(wR))
+         Next
+
+         Dim lossRates = GetWinRatesForAllChampions(False)
+
+         LossRateFlowLayoutPanel.Controls.Clear()
+         LowestWinRateLabel.Parent = LossRateFlowLayoutPanel
+         For i = 0 To Math.Min(9, lossRates.Count - 1)
+            Dim lR As New WinRateMatchup(allWinRates(i).champID, 0, allWinRates(i).gamesWon, allWinRates(i).gamesPlayed)
+            LossRateFlowLayoutPanel.Controls.Add(New WinRateUserControl(lR))
+         Next
+         Return
+      End If
+
       Dim CurrentMatchups = DataCache.GetMatchupDataFor(ImageComboBox1.Text)
+      If CurrentMatchups Is Nothing Then
+         ClearChampionData()
+         Return
+      End If
 
       Dim names = (From m In CurrentMatchups
                    Order By APIHelper.GetChampName(m.EnemyChampionID)
@@ -113,12 +152,11 @@ Public Class MainWindow
          LossRateFlowLayoutPanel.Controls.Add(New WinRateUserControl(lostRates(i)))
       Next
 
-      'For Each m In CurrentMatchups
-      '   Console.WriteLine(m.ToString)
-      'Next
+      ClearMatchupData()
 
-      ImageComboBox2.Items.Clear()
-      ChampionImageList2.Images.Clear()
+      Dim temp = New ImageComboBox.ImageComboBoxItem("", 0)
+      temp.Text = " "
+      ImageComboBox2.Items.Add(temp)
       For Each c In names
          ChampionImageList2.Images.Add(StaticCache.Images(APIHelper.GetChampID(c)))
          Dim comboBoxItem As New ImageComboBox.ImageComboBoxItem(ChampionImageList2.Images.Count - 1, c, New Font("Microsoft Sans Serif", 18.0), 0)
@@ -137,22 +175,13 @@ Public Class MainWindow
 
       WinRateLabelInitial.Text = "Overall Win Rate: " & String.Format("{0:0.00}%", CSng(wins) * 100 / games)
 
-      WinRateLabel.Text = ""
-
-      ChampionLabel.Text = ""
-      EnemyLabel.Text = ""
-      ChampionPictureBox.Image = Nothing
-      EnemyPictureBox.Image = Nothing
-      VSLabel.Visible = False
    End Sub
 
-   Private MatchupUCList As New List(Of MatchupUserControl)
-
    Private Sub ImageComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ImageComboBox2.SelectedIndexChanged
-      Dim CurrentMatchups = DataCache.GetMatchupDataFor(ImageComboBox1.Text)
       If ImageComboBox2.Text = Nothing Then
          Return
       End If
+      Dim CurrentMatchups = DataCache.GetMatchupDataFor(ImageComboBox1.Text)
 
       Dim enemyChampID As Integer = APIHelper.GetChampID(CStr(ImageComboBox2.Text))
       Dim q = From m In CurrentMatchups
@@ -169,17 +198,11 @@ Public Class MainWindow
       Dim c2 = Aggregate m In q
               Into Count()
 
-      For Each mUC In MatchupUCList
-         mUC.Parent = Nothing
-      Next
-      MatchupUCList.Clear()
-
+      MatchupFlowLayoutPanel.Controls.Clear()
       For Each m In q
          Dim matchupUC As New MatchupUserControl(m)
-         matchupUC.Parent = MatchupFlowLayoutPanel
-         matchupUC.Location = New Point(12, 100 + MatchupUCList.Count * (150 + 10))
-
-         MatchupUCList.Add(matchupUC)
+         MatchupFlowLayoutPanel.Controls.Add(matchupUC)
+         matchupUC.Location = New Point(12, 100 + MatchupFlowLayoutPanel.Controls.Count * (150 + 10))
       Next
 
       WinRateLabel.Text = "Win Rate: " & String.Format("{0:0.00}%", CSng(c) * 100 / c2)
@@ -191,19 +214,45 @@ Public Class MainWindow
       VSLabel.Visible = True
    End Sub
 
-   Private Sub SettingsButton_Click(sender As Object, e As EventArgs) Handles SettingsButton.Click
-      CacheSettingsWindow.Show()
+   Private Sub ShowMatchesButton_Click(sender As Object, e As EventArgs) Handles ShowMatchesButton.Click
+      MatchLoadingWindow.Show()
    End Sub
 
-   'Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-   '   Dim uEncode As New System.Text.UnicodeEncoding
-   '   Dim ClearString As String = "asdf"
-   '   Dim bytClearString() As Byte = uEncode.GetBytes(ClearString)
-   '   Dim sha As New  _
-   '   System.Security.Cryptography.SHA256Managed()
-   '   Dim hash() As Byte = sha.ComputeHash(bytClearString)
-   '   Console.WriteLine(Convert.ToBase64String(hash))
-   'End Sub
+   Private Sub ClearMatchupData()
+      WinRateLabel.Text = ""
+
+      ChampionLabel.Text = ""
+      EnemyLabel.Text = ""
+      ChampionPictureBox.Image = Nothing
+      EnemyPictureBox.Image = Nothing
+      VSLabel.Visible = False
+
+      ImageComboBox2.Items.Clear()
+      ChampionImageList2.Images.Clear()
+      ImageComboBox2.SelectedIndex = -1
+
+      MatchupFlowLayoutPanel.Controls.Clear()
+   End Sub
+
+   ' For champions who haven't loaded in a match yet
+   Private Sub ClearChampionData()
+      ClearMatchupData()
+
+      ChampionLabelInitial.Text = Nothing
+      WinRateLabelInitial.Text = Nothing
+      ChampionPictureBoxInitial.Image = Nothing
+
+      WinRateFlowLayoutPanel.Controls.Clear()
+      LossRateFlowLayoutPanel.Controls.Clear()
+   End Sub
+
+   Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+      If ImageComboBox1.SelectedIndex = 0 Then
+         Return
+      End If
+      ClearChampionData()
+      ImageComboBox1.SelectedIndex = 0
+   End Sub
 End Class
 
 Module LINQExtension

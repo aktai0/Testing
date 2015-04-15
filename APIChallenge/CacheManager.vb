@@ -32,6 +32,7 @@ Module CacheManager
    Public Sub Init()
       CacheTypeNames.Add("Static", New StaticCache)
       CacheTypeNames.Add("Data", New DataCache)
+      CacheTypeNames.Add("Matches", New MatchIDCache)
    End Sub
 
    Public Sub LoadAllCaches()
@@ -119,6 +120,9 @@ MustInherit Class EasyCache
    Overridable Sub FinishedLoading()
    End Sub
 
+   Overridable Sub StartedStoring()
+   End Sub
+
 End Class
 
 <Serializable()>
@@ -195,6 +199,184 @@ Class StaticCache
 End Class
 
 <Serializable>
+Class MatchIDCache
+   Inherits EasyCache
+
+   Public Overrides ReadOnly Property CACHE_FILE_NAME As String
+      Get
+         Return "MatchIDCache.bin"
+      End Get
+   End Property
+
+   Public Overrides ReadOnly Property CACHE_LIMIT As Integer
+      Get
+         Return 0
+      End Get
+   End Property
+
+   Private FirstMatchID As Integer
+   Private LastMatchID As Integer
+   Private Count As Integer
+
+   Public Overrides ReadOnly Property CacheChanged As Boolean
+      Get
+         If MatchIDQueue.Count > 0 Then
+            Return Count <> MatchIDQueue.Count OrElse FirstMatchID <> MatchIDQueue.Peek() OrElse LastMatchID <> MatchIDQueue.Last()
+         Else
+            Return Count <> MatchIDQueue.Count
+         End If
+      End Get
+   End Property
+
+   Public Overrides Sub StartedStoring()
+      If MatchIDQueue.Count > 0 Then
+         FirstMatchID = MatchIDQueue.Peek
+         LastMatchID = MatchIDQueue.Last
+      Else
+         FirstMatchID = 0
+         LastMatchID = 0
+      End If
+      Count = MatchIDQueue.Count
+   End Sub
+
+   Dim _TotalMatchesLoaded As Integer = 0
+   Public Property TotalMatchesLoaded As Integer
+      Get
+         Return _TotalMatchesLoaded
+      End Get
+      Private Set(value As Integer)
+         _TotalMatchesLoaded = value
+      End Set
+   End Property
+
+   Dim _NextURFBucketTimeToLoad As DateTime = FIRST_URF_DATETIME
+   Public Property NextURFBucketTimeToLoad As DateTime
+      Get
+         Return _NextURFBucketTimeToLoad
+      End Get
+      Private Set(value As DateTime)
+         _NextURFBucketTimeToLoad = value
+      End Set
+   End Property
+
+   Public ReadOnly Property MatchIDCount As Integer
+      Get
+         Return MatchIDQueue.Count + TotalMatchesLoaded
+      End Get
+   End Property
+
+   Public ReadOnly Property MatchesPendingLoad As Boolean
+      Get
+         Return MatchIDQueue.Count > 0
+      End Get
+   End Property
+
+   ' Queue  
+   Private MatchIDQueue As New Queue(Of Integer)
+
+   Public Sub PopFirstMatchIfEquals(ByVal matchID As Integer)
+      If matchID = MatchIDQueue.Peek Then
+         MatchIDQueue.Dequeue()
+      End If
+   End Sub
+
+   Private Sub IncrementTime()
+      NextURFBucketTimeToLoad = NextURFBucketTimeToLoad.Add(New TimeSpan(0, 5, 0))
+   End Sub
+
+   ' Call me in a BackgroundWorker! Preferably in conjunction with sleep!
+   Public Sub LoadMatchIDs()
+      ErrorPending = False
+      Dim matches = APIHelper.API_GET_URF_MATCHES(DateTimeToEpoch(NextURFBucketTimeToLoad).ToString)
+
+      If matches Is Nothing Then
+         ErrorPending = True
+         Return
+      End If
+
+      SyncLock MatchIDQueue
+         For Each m In matches
+            MatchIDQueue.Enqueue(m)
+         Next
+      End SyncLock
+      IncrementTime()
+   End Sub
+
+   <NonSerialized>
+   Public ErrorPending As Boolean = False
+
+   ' Call me in a BackgroundWorker! Preferably in conjunction with sleep!
+   Public Sub LoadFirstMatchIntoMatchups()
+      ErrorPending = False
+      Dim firstMatchID As Integer = MatchIDQueue.Peek
+      Dim matchups = LoadMatch(MatchIDQueue.Peek)
+
+      If matchups Is Nothing Then
+         ErrorPending = True
+         Return
+      End If
+
+      RetrieveCache(Of DataCache)().AddMatchupData(matchups)
+      TotalMatchesLoaded += 1
+
+      ' The first entry shouldn't change in a different thread, but better safe than sorry.
+      SyncLock MatchIDQueue
+         PopFirstMatchIfEquals(firstMatchID)
+      End SyncLock
+   End Sub
+
+   Private Function LoadMatch(ByVal matchID As Integer) As IEnumerable(Of Matchup)
+      Dim matchDetail As MatchEndpoint.MatchDetail = APIHelper.API_GET_MATCH_INFO(matchID)
+
+      If matchDetail Is Nothing Then
+         Return Nothing
+      End If
+
+      Dim participantsByLane = From p In matchDetail.Participants
+                               Group p By Lane = p.Timeline.Lane Into groups = Group
+                               Select Lane, groups
+      Dim winningTeam = If(matchDetail.Teams(0).Winner, matchDetail.Teams(0).TeamId, matchDetail.Teams(1).TeamId)
+      Dim matchupList As New List(Of Matchup)
+
+      For Each item In participantsByLane
+         For Each i In item.groups
+            Dim myChampion As Integer = i.ChampionId
+            Dim myAlly As Integer = 0
+            Dim myEnemy As Integer = 0
+            Dim myEnemy2 As Integer = 0
+            Dim wonLane As Boolean = i.TeamId = winningTeam
+
+            For Each a In item.groups
+               ' Participant on the same time with a different champion is an ally
+               If i.TeamId = a.TeamId AndAlso myChampion <> a.ChampionId Then
+                  myAlly = a.ChampionId
+               End If
+
+               ' Participant on the opposite team is an enemy, add both of them
+               If i.TeamId <> a.TeamId Then
+                  If myEnemy <> 0 Then
+                     myEnemy2 = a.ChampionId
+                  Else
+                     myEnemy = a.ChampionId
+                  End If
+               End If
+            Next
+
+            ' We create a matchup for each champion in the lane (allies and enemies). 4 matchups if 2v2
+            Dim newMatchup As New Matchup(matchID, myChampion, myAlly, myEnemy, myEnemy2, item.Lane, wonLane, i.TeamId)
+            ' Discard Xv0 matchups
+            If newMatchup.EnemyChampionID = 0 Then
+               Continue For
+            End If
+            matchupList.Add(newMatchup)
+            Next
+      Next
+
+      Return matchupList
+   End Function
+End Class
+
+<Serializable>
 Class DataCache
    Inherits EasyCache
 
@@ -222,55 +404,38 @@ Class DataCache
 
    <NonSerialized>
    Private _CacheChanged As Boolean = False
+
+   Private LoadedMatchupAdded As New Matchup(0, 0, 0, 0, 0, 0, False, 0)
+   Private LatestMatchupAdded As New Matchup(0, 0, 0, 0, 0, 0, False, 0)
+
    ' Always save by default.
    Overrides ReadOnly Property CacheChanged() As Boolean
       Get
-         Return _CacheChanged
+         Return Not LatestMatchupAdded.Equals(LoadedMatchupAdded)
       End Get
    End Property
-
-   Overrides Sub RebuildCacheAsync()
-      AsyncBackgroundWorker = New System.ComponentModel.BackgroundWorker()
-      AddHandler AsyncBackgroundWorker.DoWork, AddressOf AsyncBackgroundWorker_DoWork
-
-      AsyncBackgroundWorker.RunWorkerAsync()
-   End Sub
-
-   <NonSerialized>
-   Private AsyncBackgroundWorker As System.ComponentModel.BackgroundWorker
-
-   Private Sub AsyncBackgroundWorker_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs)
-      _CacheChanged = True
-      'Dim MatchCache = RetrieveCache(Of MatchCache)()
-
-      'If Not (LoadIndex = MatchCache.MatchList.LoadedIndex AndAlso FirstMatchID = MatchCache.MatchList(0).GetMatchID AndAlso LastMatchID = MatchCache.MatchList(MatchCache.MatchList.Count - 1).GetMatchID) Then
-      '   FirstMatchID = MatchCache.MatchList(0).GetMatchID()
-      '   LastMatchID = MatchCache.MatchList(RetrieveCache(Of MatchCache).MatchList.Count - 1).GetMatchID()
-      '   LoadIndex = MatchCache.MatchList.LoadedIndex
-
-      '   MatchupData.Clear()
-      'End If
-
-      'Dim champList As IEnumerable(Of String) = From c In RetrieveCache(Of StaticCache).Champions
-      '                                          Select c.Value.Name
-
-      'For Each champ As String In champList
-      '   If MatchupData.ContainsKey(champ) Then
-      '      Continue For
-      '   End If
-      '   Console.Write("Loading " & champ & "...")
-      '   GetMatchupDataFor(champ)
-      '   Console.WriteLine(" Done!")
-      'Next
-   End Sub
 
    Sub New()
    End Sub
 
    Overrides Sub FinishedLoading()
+      LoadedMatchupAdded = LatestMatchupAdded
    End Sub
 
    Private MatchupData As New Dictionary(Of String, List(Of Matchup))
+
+   Public Sub AddMatchupData(ByRef matchups As IEnumerable(Of Matchup))
+      SyncLock MatchupData
+         For Each m In matchups
+            If MatchupData.ContainsKey(APIHelper.GetChampName(m.ChampionID)) Then
+               MatchupData(APIHelper.GetChampName(m.ChampionID)).Add(m)
+            Else
+               MatchupData.Add(APIHelper.GetChampName(m.ChampionID), New List(Of Matchup)({m}))
+            End If
+            LatestMatchupAdded = m
+         Next
+      End SyncLock
+   End Sub
 
    ' Compute comprehensive matchup data for a given champion.
    Public Function GetMatchupDataFor(ByVal champName As String) As List(Of Matchup)
@@ -300,10 +465,6 @@ Class DataCache
       '   ElseIf Not item.BlueWon Then
       '      wonGame = True
       '   End If
-
-      '   'If item.GetMatchID = 1791704542 Then
-      '   '   Console.WriteLine("Here")
-      '   'End If
 
       '   Dim setSecondEnemy As Boolean = False
       '   Dim result As Matchup = Nothing

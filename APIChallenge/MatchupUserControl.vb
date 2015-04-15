@@ -13,16 +13,16 @@ Public Class MatchupUserControl
       Me.Matchup = givenMatchup
 
       ChampionLabel.Text = APIHelper.GetChampName(Matchup.ChampionID)
-      ChampPictureBox.Image = CacheManager.RetrieveCache(Of StaticCache).Images(Matchup.ChampionID)
+      ChampPictureBox.Image = RetrieveCache(Of StaticCache).Images(Matchup.ChampionID)
       'Readjust for short names
       ChampionLabel.Left = ChampionLabel.Left + (initialRightA - ChampionLabel.Right)
 
       EnemyLabel.Text = APIHelper.GetChampName(Matchup.EnemyChampionID)
-      EnemyPictureBox.Image = CacheManager.RetrieveCache(Of StaticCache).Images(Matchup.EnemyChampionID)
+      EnemyPictureBox.Image = RetrieveCache(Of StaticCache).Images(Matchup.EnemyChampionID)
 
       If Matchup.AllyChampionID > 0 Then
          AllyLabel.Text = APIHelper.GetChampName(Matchup.AllyChampionID)
-         AllyPictureBox.Image = CacheManager.RetrieveCache(Of StaticCache).Images(Matchup.AllyChampionID)
+         AllyPictureBox.Image = RetrieveCache(Of StaticCache).Images(Matchup.AllyChampionID)
          'Readjust for short names
          AllyLabel.Left = AllyLabel.Left + (initialRightB - AllyLabel.Right)
       Else
