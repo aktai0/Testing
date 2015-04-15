@@ -19,20 +19,17 @@ Public Class MainWindow
       'matchupUC.Parent = Me
       'matchupUC.Location = New Point(12, 150)
 
-      ImageComboBox1.Items.Clear()
-      ChampionImageList1.Images.Clear()
+      FirstImageComboBox.Items.Clear()
+      _ChampionImageList1.Images.Clear()
       Dim temp = New ImageComboBox.ImageComboBoxItem("", 0)
       temp.Text = " "
-      ImageComboBox1.Items.Add(temp)
+      FirstImageComboBox.Items.Add(temp)
       For Each c In APIHelper.Champions.Values
-         ChampionImageList1.Images.Add(StaticCache.Images(c.Id))
-         Dim comboBoxItem As New ImageComboBox.ImageComboBoxItem(ChampionImageList1.Images.Count - 1, c.Name, New Font("Microsoft Sans Serif", 18.0), 0)
-         ImageComboBox1.Items.Add(comboBoxItem)
+         _ChampionImageList1.Images.Add(StaticCache.Images(c.Id))
+         Dim comboBoxItem As New ImageComboBox.ImageComboBoxItem(_ChampionImageList1.Images.Count - 1, c.Name, New Font("Microsoft Sans Serif", 18.0), 0)
+         FirstImageComboBox.Items.Add(comboBoxItem)
       Next
-      ImageComboBox1.SelectedIndex = 23
-   End Sub
-
-   Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
+      FirstImageComboBox.SelectedIndex = 23
    End Sub
 
    Private Sub MainWindow_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
@@ -104,8 +101,8 @@ Public Class MainWindow
       '    Console.WriteLine(Me.Size)
    End Sub
 
-   Private Sub ImageComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ImageComboBox1.SelectedIndexChanged
-      If ImageComboBox1.Text = "" Or ImageComboBox1.Text = " " Then
+   Private Sub ImageComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles FirstImageComboBox.SelectedIndexChanged
+      If FirstImageComboBox.Text = "" Or FirstImageComboBox.Text = " " Then
          Dim allWinRates = GetWinRatesForAllChampions()
 
          WinRateFlowLayoutPanel.Controls.Clear()
@@ -126,7 +123,7 @@ Public Class MainWindow
          Return
       End If
 
-      Dim CurrentMatchups = DataCache.GetMatchupDataFor(ImageComboBox1.Text)
+      Dim CurrentMatchups = DataCache.GetMatchupDataFor(FirstImageComboBox.Text)
       If CurrentMatchups Is Nothing Then
          ClearChampionData()
          Return
@@ -136,7 +133,7 @@ Public Class MainWindow
                    Order By APIHelper.GetChampName(m.EnemyChampionID)
                    Select APIHelper.GetChampName(m.EnemyChampionID)).Distinct()
 
-      Dim winRates = WinRateMatchup.GetWinRateDataFor(APIHelper.GetChampID(ImageComboBox1.Text), CurrentMatchups)
+      Dim winRates = WinRateMatchup.GetWinRateDataFor(APIHelper.GetChampID(FirstImageComboBox.Text), CurrentMatchups)
 
       WinRateFlowLayoutPanel.Controls.Clear()
       TopWinRateLabel.Parent = WinRateFlowLayoutPanel
@@ -144,7 +141,7 @@ Public Class MainWindow
          WinRateFlowLayoutPanel.Controls.Add(New WinRateUserControl(winRates(i)))
       Next
 
-      Dim lostRates = WinRateMatchup.GetWinRateDataFor(APIHelper.GetChampID(ImageComboBox1.Text), CurrentMatchups, False)
+      Dim lostRates = WinRateMatchup.GetWinRateDataFor(APIHelper.GetChampID(FirstImageComboBox.Text), CurrentMatchups, False)
 
       LossRateFlowLayoutPanel.Controls.Clear()
       LowestWinRateLabel.Parent = LossRateFlowLayoutPanel
@@ -156,16 +153,16 @@ Public Class MainWindow
 
       Dim temp = New ImageComboBox.ImageComboBoxItem("", 0)
       temp.Text = " "
-      ImageComboBox2.Items.Add(temp)
+      SecondImageComboBox.Items.Add(temp)
       For Each c In names
-         ChampionImageList2.Images.Add(StaticCache.Images(APIHelper.GetChampID(c)))
-         Dim comboBoxItem As New ImageComboBox.ImageComboBoxItem(ChampionImageList2.Images.Count - 1, c, New Font("Microsoft Sans Serif", 18.0), 0)
-         ImageComboBox2.Items.Add(comboBoxItem)
+         _ChampionImageList2.Images.Add(StaticCache.Images(APIHelper.GetChampID(c)))
+         Dim comboBoxItem As New ImageComboBox.ImageComboBoxItem(_ChampionImageList2.Images.Count - 1, c, New Font("Microsoft Sans Serif", 18.0), 0)
+         SecondImageComboBox.Items.Add(comboBoxItem)
       Next
-      ImageComboBox2.SelectedIndex = -1
+      SecondImageComboBox.SelectedIndex = -1
 
-      ChampionLabelInitial.Text = ImageComboBox1.Text
-      ChampionPictureBoxInitial.Image = StaticCache.Images(APIHelper.GetChampID(ImageComboBox1.Text))
+      ChampionLabelInitial.Text = FirstImageComboBox.Text
+      ChampionPictureBoxInitial.Image = StaticCache.Images(APIHelper.GetChampID(FirstImageComboBox.Text))
 
       Dim wins = Aggregate m In CurrentMatchups
                  Where m.WonLane
@@ -177,15 +174,15 @@ Public Class MainWindow
 
    End Sub
 
-   Private Sub ImageComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ImageComboBox2.SelectedIndexChanged
-      If ImageComboBox2.Text = Nothing Then
+   Private Sub ImageComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles SecondImageComboBox.SelectedIndexChanged
+      If SecondImageComboBox.Text = Nothing Then
          Return
       End If
-      Dim CurrentMatchups = DataCache.GetMatchupDataFor(ImageComboBox1.Text)
+      Dim CurrentMatchups = DataCache.GetMatchupDataFor(FirstImageComboBox.Text)
 
-      Dim enemyChampID As Integer = APIHelper.GetChampID(CStr(ImageComboBox2.Text))
+      Dim enemyChampID As Integer = APIHelper.GetChampID(CStr(SecondImageComboBox.Text))
       Dim q = From m In CurrentMatchups
-              Where m.ChampionID = APIHelper.GetChampID(ImageComboBox1.Text) AndAlso m.EnemyChampionID = enemyChampID
+              Where m.ChampionID = APIHelper.GetChampID(FirstImageComboBox.Text) AndAlso m.EnemyChampionID = enemyChampID
               Select m
       For Each m In q
          Console.WriteLine(m.ToString)
@@ -207,10 +204,10 @@ Public Class MainWindow
 
       WinRateLabel.Text = "Win Rate: " & String.Format("{0:0.00}%", CSng(c) * 100 / c2)
 
-      ChampionLabel.Text = ImageComboBox1.Text
-      EnemyLabel.Text = ImageComboBox2.Text
-      ChampionPictureBox.Image = StaticCache.Images(APIHelper.GetChampID(ImageComboBox1.Text))
-      EnemyPictureBox.Image = StaticCache.Images(APIHelper.GetChampID(ImageComboBox2.Text))
+      ChampionLabel.Text = FirstImageComboBox.Text
+      EnemyLabel.Text = SecondImageComboBox.Text
+      ChampionPictureBox.Image = StaticCache.Images(APIHelper.GetChampID(FirstImageComboBox.Text))
+      EnemyPictureBox.Image = StaticCache.Images(APIHelper.GetChampID(SecondImageComboBox.Text))
       VSLabel.Visible = True
    End Sub
 
@@ -227,9 +224,9 @@ Public Class MainWindow
       EnemyPictureBox.Image = Nothing
       VSLabel.Visible = False
 
-      ImageComboBox2.Items.Clear()
-      ChampionImageList2.Images.Clear()
-      ImageComboBox2.SelectedIndex = -1
+      SecondImageComboBox.Items.Clear()
+      _ChampionImageList2.Images.Clear()
+      SecondImageComboBox.SelectedIndex = -1
 
       MatchupFlowLayoutPanel.Controls.Clear()
    End Sub
@@ -246,12 +243,12 @@ Public Class MainWindow
       LossRateFlowLayoutPanel.Controls.Clear()
    End Sub
 
-   Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-      If ImageComboBox1.SelectedIndex = 0 Then
+   Private Sub ClearButton_Click(sender As Object, e As EventArgs) Handles ClearButton.Click
+      If FirstImageComboBox.SelectedIndex = 0 Then
          Return
       End If
       ClearChampionData()
-      ImageComboBox1.SelectedIndex = 0
+      FirstImageComboBox.SelectedIndex = 0
    End Sub
 End Class
 

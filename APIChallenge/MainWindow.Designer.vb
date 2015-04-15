@@ -23,12 +23,13 @@ Partial Class MainWindow
    <System.Diagnostics.DebuggerStepThrough()> _
    Private Sub InitializeComponent()
       Me.components = New System.ComponentModel.Container()
-      Me.ChampionImageList2 = New System.Windows.Forms.ImageList(Me.components)
-      Me.ChampionImageList1 = New System.Windows.Forms.ImageList(Me.components)
-      Me.ImageComboBox2 = New ImageComboBox.ImageComboBox()
-      Me.ImageComboBox1 = New ImageComboBox.ImageComboBox()
+      Me._ChampionImageList2 = New System.Windows.Forms.ImageList(Me.components)
+      Me._ChampionImageList1 = New System.Windows.Forms.ImageList(Me.components)
+      Me.SecondImageComboBox = New ImageComboBox.ImageComboBox()
+      Me.FirstImageComboBox = New ImageComboBox.ImageComboBox()
       Me.MatchupFlowLayoutPanel = New System.Windows.Forms.FlowLayoutPanel()
       Me.SelectorPanel = New System.Windows.Forms.Panel()
+      Me.ClearButton = New System.Windows.Forms.Button()
       Me.ShowMatchesButton = New System.Windows.Forms.Button()
       Me.LeftSidePanel = New System.Windows.Forms.Panel()
       Me.EnemyLabel = New System.Windows.Forms.Label()
@@ -48,8 +49,6 @@ Partial Class MainWindow
       Me.BottomRightPanel = New System.Windows.Forms.Panel()
       Me.LossRateFlowLayoutPanel = New System.Windows.Forms.FlowLayoutPanel()
       Me.LowestWinRateLabel = New System.Windows.Forms.Label()
-      Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
-      Me.Button1 = New System.Windows.Forms.Button()
       Me.SelectorPanel.SuspendLayout()
       Me.LeftSidePanel.SuspendLayout()
       CType(Me.EnemyPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -63,50 +62,50 @@ Partial Class MainWindow
       Me.LossRateFlowLayoutPanel.SuspendLayout()
       Me.SuspendLayout()
       '
-      'ChampionImageList2
+      '_ChampionImageList2
       '
-      Me.ChampionImageList2.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit
-      Me.ChampionImageList2.ImageSize = New System.Drawing.Size(60, 60)
-      Me.ChampionImageList2.TransparentColor = System.Drawing.Color.Transparent
+      Me._ChampionImageList2.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit
+      Me._ChampionImageList2.ImageSize = New System.Drawing.Size(60, 60)
+      Me._ChampionImageList2.TransparentColor = System.Drawing.Color.Transparent
       '
-      'ChampionImageList1
+      '_ChampionImageList1
       '
-      Me.ChampionImageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit
-      Me.ChampionImageList1.ImageSize = New System.Drawing.Size(60, 60)
-      Me.ChampionImageList1.TransparentColor = System.Drawing.Color.Transparent
+      Me._ChampionImageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit
+      Me._ChampionImageList1.ImageSize = New System.Drawing.Size(60, 60)
+      Me._ChampionImageList1.TransparentColor = System.Drawing.Color.Transparent
       '
-      'ImageComboBox2
+      'SecondImageComboBox
       '
-      Me.ImageComboBox2.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
-      Me.ImageComboBox2.DropDownHeight = 720
-      Me.ImageComboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-      Me.ImageComboBox2.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-      Me.ImageComboBox2.ImageList = Me.ChampionImageList2
-      Me.ImageComboBox2.Indent = 20
-      Me.ImageComboBox2.IntegralHeight = False
-      Me.ImageComboBox2.ItemHeight = 30
-      Me.ImageComboBox2.Location = New System.Drawing.Point(315, 45)
-      Me.ImageComboBox2.MaxDropDownItems = 12
-      Me.ImageComboBox2.Name = "ImageComboBox2"
-      Me.ImageComboBox2.Size = New System.Drawing.Size(300, 36)
-      Me.ImageComboBox2.TabIndex = 19
+      Me.SecondImageComboBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
+      Me.SecondImageComboBox.DropDownHeight = 720
+      Me.SecondImageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+      Me.SecondImageComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+      Me.SecondImageComboBox.ImageList = Me._ChampionImageList2
+      Me.SecondImageComboBox.Indent = 20
+      Me.SecondImageComboBox.IntegralHeight = False
+      Me.SecondImageComboBox.ItemHeight = 30
+      Me.SecondImageComboBox.Location = New System.Drawing.Point(315, 45)
+      Me.SecondImageComboBox.MaxDropDownItems = 12
+      Me.SecondImageComboBox.Name = "SecondImageComboBox"
+      Me.SecondImageComboBox.Size = New System.Drawing.Size(300, 36)
+      Me.SecondImageComboBox.TabIndex = 19
       '
-      'ImageComboBox1
+      'FirstImageComboBox
       '
-      Me.ImageComboBox1.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
-      Me.ImageComboBox1.DropDownHeight = 720
-      Me.ImageComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-      Me.ImageComboBox1.DropDownWidth = 300
-      Me.ImageComboBox1.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-      Me.ImageComboBox1.ImageList = Me.ChampionImageList1
-      Me.ImageComboBox1.Indent = 20
-      Me.ImageComboBox1.IntegralHeight = False
-      Me.ImageComboBox1.ItemHeight = 30
-      Me.ImageComboBox1.Location = New System.Drawing.Point(9, 45)
-      Me.ImageComboBox1.MaxDropDownItems = 12
-      Me.ImageComboBox1.Name = "ImageComboBox1"
-      Me.ImageComboBox1.Size = New System.Drawing.Size(300, 36)
-      Me.ImageComboBox1.TabIndex = 18
+      Me.FirstImageComboBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
+      Me.FirstImageComboBox.DropDownHeight = 720
+      Me.FirstImageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+      Me.FirstImageComboBox.DropDownWidth = 300
+      Me.FirstImageComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+      Me.FirstImageComboBox.ImageList = Me._ChampionImageList1
+      Me.FirstImageComboBox.Indent = 20
+      Me.FirstImageComboBox.IntegralHeight = False
+      Me.FirstImageComboBox.ItemHeight = 30
+      Me.FirstImageComboBox.Location = New System.Drawing.Point(9, 45)
+      Me.FirstImageComboBox.MaxDropDownItems = 12
+      Me.FirstImageComboBox.Name = "FirstImageComboBox"
+      Me.FirstImageComboBox.Size = New System.Drawing.Size(300, 36)
+      Me.FirstImageComboBox.TabIndex = 18
       '
       'MatchupFlowLayoutPanel
       '
@@ -125,15 +124,25 @@ Partial Class MainWindow
       'SelectorPanel
       '
       Me.SelectorPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-      Me.SelectorPanel.Controls.Add(Me.Button1)
+      Me.SelectorPanel.Controls.Add(Me.ClearButton)
       Me.SelectorPanel.Controls.Add(Me.ShowMatchesButton)
-      Me.SelectorPanel.Controls.Add(Me.ImageComboBox2)
-      Me.SelectorPanel.Controls.Add(Me.ImageComboBox1)
+      Me.SelectorPanel.Controls.Add(Me.SecondImageComboBox)
+      Me.SelectorPanel.Controls.Add(Me.FirstImageComboBox)
       Me.SelectorPanel.Dock = System.Windows.Forms.DockStyle.Top
       Me.SelectorPanel.Location = New System.Drawing.Point(0, 0)
       Me.SelectorPanel.Name = "SelectorPanel"
       Me.SelectorPanel.Size = New System.Drawing.Size(629, 129)
       Me.SelectorPanel.TabIndex = 22
+      '
+      'ClearButton
+      '
+      Me.ClearButton.Dock = System.Windows.Forms.DockStyle.Bottom
+      Me.ClearButton.Location = New System.Drawing.Point(0, 92)
+      Me.ClearButton.Name = "ClearButton"
+      Me.ClearButton.Size = New System.Drawing.Size(627, 35)
+      Me.ClearButton.TabIndex = 22
+      Me.ClearButton.Text = "Clear"
+      Me.ClearButton.UseVisualStyleBackColor = True
       '
       'ShowMatchesButton
       '
@@ -341,20 +350,6 @@ Partial Class MainWindow
       Me.LowestWinRateLabel.Text = "Lowest Win Rates"
       Me.LowestWinRateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
       '
-      'Timer1
-      '
-      Me.Timer1.Enabled = True
-      '
-      'Button1
-      '
-      Me.Button1.Dock = System.Windows.Forms.DockStyle.Bottom
-      Me.Button1.Location = New System.Drawing.Point(0, 92)
-      Me.Button1.Name = "Button1"
-      Me.Button1.Size = New System.Drawing.Size(627, 35)
-      Me.Button1.TabIndex = 22
-      Me.Button1.Text = "Clear"
-      Me.Button1.UseVisualStyleBackColor = True
-      '
       'MainWindow
       '
       Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
@@ -381,10 +376,10 @@ Partial Class MainWindow
       Me.ResumeLayout(False)
 
    End Sub
-   Friend WithEvents ChampionImageList1 As System.Windows.Forms.ImageList
-   Friend WithEvents ChampionImageList2 As System.Windows.Forms.ImageList
-   Private WithEvents ImageComboBox2 As ImageComboBox.ImageComboBox
-   Private WithEvents ImageComboBox1 As ImageComboBox.ImageComboBox
+   Friend WithEvents _ChampionImageList1 As System.Windows.Forms.ImageList
+   Friend WithEvents _ChampionImageList2 As System.Windows.Forms.ImageList
+   Private WithEvents SecondImageComboBox As ImageComboBox.ImageComboBox
+   Private WithEvents FirstImageComboBox As ImageComboBox.ImageComboBox
    Friend WithEvents MatchupFlowLayoutPanel As System.Windows.Forms.FlowLayoutPanel
    Friend WithEvents SelectorPanel As System.Windows.Forms.Panel
    Friend WithEvents LeftSidePanel As System.Windows.Forms.Panel
@@ -405,8 +400,7 @@ Partial Class MainWindow
    Friend WithEvents BottomRightPanel As System.Windows.Forms.Panel
    Friend WithEvents LossRateFlowLayoutPanel As System.Windows.Forms.FlowLayoutPanel
    Friend WithEvents LowestWinRateLabel As System.Windows.Forms.Label
-   Friend WithEvents Timer1 As System.Windows.Forms.Timer
    Friend WithEvents ShowMatchesButton As System.Windows.Forms.Button
-   Friend WithEvents Button1 As System.Windows.Forms.Button
+   Friend WithEvents ClearButton As System.Windows.Forms.Button
 
 End Class
