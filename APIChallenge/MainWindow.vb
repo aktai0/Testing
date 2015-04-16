@@ -171,13 +171,6 @@ Public Class MainWindow
       Dim c2 = Aggregate m In q
               Into Count()
 
-      'PopularityFlowLayoutPanel.Controls.Clear()
-      'For Each m In q
-      '   Dim matchupUC As New MatchupUserControl(m)
-      '   PopularityFlowLayoutPanel.Controls.Add(matchupUC)
-      '   matchupUC.Location = New Point(12, 100 + PopularityFlowLayoutPanel.Controls.Count * (150 + 10))
-      'Next
-
       WinRateLabel.Text = "Win Rate: " & String.Format("{0:0.00}%", CSng(c) * 100 / c2) & " (from " & c2 & " games)"
 
       ChampionLabel.Text = FirstImageComboBox.Text
@@ -250,7 +243,7 @@ Public Class MainWindow
       End If
    End Sub
 
-   Private Sub CheckBox1_CheckedChanged(sender As Object, e As EventArgs) Handles FilterUnpopularCheckbox.CheckedChanged
+   Private Sub FilterUnpopularCheckbox_CheckedChanged(sender As Object, e As EventArgs) Handles FilterUnpopularCheckbox.CheckedChanged
       RefreshPanels()
    End Sub
 End Class
