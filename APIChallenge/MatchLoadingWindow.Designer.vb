@@ -43,20 +43,20 @@ Partial Class MatchLoadingWindow
       Me.URFTimeLabel.TabIndex = 0
       Me.URFTimeLabel.Text = "Last URF Match Bucket Loaded: "
       '
-      'Button1
+      'StartButton
       '
       Me.StartButton.Location = New System.Drawing.Point(15, 29)
-      Me.StartButton.Name = "Button1"
+      Me.StartButton.Name = "StartButton"
       Me.StartButton.Size = New System.Drawing.Size(75, 23)
       Me.StartButton.TabIndex = 1
       Me.StartButton.Text = "Start"
       Me.StartButton.UseVisualStyleBackColor = True
       '
-      'Button2
+      'StopButton
       '
       Me.StopButton.Enabled = False
       Me.StopButton.Location = New System.Drawing.Point(96, 29)
-      Me.StopButton.Name = "Button2"
+      Me.StopButton.Name = "StopButton"
       Me.StopButton.Size = New System.Drawing.Size(75, 23)
       Me.StopButton.TabIndex = 2
       Me.StopButton.Text = "Stop"
@@ -65,9 +65,9 @@ Partial Class MatchLoadingWindow
       'StatusStrip1
       '
       Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusLabel, Me.ToolStripStatusLabel3})
-      Me.StatusStrip1.Location = New System.Drawing.Point(0, 238)
+      Me.StatusStrip1.Location = New System.Drawing.Point(0, 106)
       Me.StatusStrip1.Name = "StatusStrip1"
-      Me.StatusStrip1.Size = New System.Drawing.Size(782, 25)
+      Me.StatusStrip1.Size = New System.Drawing.Size(317, 25)
       Me.StatusStrip1.TabIndex = 3
       Me.StatusStrip1.Text = "StatusStrip1"
       '
@@ -80,7 +80,7 @@ Partial Class MatchLoadingWindow
       'ToolStripStatusLabel3
       '
       Me.ToolStripStatusLabel3.Name = "ToolStripStatusLabel3"
-      Me.ToolStripStatusLabel3.Size = New System.Drawing.Size(706, 20)
+      Me.ToolStripStatusLabel3.Size = New System.Drawing.Size(241, 20)
       Me.ToolStripStatusLabel3.Spring = True
       '
       'MatchIDsLabel
@@ -110,7 +110,7 @@ Partial Class MatchLoadingWindow
       '
       Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
       Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-      Me.ClientSize = New System.Drawing.Size(782, 263)
+      Me.ClientSize = New System.Drawing.Size(317, 131)
       Me.Controls.Add(Me.LoadedMatchesLabel)
       Me.Controls.Add(Me.MatchIDsLabel)
       Me.Controls.Add(Me.StatusStrip1)

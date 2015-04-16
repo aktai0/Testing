@@ -28,16 +28,17 @@ Partial Class WinRateUserControl
       Me.ChampionPictureBox = New System.Windows.Forms.PictureBox()
       Me.EnemyPictureBox = New System.Windows.Forms.PictureBox()
       Me.ChampionLabel = New System.Windows.Forms.Label()
+      Me.PlayRateLabel = New System.Windows.Forms.Label()
       CType(Me.ChampionPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
       CType(Me.EnemyPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
       Me.SuspendLayout()
       '
       'WinRateLabel
       '
-      Me.WinRateLabel.Font = New System.Drawing.Font("Garamond", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-      Me.WinRateLabel.Location = New System.Drawing.Point(3, 74)
+      Me.WinRateLabel.BackColor = System.Drawing.Color.Transparent
+      Me.WinRateLabel.Font = New System.Drawing.Font("Garamond", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+      Me.WinRateLabel.Location = New System.Drawing.Point(3, 70)
       Me.WinRateLabel.Name = "WinRateLabel"
-      Me.WinRateLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes
       Me.WinRateLabel.Size = New System.Drawing.Size(434, 39)
       Me.WinRateLabel.TabIndex = 20
       Me.WinRateLabel.Text = "Testing"
@@ -92,18 +93,30 @@ Partial Class WinRateUserControl
       Me.ChampionLabel.Text = "Heimerdinger"
       Me.ChampionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
       '
+      'PlayRateLabel
+      '
+      Me.PlayRateLabel.BackColor = System.Drawing.Color.Transparent
+      Me.PlayRateLabel.Font = New System.Drawing.Font("Garamond", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+      Me.PlayRateLabel.Location = New System.Drawing.Point(3, 99)
+      Me.PlayRateLabel.Name = "PlayRateLabel"
+      Me.PlayRateLabel.Size = New System.Drawing.Size(434, 39)
+      Me.PlayRateLabel.TabIndex = 21
+      Me.PlayRateLabel.Text = "Testing"
+      Me.PlayRateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+      '
       'WinRateUserControl
       '
       Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
       Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-      Me.Controls.Add(Me.ChampionLabel)
       Me.Controls.Add(Me.WinRateLabel)
+      Me.Controls.Add(Me.PlayRateLabel)
+      Me.Controls.Add(Me.ChampionLabel)
       Me.Controls.Add(Me.VSLabel)
       Me.Controls.Add(Me.EnemyLabel)
       Me.Controls.Add(Me.ChampionPictureBox)
       Me.Controls.Add(Me.EnemyPictureBox)
       Me.Name = "WinRateUserControl"
-      Me.Size = New System.Drawing.Size(443, 120)
+      Me.Size = New System.Drawing.Size(443, 141)
       CType(Me.ChampionPictureBox, System.ComponentModel.ISupportInitialize).EndInit()
       CType(Me.EnemyPictureBox, System.ComponentModel.ISupportInitialize).EndInit()
       Me.ResumeLayout(False)
@@ -116,5 +129,6 @@ Partial Class WinRateUserControl
    Friend WithEvents ChampionPictureBox As System.Windows.Forms.PictureBox
    Friend WithEvents EnemyPictureBox As System.Windows.Forms.PictureBox
    Friend WithEvents ChampionLabel As System.Windows.Forms.Label
+   Friend WithEvents PlayRateLabel As System.Windows.Forms.Label
 
 End Class

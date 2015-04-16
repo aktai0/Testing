@@ -2,7 +2,7 @@
 
    Private WinRateMatchup As WinRateMatchup
 
-   Sub New(ByVal givenWinRateMatchup As WinRateMatchup)
+   Sub New(ByVal givenWinRateMatchup As WinRateMatchup, Optional ByVal ShowPercentPlayed As Boolean = False)
       InitializeComponent()
 
       WinRateMatchup = givenWinRateMatchup
@@ -22,10 +22,10 @@
 
          EnemyPictureBox.Left -= 25
          ChampionLabel.Left = 59
-
       End If
 
       WinRateLabel.Text = "Win Rate: " & String.Format("{0:0.00}%", WinRateMatchup.WinRate * 100) & " (from " & WinRateMatchup.TotalGames & " game" & If(WinRateMatchup.TotalGames > 1, "s", "") & ")"
+      PlayRateLabel.Text = "Played in " & String.Format("{0:0.00}%", WinRateMatchup.TotalGames * 100 / RetrieveCache(Of MatchIDCache).TotalMatchesLoaded) & " (" & WinRateMatchup.TotalGames & "/" & RetrieveCache(Of MatchIDCache).TotalMatchesLoaded & ") matches"
    End Sub
 
 End Class
