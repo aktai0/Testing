@@ -92,7 +92,7 @@
       MatchIDCache = RetrieveCache(Of MatchIDCache)()
 
       MatchIDsLabel.Text = "Number of Match IDs: " & MatchIDCache.NumMatchesPendingLoad & "/" & MatchIDCache.MatchIDCount
-      URFTimeLabel.Text = "Next URF Match Bucket to Load: " & MatchIDCache.NextURFBucketTimeToLoad.ToString
+      DateLabel.Text = MatchIDCache.NextURFBucketTimeToLoad.ToString
       LoadedMatchesLabel.Text = "Number of Loaded Matches: " & MatchIDCache.TotalMatchesLoaded
    End Sub
 
@@ -102,22 +102,22 @@
             StatusLabel.Text = "Loading in new URF match IDs using the API..."
          Case ProgressState.UpdatedMatchIDs
             StatusLabel.Text = "Loaded in new URF match IDs."
-            MatchIDsLabel.Text = "Number of Match IDs: " & MatchIDCache.NumMatchesPendingLoad & "/" & MatchIDCache.MatchIDCount
-            URFTimeLabel.Text = "Last URF Match Bucket Loaded: " & MatchIDCache.NextURFBucketTimeToLoad.ToString
+            MatchIDsLabel.Text = "Number of Match IDs: " & MatchIDCache.TotalMatchesLoaded & "/" & MatchIDCache.MatchIDCount
+            DateLabel.Text = MatchIDCache.NextURFBucketTimeToLoad.ToString
          Case ProgressState.GoingToLoadMatch
             StatusLabel.Text = "Loading a match using the API..."
          Case ProgressState.LoadedMatch
             StatusLabel.Text = "Loaded in a new match."
             LoadedMatchesLabel.Text = "Number of Loaded Matches: " & MatchIDCache.TotalMatchesLoaded
-            MatchIDsLabel.Text = "Number of Match IDs: " & MatchIDCache.NumMatchesPendingLoad & "/" & MatchIDCache.MatchIDCount
+            MatchIDsLabel.Text = "Number of Match IDs: " & MatchIDCache.TotalMatchesLoaded & "/" & MatchIDCache.MatchIDCount
          Case ProgressState.WaitingForAPI
             StatusLabel.Text = "Waiting for API rate limit..."
       End Select
    End Sub
 
    Private Sub MatchIDsChanged()
-      MatchIDsLabel.Text = "Number of Match IDs: " & MatchIDCache.MatchIDCount
-      URFTimeLabel.Text = "Last URF Match Bucket Loaded: " & MatchIDCache.NextURFBucketTimeToLoad.ToString
+      MatchIDsLabel.Text = "Number of Match IDs: " & MatchIDCache.TotalMatchesLoaded & "/" & MatchIDCache.MatchIDCount
+      DateLabel.Text = MatchIDCache.NextURFBucketTimeToLoad.ToString
    End Sub
 
    Private Sub NewMatchesLoaded()

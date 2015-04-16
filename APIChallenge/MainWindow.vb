@@ -30,6 +30,9 @@ Public Class MainWindow
          FirstImageComboBox.Items.Add(comboBoxItem)
       Next
       FirstImageComboBox.SelectedIndex = 0
+
+      Me.MinimumSize = New Size(Me.Width, Me.MinimumSize.Height)
+      Me.MaximumSize = New Size(Me.Width, Me.MaximumSize.Height)
    End Sub
 
    Private Sub MainWindow_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
@@ -38,7 +41,7 @@ Public Class MainWindow
 
    Private Sub DisplayGeneralRates()
       ' Display Best Champions
-      Dim allWinRates = Matchup.GetWinRatesForAllChampions(CheckBox1.Checked, ListSortMode.WinRate)
+      Dim allWinRates = Matchup.GetWinRatesForAllChampions(FilterUnpopularCheckbox.Checked, ListSortMode.WinRate)
 
       WinRateFlowLayoutPanel.Controls.Clear()
       TopWinRateLabel.Parent = WinRateFlowLayoutPanel
@@ -48,7 +51,7 @@ Public Class MainWindow
       Next
 
       ' Display Worst Champions
-      Dim lossRates = Matchup.GetWinRatesForAllChampions(CheckBox1.Checked, ListSortMode.LossRate)
+      Dim lossRates = Matchup.GetWinRatesForAllChampions(FilterUnpopularCheckbox.Checked, ListSortMode.LossRate)
 
       LossRateFlowLayoutPanel.Controls.Clear()
       LowestWinRateLabel.Parent = LossRateFlowLayoutPanel
@@ -58,7 +61,7 @@ Public Class MainWindow
       Next
 
       ' Display Most Popular Champions
-      Dim popular = Matchup.GetWinRatesForAllChampions(CheckBox1.Checked, ListSortMode.Popularity)
+      Dim popular = Matchup.GetWinRatesForAllChampions(FilterUnpopularCheckbox.Checked, ListSortMode.Popularity)
 
       PopularityFlowLayoutPanel.Controls.Clear()
       PopularChampionsLabel.Parent = PopularityFlowLayoutPanel
@@ -82,7 +85,7 @@ Public Class MainWindow
                    Order By APIHelper.GetChampName(m.EnemyChampionID)
                    Select APIHelper.GetChampName(m.EnemyChampionID)).Distinct()
 
-      Dim winRates = WinRateMatchup.GetWinRateDataFor(APIHelper.GetChampID(FirstImageComboBox.Text), CurrentMatchups)
+      Dim winRates = WinRateMatchup.GetWinRateDataFor(APIHelper.GetChampID(FirstImageComboBox.Text), CurrentMatchups, ListSortMode.WinRate, FilterUnpopularCheckbox.Checked)
 
       WinRateFlowLayoutPanel.Controls.Clear()
       TopWinRateLabel.Parent = WinRateFlowLayoutPanel
@@ -91,7 +94,7 @@ Public Class MainWindow
       Next
 
       ' Display Least Favorable Matchups
-      Dim lostRates = WinRateMatchup.GetWinRateDataFor(APIHelper.GetChampID(FirstImageComboBox.Text), CurrentMatchups, False)
+      Dim lostRates = WinRateMatchup.GetWinRateDataFor(APIHelper.GetChampID(FirstImageComboBox.Text), CurrentMatchups, ListSortMode.LossRate, FilterUnpopularCheckbox.Checked)
 
       LossRateFlowLayoutPanel.Controls.Clear()
       LowestWinRateLabel.Parent = LossRateFlowLayoutPanel
@@ -99,9 +102,18 @@ Public Class MainWindow
          LossRateFlowLayoutPanel.Controls.Add(New WinRateUserControl(lostRates(i)))
       Next
 
-      ' Display Most Popular Matchups
-      ClearMatchupDataPanels()
+      ClearMatchupDataPanels(True, False)
 
+      ' Display Most Popular Matchups
+      Dim popular = WinRateMatchup.GetWinRateDataFor(APIHelper.GetChampID(FirstImageComboBox.Text), CurrentMatchups, ListSortMode.Popularity, FilterUnpopularCheckbox.Checked)
+
+      PopularityFlowLayoutPanel.Controls.Clear()
+      PopularChampionsLabel.Parent = PopularityFlowLayoutPanel
+      For i = 0 To Math.Min(9, popular.Count - 1)
+         PopularityFlowLayoutPanel.Controls.Add(New WinRateUserControl(popular(i)))
+      Next
+
+      ' Display list of enemy champions in ImageComboBox2
       Dim temp = New ImageComboBox.ImageComboBoxItem("", 0)
       temp.Text = " "
       SecondImageComboBox.Items.Add(temp)
@@ -111,6 +123,7 @@ Public Class MainWindow
          SecondImageComboBox.Items.Add(comboBoxItem)
       Next
 
+      ' Display overall win rates
       ChampionLabelInitial.Text = FirstImageComboBox.Text
       ChampionPictureBoxInitial.Image = StaticCache.Images(APIHelper.GetChampID(FirstImageComboBox.Text))
 
@@ -134,12 +147,13 @@ Public Class MainWindow
 
    Private Sub ImageComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles SecondImageComboBox.SelectedIndexChanged
       If SecondImageComboBox.Text = "" Or SecondImageComboBox.Text = " " Then
-         ClearMatchupDataPanels(False)
+         ClearMatchupDataPanels(False, True)
          Return
       End If
       If SecondImageComboBox.Text = Nothing Then
          Return
       End If
+
       Dim CurrentMatchups = DataCache.GetMatchupDataFor(FirstImageComboBox.Text)
 
       Dim enemyChampID As Integer = APIHelper.GetChampID(CStr(SecondImageComboBox.Text))
@@ -157,12 +171,12 @@ Public Class MainWindow
       Dim c2 = Aggregate m In q
               Into Count()
 
-      PopularityFlowLayoutPanel.Controls.Clear()
-      For Each m In q
-         Dim matchupUC As New MatchupUserControl(m)
-         PopularityFlowLayoutPanel.Controls.Add(matchupUC)
-         matchupUC.Location = New Point(12, 100 + PopularityFlowLayoutPanel.Controls.Count * (150 + 10))
-      Next
+      'PopularityFlowLayoutPanel.Controls.Clear()
+      'For Each m In q
+      '   Dim matchupUC As New MatchupUserControl(m)
+      '   PopularityFlowLayoutPanel.Controls.Add(matchupUC)
+      '   matchupUC.Location = New Point(12, 100 + PopularityFlowLayoutPanel.Controls.Count * (150 + 10))
+      'Next
 
       WinRateLabel.Text = "Win Rate: " & String.Format("{0:0.00}%", CSng(c) * 100 / c2) & " (from " & c2 & " games)"
 
@@ -177,7 +191,7 @@ Public Class MainWindow
       MatchLoadingWindow.Show()
    End Sub
 
-   Private Sub ClearMatchupDataPanels(Optional ByVal clearSecondList As Boolean = True)
+   Private Sub ClearMatchupDataPanels(Optional ByVal clearSecondList As Boolean = True, Optional ByVal clearPopularityPanel As Boolean = True)
       WinRateLabel.Text = ""
       ChampionLabel.Text = ""
       EnemyLabel.Text = ""
@@ -189,11 +203,11 @@ Public Class MainWindow
       If clearSecondList Then
          SecondImageComboBox.Items.Clear()
          _ChampionImageList2.Images.Clear()
-      Else
-
       End If
 
-      PopularityFlowLayoutPanel.Controls.Clear()
+      If clearPopularityPanel Then
+         PopularityFlowLayoutPanel.Controls.Clear()
+      End If
    End Sub
 
    ' For champions who haven't loaded in a match yet
@@ -206,6 +220,8 @@ Public Class MainWindow
 
       WinRateFlowLayoutPanel.Controls.Clear()
       LossRateFlowLayoutPanel.Controls.Clear()
+
+      SecondImageComboBox.Items.Clear()
    End Sub
 
    Private Sub ClearButton_Click(sender As Object, e As EventArgs) Handles ClearButton.Click
@@ -213,8 +229,11 @@ Public Class MainWindow
          DisplayGeneralRates()
          Return
       End If
+
       ClearChampionDataPanels()
       FirstImageComboBox.SelectedIndex = 0
+
+      FilterUnpopularCheckbox.Checked = False
    End Sub
 
    Private Sub RefreshPanels()
@@ -223,11 +242,15 @@ Public Class MainWindow
          Return
       End If
 
+      Dim currentSecondChampion = SecondImageComboBox.SelectedIndex
       ImageComboBox1_SelectedIndexChanged(Nothing, Nothing)
-      ImageComboBox2_SelectedIndexChanged(Nothing, Nothing)
+
+      If currentSecondChampion > 0 Then
+         SecondImageComboBox.SelectedIndex = currentSecondChampion
+      End If
    End Sub
 
-   Private Sub CheckBox1_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox1.CheckedChanged
+   Private Sub CheckBox1_CheckedChanged(sender As Object, e As EventArgs) Handles FilterUnpopularCheckbox.CheckedChanged
       RefreshPanels()
    End Sub
 End Class

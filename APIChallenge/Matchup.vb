@@ -2,7 +2,7 @@
 
 <Serializable>
 Public Class Matchup
-   Const UNPOPULAR_CHAMPION_CUTOFF = 0.05 ' Cutoff the bottom 5%
+   Public Const UNPOPULAR_CHAMPION_CUTOFF = 0.05 ' Cutoff the bottom 5%
 
    Public MatchID As Integer
 
@@ -136,6 +136,8 @@ End Class
 
 <Serializable>
 Public Class WinRateMatchup
+   Public Const UNPOPULAR_MATCHUP_CUTOFF = 0.01 ' Cut off lowest 1% of matchups
+
    Public ChampionID As Integer
    Public EnemyChampionID As Integer
 
@@ -155,7 +157,7 @@ Public Class WinRateMatchup
       WinRate = CSng(WinNum) / TotalGames
    End Sub
 
-   Public Shared Function GetWinRateDataFor(ByVal champID As Integer, ByRef currentMatchups As List(Of Matchup), Optional ByVal orderDesc As Boolean = True) As IEnumerable(Of WinRateMatchup)
+   Public Shared Function GetWinRateDataFor(ByVal champID As Integer, ByRef currentMatchups As List(Of Matchup), ByVal sortMode As ListSortMode, ByVal filterPopular As Boolean) As IEnumerable(Of WinRateMatchup)
       Dim winRates As New List(Of WinRateMatchup)
 
       Dim groupedMatches = From m In currentMatchups
@@ -168,18 +170,40 @@ Public Class WinRateMatchup
                         Into Count()
          Dim totalGames = championGroup.groups.Count()
 
+         ' If it's a mirror matchup, only display as half the number of games (for obvious reasons).
+         If championGroup.OtherChampID = champID Then
+            totalGames = CInt(totalGames / 2)
+            wonGames = CInt(wonGames / 2)
+         End If
+
+         If filterPopular Then
+            If totalGames / currentMatchups.Count <= UNPOPULAR_MATCHUP_CUTOFF Then
+               Continue For
+            End If
+         End If
+
          winRates.Add(New WinRateMatchup(champID, championGroup.OtherChampID, wonGames, totalGames))
       Next
 
-      If orderDesc Then
+      If sortMode = ListSortMode.WinRate Then
          Return (From w In winRates
                  Where w.EnemyChampionID <> 0
                  Order By w.WinRate Descending, w.TotalGames Descending, APIHelper.GetChampName(w.EnemyChampionID) Ascending
                  Select w)
-      Else
+      ElseIf sortMode = ListSortMode.LossRate Then
          Return (From w In winRates
                  Where w.EnemyChampionID <> 0
                  Order By w.WinRate Ascending, w.TotalGames Descending, APIHelper.GetChampName(w.EnemyChampionID) Ascending
+                 Select w)
+      ElseIf sortMode = ListSortMode.Alphabetical Then
+         Return (From w In winRates
+                 Where w.EnemyChampionID <> 0
+                 Order By APIHelper.GetChampName(w.EnemyChampionID) Ascending
+                 Select w)
+      Else
+         Return (From w In winRates
+                 Where w.EnemyChampionID <> 0
+                 Order By w.TotalGames Descending, w.WinRate Descending, APIHelper.GetChampName(w.EnemyChampionID) Ascending
                  Select w)
       End If
    End Function
@@ -216,4 +240,5 @@ Public Enum ListSortMode
    WinRate
    LossRate
    Popularity
+   Alphabetical
 End Enum

@@ -31,10 +31,12 @@ Partial Class MainWindow
       Me.PopularChampionsLabel = New System.Windows.Forms.Label()
       Me.AllMatchupsLabel = New System.Windows.Forms.Label()
       Me.SelectorPanel = New System.Windows.Forms.Panel()
-      Me.CheckBox1 = New System.Windows.Forms.CheckBox()
+      Me.FilterUnpopularCheckbox = New System.Windows.Forms.CheckBox()
       Me.ClearButton = New System.Windows.Forms.Button()
       Me.ShowMatchesButton = New System.Windows.Forms.Button()
       Me.LeftSidePanel = New System.Windows.Forms.Panel()
+      Me.WinRateFlowLayoutPanel = New System.Windows.Forms.FlowLayoutPanel()
+      Me.TopWinRateLabel = New System.Windows.Forms.Label()
       Me.PopularityFlowLayoutPanel = New System.Windows.Forms.FlowLayoutPanel()
       Me.EnemyLabel = New System.Windows.Forms.Label()
       Me.EnemyPictureBox = New System.Windows.Forms.PictureBox()
@@ -47,21 +49,19 @@ Partial Class MainWindow
       Me.ChampionPictureBoxInitial = New System.Windows.Forms.PictureBox()
       Me.ChampionLabelInitial = New System.Windows.Forms.Label()
       Me.WinRateLabelInitial = New System.Windows.Forms.Label()
-      Me.WinRateFlowLayoutPanel = New System.Windows.Forms.FlowLayoutPanel()
-      Me.TopWinRateLabel = New System.Windows.Forms.Label()
       Me.TopRightPanel = New System.Windows.Forms.Panel()
       Me.BottomRightPanel = New System.Windows.Forms.Panel()
       Me.LossRateFlowLayoutPanel = New System.Windows.Forms.FlowLayoutPanel()
       Me.LowestWinRateLabel = New System.Windows.Forms.Label()
       Me.SelectorPanel.SuspendLayout()
       Me.LeftSidePanel.SuspendLayout()
+      Me.WinRateFlowLayoutPanel.SuspendLayout()
       Me.PopularityFlowLayoutPanel.SuspendLayout()
       CType(Me.EnemyPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
       CType(Me.ChampionPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
       Me.ChampVsChampWinRatePanel.SuspendLayout()
       Me.ChampWinRatePanel.SuspendLayout()
       CType(Me.ChampionPictureBoxInitial, System.ComponentModel.ISupportInitialize).BeginInit()
-      Me.WinRateFlowLayoutPanel.SuspendLayout()
       Me.TopRightPanel.SuspendLayout()
       Me.BottomRightPanel.SuspendLayout()
       Me.LossRateFlowLayoutPanel.SuspendLayout()
@@ -139,7 +139,7 @@ Partial Class MainWindow
       'SelectorPanel
       '
       Me.SelectorPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-      Me.SelectorPanel.Controls.Add(Me.CheckBox1)
+      Me.SelectorPanel.Controls.Add(Me.FilterUnpopularCheckbox)
       Me.SelectorPanel.Controls.Add(Me.ClearButton)
       Me.SelectorPanel.Controls.Add(Me.ShowMatchesButton)
       Me.SelectorPanel.Controls.Add(Me.SecondImageComboBox)
@@ -150,14 +150,14 @@ Partial Class MainWindow
       Me.SelectorPanel.Size = New System.Drawing.Size(470, 129)
       Me.SelectorPanel.TabIndex = 22
       '
-      'CheckBox1
+      'FilterUnpopularCheckbox
       '
-      Me.CheckBox1.Location = New System.Drawing.Point(315, 83)
-      Me.CheckBox1.Name = "CheckBox1"
-      Me.CheckBox1.Size = New System.Drawing.Size(148, 39)
-      Me.CheckBox1.TabIndex = 5
-      Me.CheckBox1.Text = "Filter Unpopular Champions"
-      Me.CheckBox1.UseVisualStyleBackColor = True
+      Me.FilterUnpopularCheckbox.Location = New System.Drawing.Point(315, 83)
+      Me.FilterUnpopularCheckbox.Name = "FilterUnpopularCheckbox"
+      Me.FilterUnpopularCheckbox.Size = New System.Drawing.Size(148, 39)
+      Me.FilterUnpopularCheckbox.TabIndex = 5
+      Me.FilterUnpopularCheckbox.Text = "Filter Unpopular Champions"
+      Me.FilterUnpopularCheckbox.UseVisualStyleBackColor = True
       '
       'ClearButton
       '
@@ -184,8 +184,33 @@ Partial Class MainWindow
       Me.LeftSidePanel.Dock = System.Windows.Forms.DockStyle.Left
       Me.LeftSidePanel.Location = New System.Drawing.Point(0, 0)
       Me.LeftSidePanel.Name = "LeftSidePanel"
-      Me.LeftSidePanel.Size = New System.Drawing.Size(470, 714)
+      Me.LeftSidePanel.Size = New System.Drawing.Size(470, 772)
       Me.LeftSidePanel.TabIndex = 0
+      '
+      'WinRateFlowLayoutPanel
+      '
+      Me.WinRateFlowLayoutPanel.AutoScroll = True
+      Me.WinRateFlowLayoutPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+      Me.WinRateFlowLayoutPanel.Controls.Add(Me.TopWinRateLabel)
+      Me.WinRateFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Left
+      Me.WinRateFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
+      Me.WinRateFlowLayoutPanel.Location = New System.Drawing.Point(0, 129)
+      Me.WinRateFlowLayoutPanel.Name = "WinRateFlowLayoutPanel"
+      Me.WinRateFlowLayoutPanel.Size = New System.Drawing.Size(470, 643)
+      Me.WinRateFlowLayoutPanel.TabIndex = 17
+      Me.WinRateFlowLayoutPanel.WrapContents = False
+      '
+      'TopWinRateLabel
+      '
+      Me.TopWinRateLabel.Dock = System.Windows.Forms.DockStyle.Top
+      Me.TopWinRateLabel.Font = New System.Drawing.Font("Garamond", 18.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+      Me.TopWinRateLabel.Location = New System.Drawing.Point(3, 0)
+      Me.TopWinRateLabel.Name = "TopWinRateLabel"
+      Me.TopWinRateLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes
+      Me.TopWinRateLabel.Size = New System.Drawing.Size(0, 45)
+      Me.TopWinRateLabel.TabIndex = 18
+      Me.TopWinRateLabel.Text = "Top Win Rates"
+      Me.TopWinRateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
       '
       'PopularityFlowLayoutPanel
       '
@@ -197,7 +222,7 @@ Partial Class MainWindow
       Me.PopularityFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
       Me.PopularityFlowLayoutPanel.Location = New System.Drawing.Point(470, 0)
       Me.PopularityFlowLayoutPanel.Name = "PopularityFlowLayoutPanel"
-      Me.PopularityFlowLayoutPanel.Size = New System.Drawing.Size(470, 585)
+      Me.PopularityFlowLayoutPanel.Size = New System.Drawing.Size(470, 643)
       Me.PopularityFlowLayoutPanel.TabIndex = 21
       Me.PopularityFlowLayoutPanel.WrapContents = False
       '
@@ -317,31 +342,6 @@ Partial Class MainWindow
       Me.WinRateLabelInitial.TabIndex = 17
       Me.WinRateLabelInitial.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
       '
-      'WinRateFlowLayoutPanel
-      '
-      Me.WinRateFlowLayoutPanel.AutoScroll = True
-      Me.WinRateFlowLayoutPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-      Me.WinRateFlowLayoutPanel.Controls.Add(Me.TopWinRateLabel)
-      Me.WinRateFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Left
-      Me.WinRateFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-      Me.WinRateFlowLayoutPanel.Location = New System.Drawing.Point(0, 129)
-      Me.WinRateFlowLayoutPanel.Name = "WinRateFlowLayoutPanel"
-      Me.WinRateFlowLayoutPanel.Size = New System.Drawing.Size(470, 585)
-      Me.WinRateFlowLayoutPanel.TabIndex = 17
-      Me.WinRateFlowLayoutPanel.WrapContents = False
-      '
-      'TopWinRateLabel
-      '
-      Me.TopWinRateLabel.Dock = System.Windows.Forms.DockStyle.Top
-      Me.TopWinRateLabel.Font = New System.Drawing.Font("Garamond", 18.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-      Me.TopWinRateLabel.Location = New System.Drawing.Point(3, 0)
-      Me.TopWinRateLabel.Name = "TopWinRateLabel"
-      Me.TopWinRateLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes
-      Me.TopWinRateLabel.Size = New System.Drawing.Size(0, 45)
-      Me.TopWinRateLabel.TabIndex = 18
-      Me.TopWinRateLabel.Text = "Top Win Rates"
-      Me.TopWinRateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-      '
       'TopRightPanel
       '
       Me.TopRightPanel.Controls.Add(Me.ChampVsChampWinRatePanel)
@@ -359,7 +359,7 @@ Partial Class MainWindow
       Me.BottomRightPanel.Dock = System.Windows.Forms.DockStyle.Fill
       Me.BottomRightPanel.Location = New System.Drawing.Point(470, 129)
       Me.BottomRightPanel.Name = "BottomRightPanel"
-      Me.BottomRightPanel.Size = New System.Drawing.Size(940, 585)
+      Me.BottomRightPanel.Size = New System.Drawing.Size(940, 643)
       Me.BottomRightPanel.TabIndex = 19
       '
       'LossRateFlowLayoutPanel
@@ -371,7 +371,7 @@ Partial Class MainWindow
       Me.LossRateFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
       Me.LossRateFlowLayoutPanel.Location = New System.Drawing.Point(0, 0)
       Me.LossRateFlowLayoutPanel.Name = "LossRateFlowLayoutPanel"
-      Me.LossRateFlowLayoutPanel.Size = New System.Drawing.Size(470, 585)
+      Me.LossRateFlowLayoutPanel.Size = New System.Drawing.Size(470, 643)
       Me.LossRateFlowLayoutPanel.TabIndex = 19
       Me.LossRateFlowLayoutPanel.WrapContents = False
       '
@@ -391,15 +391,18 @@ Partial Class MainWindow
       '
       Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
       Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-      Me.ClientSize = New System.Drawing.Size(1410, 714)
+      Me.ClientSize = New System.Drawing.Size(1410, 772)
       Me.Controls.Add(Me.BottomRightPanel)
       Me.Controls.Add(Me.TopRightPanel)
       Me.Controls.Add(Me.LeftSidePanel)
       Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+      Me.MaximizeBox = False
+      Me.MaximumSize = New System.Drawing.Size(2000, 2000)
       Me.Name = "MainWindow"
-      Me.Text = "Main Window"
+      Me.Text = "VS - Matchup Display Tool"
       Me.SelectorPanel.ResumeLayout(False)
       Me.LeftSidePanel.ResumeLayout(False)
+      Me.WinRateFlowLayoutPanel.ResumeLayout(False)
       Me.PopularityFlowLayoutPanel.ResumeLayout(False)
       CType(Me.EnemyPictureBox, System.ComponentModel.ISupportInitialize).EndInit()
       CType(Me.ChampionPictureBox, System.ComponentModel.ISupportInitialize).EndInit()
@@ -407,7 +410,6 @@ Partial Class MainWindow
       Me.ChampVsChampWinRatePanel.PerformLayout()
       Me.ChampWinRatePanel.ResumeLayout(False)
       CType(Me.ChampionPictureBoxInitial, System.ComponentModel.ISupportInitialize).EndInit()
-      Me.WinRateFlowLayoutPanel.ResumeLayout(False)
       Me.TopRightPanel.ResumeLayout(False)
       Me.BottomRightPanel.ResumeLayout(False)
       Me.LossRateFlowLayoutPanel.ResumeLayout(False)
@@ -442,6 +444,6 @@ Partial Class MainWindow
    Friend WithEvents PopularChampionsLabel As System.Windows.Forms.Label
    Friend WithEvents AllMatchupsLabel As System.Windows.Forms.Label
    Friend WithEvents PopularityFlowLayoutPanel As System.Windows.Forms.FlowLayoutPanel
-   Friend WithEvents CheckBox1 As System.Windows.Forms.CheckBox
+   Friend WithEvents FilterUnpopularCheckbox As System.Windows.Forms.CheckBox
 
 End Class

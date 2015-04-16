@@ -56,7 +56,6 @@ Public Class APIHelper
    Public Shared Sub API_INIT()
       If API_KEY = "" Or CDN_URL = "" Then
          API_LOAD_FILE()
-         API_STATIC_LOAD_CDN_URL()
       End If
    End Sub
 
@@ -83,6 +82,10 @@ Public Class APIHelper
    Public Shared Sub API_STATIC_LOAD_CHAMPION_INFO()
       If Champions IsNot Nothing Then
          Return
+      End If
+
+      If CDN_URL = Nothing Or CDN_URL = "" Then
+         API_STATIC_LOAD_CDN_URL()
       End If
 
       Champions = New Dictionary(Of Integer, StaticDataEndpoint.ChampionStatic)

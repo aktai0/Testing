@@ -25,7 +25,11 @@
       End If
 
       WinRateLabel.Text = "Win Rate: " & String.Format("{0:0.00}%", WinRateMatchup.WinRate * 100) & " (from " & WinRateMatchup.TotalGames & " game" & If(WinRateMatchup.TotalGames > 1, "s", "") & ")"
-      PlayRateLabel.Text = "Played in " & String.Format("{0:0.00}%", WinRateMatchup.TotalGames * 100 / RetrieveCache(Of MatchIDCache).TotalMatchesLoaded) & " (" & WinRateMatchup.TotalGames & "/" & RetrieveCache(Of MatchIDCache).TotalMatchesLoaded & ") matches"
+      If WinRateMatchup.EnemyChampionID = 0 Then
+         PlayRateLabel.Text = "Played in " & String.Format("{0:0.00}%", WinRateMatchup.TotalGames * 100 / RetrieveCache(Of MatchIDCache).TotalMatchesLoaded) & " (" & WinRateMatchup.TotalGames & "/" & RetrieveCache(Of MatchIDCache).TotalMatchesLoaded & ") matches"
+      Else
+         PlayRateLabel.Text = "Played in " & String.Format("{0:0.00}%", WinRateMatchup.TotalGames * 100 / RetrieveCache(Of DataCache).GetMatchupDataFor(APIHelper.GetChampName(WinRateMatchup.ChampionID)).Count) & " (" & WinRateMatchup.TotalGames & "/" & RetrieveCache(Of DataCache).GetMatchupDataFor(APIHelper.GetChampName(WinRateMatchup.ChampionID)).Count & ") matchups"
+      End If
    End Sub
 
 End Class
