@@ -2,6 +2,8 @@
 
 <Serializable>
 Public Class Matchup
+   Const UNPOPULAR_CHAMPION_CUTOFF = 0.05 ' Cutoff the bottom 5%
+
    Public MatchID As Integer
 
    Public ChampionID As Integer
@@ -71,6 +73,65 @@ Public Class Matchup
       Return Nothing
    End Function
 
+
+   Public Shared Function GetWinRateOfChamp(ByVal champID As Integer) As ChampHistory
+      If RetrieveCache(Of DataCache).GetMatchupDataFor(APIHelper.GetChampName(champID)) Is Nothing Then
+         Return New ChampHistory(champID, 0, 0)
+      End If
+      ' Count how many matches the champion won in
+      Dim winNum = (From matches In RetrieveCache(Of DataCache).GetMatchupDataFor(APIHelper.GetChampName(champID))
+                    Where matches.WonLane
+                    Select matches).Count()
+      ' Count how many matches the champion was in
+      Dim totalGames = RetrieveCache(Of DataCache).GetMatchupDataFor(APIHelper.GetChampName(champID)).Count
+      Return New ChampHistory(champID, winNum, totalGames)
+   End Function
+
+
+   Public Shared Function GetWinRatesForAllChampions(ByVal filterUnpopular As Boolean, Optional ByVal sortMode As ListSortMode = ListSortMode.WinRate) As IEnumerable(Of ChampHistory)
+      Dim champHistoryList As New List(Of ChampHistory)
+      For Each champ In APIHelper.Champions.Keys
+         champHistoryList.Add(Matchup.GetWinRateOfChamp(champ))
+      Next
+
+      Dim query As IEnumerable(Of ChampHistory)
+      If filterUnpopular Then
+         If sortMode = ListSortMode.WinRate Then
+            query = From c In champHistoryList, names In APIHelper.Champions.Values
+                        Where c.champID = names.Id AndAlso c.gamesPlayed / RetrieveCache(Of MatchIDCache).TotalMatchesLoaded > UNPOPULAR_CHAMPION_CUTOFF
+                        Order By c.GetWinRate() Descending, c.gamesPlayed Descending, c.champName Ascending
+                        Select c
+         ElseIf sortMode = ListSortMode.LossRate Then
+            query = From c In champHistoryList, names In APIHelper.Champions.Values
+                        Where c.champID = names.Id AndAlso c.gamesPlayed / RetrieveCache(Of MatchIDCache).TotalMatchesLoaded > UNPOPULAR_CHAMPION_CUTOFF
+                        Order By c.GetWinRate() Ascending, c.gamesPlayed Descending, c.champName Ascending
+                        Select c
+         Else
+            query = From c In champHistoryList, names In APIHelper.Champions.Values
+                        Where c.champID = names.Id AndAlso c.gamesPlayed / RetrieveCache(Of MatchIDCache).TotalMatchesLoaded > UNPOPULAR_CHAMPION_CUTOFF
+                        Order By c.gamesPlayed Descending, c.GetWinRate Descending, c.champName Ascending
+                        Select c
+         End If
+      Else
+         If sortMode = ListSortMode.WinRate Then
+            query = From c In champHistoryList, names In APIHelper.Champions.Values
+                        Where c.champID = names.Id
+                        Order By c.GetWinRate() Descending, c.gamesPlayed Descending, c.champName Ascending
+                        Select c
+         ElseIf sortMode = ListSortMode.LossRate Then
+            query = From c In champHistoryList, names In APIHelper.Champions.Values
+                        Where c.champID = names.Id
+                        Order By c.GetWinRate() Ascending, c.gamesPlayed Descending, c.champName Ascending
+                        Select c
+         Else
+            query = From c In champHistoryList, names In APIHelper.Champions.Values
+                        Where c.champID = names.Id
+                        Order By c.gamesPlayed Descending, c.GetWinRate Descending, c.champName Ascending
+                        Select c
+         End If
+      End If
+      Return query
+   End Function
 End Class
 
 <Serializable>
@@ -123,3 +184,36 @@ Public Class WinRateMatchup
       End If
    End Function
 End Class
+
+Public Class ChampHistory
+   Public champID As Integer
+   Public gamesWon As Integer
+   Public gamesPlayed As Integer
+   Public champName As String
+
+   Private _WinRate As Single
+
+   Public Function GetWinRate() As Single
+      Return _WinRate
+   End Function
+
+   Sub New(ByVal ID As Integer, ByVal won As Integer, ByVal played As Integer)
+      With Me
+         .champID = ID
+         .gamesWon = won
+         .gamesPlayed = played
+      End With
+      champName = APIHelper.Champions(champID).Name
+      _WinRate = CSng(gamesWon) / If(gamesPlayed > 0, gamesPlayed, 1)
+   End Sub
+
+   Public Overrides Function ToString() As String
+      Return "Champion " & champName & " won " & gamesWon & "/" & gamesPlayed & " (" & GetWinRate() & ")"
+   End Function
+End Class
+
+Public Enum ListSortMode
+   WinRate
+   LossRate
+   Popularity
+End Enum

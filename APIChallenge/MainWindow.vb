@@ -36,84 +36,9 @@ Public Class MainWindow
       CacheManager.StoreAllCaches()
    End Sub
 
-   Private Enum SortMode
-      WinRate
-      LossRate
-      Popularity
-   End Enum
-
-   Private Function GetWinRatesForAllChampions(Optional ByVal sortMode As SortMode = SortMode.WinRate) As IEnumerable(Of ChampHistory)
-      Dim champHistoryList As New List(Of ChampHistory)
-      For Each champ In APIHelper.Champions.Keys
-         champHistoryList.Add(GetWinRateOfChamp(champ))
-      Next
-
-      Dim query As IEnumerable(Of ChampHistory)
-      If sortMode = MainWindow.SortMode.WinRate Then
-         query = From c In champHistoryList, names In APIHelper.Champions.Values
-                     Where c.champID = names.Id
-                     Order By c.GetWinRate() Descending, c.gamesPlayed Descending, c.champName Ascending
-                     Select c
-      ElseIf sortMode = MainWindow.SortMode.LossRate Then
-         query = From c In champHistoryList, names In APIHelper.Champions.Values
-                     Where c.champID = names.Id
-                     Order By c.GetWinRate() Ascending, c.gamesPlayed Descending, c.champName Ascending
-                     Select c
-      Else
-         query = From c In champHistoryList, names In APIHelper.Champions.Values
-                     Where c.champID = names.Id
-                     Order By c.gamesPlayed Descending, c.GetWinRate Descending, c.champName Ascending
-                     Select c
-      End If
-      Return query
-   End Function
-
-   Class ChampHistory
-      Public champID As Integer
-      Public gamesWon As Integer
-      Public gamesPlayed As Integer
-      Public champName As String
-
-      Private _WinRate As Single
-
-      Public Function GetWinRate() As Single
-         Return _WinRate
-      End Function
-
-      Sub New(ByVal ID As Integer, ByVal won As Integer, ByVal played As Integer)
-         With Me
-            .champID = ID
-            .gamesWon = won
-            .gamesPlayed = played
-         End With
-         champName = APIHelper.Champions(champID).Name
-         _WinRate = CSng(gamesWon) / If(gamesPlayed > 0, gamesPlayed, 1)
-      End Sub
-
-      Public Overrides Function ToString() As String
-         Return "Champion " & champName & " won " & gamesWon & "/" & gamesPlayed & " (" & GetWinRate() & ")"
-      End Function
-   End Class
-
-   Public Function GetWinRateOfChamp(ByVal champID As Integer) As ChampHistory
-      If DataCache.GetMatchupDataFor(APIHelper.GetChampName(champID)) Is Nothing Then
-         Return New ChampHistory(champID, 0, 0)
-      End If
-      ' Count how many matches the champion won in
-      Dim winNum = (From matches In DataCache.GetMatchupDataFor(APIHelper.GetChampName(champID))
-                    Where matches.WonLane
-                    Select matches).Count()
-      ' Count how many matches the champion was in
-      Dim totalGames = DataCache.GetMatchupDataFor(APIHelper.GetChampName(champID)).Count
-      Return New ChampHistory(champID, winNum, totalGames)
-   End Function
-
-   Private Sub MainWindow_SizeChanged(sender As Object, e As EventArgs) Handles MyBase.SizeChanged
-      '    Console.WriteLine(Me.Size)
-   End Sub
-
    Private Sub DisplayGeneralRates()
-      Dim allWinRates = GetWinRatesForAllChampions(SortMode.WinRate)
+      ' Display Best Champions
+      Dim allWinRates = Matchup.GetWinRatesForAllChampions(CheckBox1.Checked, ListSortMode.WinRate)
 
       WinRateFlowLayoutPanel.Controls.Clear()
       TopWinRateLabel.Parent = WinRateFlowLayoutPanel
@@ -122,7 +47,8 @@ Public Class MainWindow
          WinRateFlowLayoutPanel.Controls.Add(New WinRateUserControl(wR))
       Next
 
-      Dim lossRates = GetWinRatesForAllChampions(SortMode.LossRate)
+      ' Display Worst Champions
+      Dim lossRates = Matchup.GetWinRatesForAllChampions(CheckBox1.Checked, ListSortMode.LossRate)
 
       LossRateFlowLayoutPanel.Controls.Clear()
       LowestWinRateLabel.Parent = LossRateFlowLayoutPanel
@@ -131,7 +57,8 @@ Public Class MainWindow
          LossRateFlowLayoutPanel.Controls.Add(New WinRateUserControl(lR))
       Next
 
-      Dim popular = GetWinRatesForAllChampions(SortMode.Popularity)
+      ' Display Most Popular Champions
+      Dim popular = Matchup.GetWinRatesForAllChampions(CheckBox1.Checked, ListSortMode.Popularity)
 
       PopularityFlowLayoutPanel.Controls.Clear()
       PopularChampionsLabel.Parent = PopularityFlowLayoutPanel
@@ -141,18 +68,15 @@ Public Class MainWindow
       Next
    End Sub
 
-   Private Sub ImageComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles FirstImageComboBox.SelectedIndexChanged
-      If FirstImageComboBox.Text = "" Or FirstImageComboBox.Text = " " Then
-         DisplayGeneralRates()
-         Return
-      End If
-
+   Private Sub DisplayChampionRates(ByVal champName As String)
       Dim CurrentMatchups = DataCache.GetMatchupDataFor(FirstImageComboBox.Text)
+      ' If we don't have any data for that champion, clear everything.
       If CurrentMatchups Is Nothing Then
-         ClearChampionData()
+         ClearChampionDataPanels()
          Return
       End If
 
+      ' Display Most Favorable Matchups
       Dim names = (From m In CurrentMatchups
                    Where m.EnemyChampionID <> 0
                    Order By APIHelper.GetChampName(m.EnemyChampionID)
@@ -166,6 +90,7 @@ Public Class MainWindow
          WinRateFlowLayoutPanel.Controls.Add(New WinRateUserControl(winRates(i)))
       Next
 
+      ' Display Least Favorable Matchups
       Dim lostRates = WinRateMatchup.GetWinRateDataFor(APIHelper.GetChampID(FirstImageComboBox.Text), CurrentMatchups, False)
 
       LossRateFlowLayoutPanel.Controls.Clear()
@@ -174,7 +99,8 @@ Public Class MainWindow
          LossRateFlowLayoutPanel.Controls.Add(New WinRateUserControl(lostRates(i)))
       Next
 
-      ClearMatchupData()
+      ' Display Most Popular Matchups
+      ClearMatchupDataPanels()
 
       Dim temp = New ImageComboBox.ImageComboBoxItem("", 0)
       temp.Text = " "
@@ -195,12 +121,20 @@ Public Class MainWindow
       Dim games = CurrentMatchups.Count
 
       WinRateLabelInitial.Text = "Overall Win Rate: " & String.Format("{0:0.00}%", CSng(wins) * 100 / games) & " (from " & games & " games)"
+   End Sub
 
+   Private Sub ImageComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles FirstImageComboBox.SelectedIndexChanged
+      If FirstImageComboBox.Text = "" Or FirstImageComboBox.Text = " " Then
+         DisplayGeneralRates()
+         Return
+      End If
+
+      DisplayChampionRates(FirstImageComboBox.Text)
    End Sub
 
    Private Sub ImageComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles SecondImageComboBox.SelectedIndexChanged
       If SecondImageComboBox.Text = "" Or SecondImageComboBox.Text = " " Then
-         ClearMatchupData(False)
+         ClearMatchupDataPanels(False)
          Return
       End If
       If SecondImageComboBox.Text = Nothing Then
@@ -243,7 +177,7 @@ Public Class MainWindow
       MatchLoadingWindow.Show()
    End Sub
 
-   Private Sub ClearMatchupData(Optional ByVal clearSecondList As Boolean = True)
+   Private Sub ClearMatchupDataPanels(Optional ByVal clearSecondList As Boolean = True)
       WinRateLabel.Text = ""
       ChampionLabel.Text = ""
       EnemyLabel.Text = ""
@@ -263,8 +197,8 @@ Public Class MainWindow
    End Sub
 
    ' For champions who haven't loaded in a match yet
-   Private Sub ClearChampionData()
-      ClearMatchupData()
+   Private Sub ClearChampionDataPanels()
+      ClearMatchupDataPanels()
 
       ChampionLabelInitial.Text = Nothing
       WinRateLabelInitial.Text = Nothing
@@ -279,8 +213,22 @@ Public Class MainWindow
          DisplayGeneralRates()
          Return
       End If
-      ClearChampionData()
+      ClearChampionDataPanels()
       FirstImageComboBox.SelectedIndex = 0
+   End Sub
+
+   Private Sub RefreshPanels()
+      If FirstImageComboBox.SelectedIndex = 0 Then
+         DisplayGeneralRates()
+         Return
+      End If
+
+      ImageComboBox1_SelectedIndexChanged(Nothing, Nothing)
+      ImageComboBox2_SelectedIndexChanged(Nothing, Nothing)
+   End Sub
+
+   Private Sub CheckBox1_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox1.CheckedChanged
+      RefreshPanels()
    End Sub
 End Class
 
