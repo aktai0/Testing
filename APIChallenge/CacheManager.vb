@@ -322,6 +322,7 @@ Class MatchIDCache
          Return
       End If
 
+
       RetrieveCache(Of DataCache)().AddMatchupData(matchups)
       TotalMatchesLoaded += 1
 

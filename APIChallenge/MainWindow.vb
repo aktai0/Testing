@@ -145,31 +145,20 @@ Public Class MainWindow
       DisplayChampionRates(FirstImageComboBox.Text)
    End Sub
 
-   Private Sub ImageComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles SecondImageComboBox.SelectedIndexChanged
-      If SecondImageComboBox.Text = "" Or SecondImageComboBox.Text = " " Then
-         ClearMatchupDataPanels(False, True)
-         Return
-      End If
-      If SecondImageComboBox.Text = Nothing Then
-         Return
-      End If
-
+   Private Sub DisplayMatchupWinRate(ByVal champName As String, ByVal enemyName As String)
       Dim CurrentMatchups = DataCache.GetMatchupDataFor(FirstImageComboBox.Text)
 
       Dim enemyChampID As Integer = APIHelper.GetChampID(CStr(SecondImageComboBox.Text))
       Dim q = From m In CurrentMatchups
               Where m.ChampionID = APIHelper.GetChampID(FirstImageComboBox.Text) AndAlso m.EnemyChampionID = enemyChampID
               Select m
-      For Each m In q
-         Console.WriteLine(m.ToString)
-      Next
 
       Dim c = Aggregate m In q
               Where m.WonLane
               Into Count()
 
       Dim c2 = Aggregate m In q
-              Into Count()
+               Into Count()
 
       WinRateLabel.Text = "Win Rate: " & String.Format("{0:0.00}%", CSng(c) * 100 / c2) & " (from " & c2 & " games)"
 
@@ -178,6 +167,19 @@ Public Class MainWindow
       ChampionPictureBox.Image = StaticCache.Images(APIHelper.GetChampID(FirstImageComboBox.Text))
       EnemyPictureBox.Image = StaticCache.Images(APIHelper.GetChampID(SecondImageComboBox.Text))
       VSLabel.Visible = True
+   End Sub
+
+   Private Sub ImageComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles SecondImageComboBox.SelectedIndexChanged
+      If SecondImageComboBox.Text = "" Or SecondImageComboBox.Text = " " Then
+         ClearMatchupDataPanels(False, True)
+         Return
+      End If
+
+      If SecondImageComboBox.Text = Nothing Then
+         Return
+      End If
+
+      DisplayMatchupWinRate(FirstImageComboBox.Text, SecondImageComboBox.Text)
    End Sub
 
    Private Sub ShowMatchesButton_Click(sender As Object, e As EventArgs) Handles ShowMatchesButton.Click
@@ -229,7 +231,7 @@ Public Class MainWindow
       FilterUnpopularCheckbox.Checked = False
    End Sub
 
-   Private Sub RefreshPanels()
+   Public Sub RefreshPanels()
       If FirstImageComboBox.SelectedIndex = 0 Then
          DisplayGeneralRates()
          Return

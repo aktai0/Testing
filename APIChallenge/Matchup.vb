@@ -91,7 +91,10 @@ Public Class Matchup
    Public Shared Function GetWinRatesForAllChampions(ByVal filterUnpopular As Boolean, Optional ByVal sortMode As ListSortMode = ListSortMode.WinRate) As IEnumerable(Of ChampHistory)
       Dim champHistoryList As New List(Of ChampHistory)
       For Each champ In APIHelper.Champions.Keys
-         champHistoryList.Add(Matchup.GetWinRateOfChamp(champ))
+         Dim history = Matchup.GetWinRateOfChamp(champ)
+         If history.gamesPlayed > 0 Then
+            champHistoryList.Add(history)
+         End If
       Next
 
       Dim query As IEnumerable(Of ChampHistory)

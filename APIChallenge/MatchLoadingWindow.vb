@@ -9,11 +9,12 @@
    End Sub
 
    Private Sub MatchLoaderBackgroundWorker_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles MatchLoaderBackgroundWorker.DoWork
+      Dim firstRun As Boolean = True
       While True
          Dim i = 0
          ' Load in all the matches we have
          While MatchIDCache.MatchesPendingLoad
-
+            firstRun = False
             MatchLoaderBackgroundWorker.ReportProgress(0, ProgressState.GoingToLoadMatch)
             MatchIDCache.LoadFirstMatchIntoMatchups()
             MatchLoaderBackgroundWorker.ReportProgress(0, ProgressState.LoadedMatch)
@@ -43,8 +44,10 @@
             Return
          End If
 
-         MatchLoaderBackgroundWorker.ReportProgress(0, ProgressState.WaitingForAPI)
-         SleepBreak(APIHelper.API_FULL_DELAY)
+         If Not firstRun Then
+            MatchLoaderBackgroundWorker.ReportProgress(0, ProgressState.WaitingForAPI)
+            SleepBreak(APIHelper.API_FULL_DELAY)
+         End If
 
          If MatchLoaderBackgroundWorker.CancellationPending Then
             e.Result = MatchIDCache.ErrorPending
@@ -91,9 +94,10 @@
    Private Sub MatchLoadingWindow_Load(sender As Object, e As EventArgs) Handles MyBase.Load
       MatchIDCache = RetrieveCache(Of MatchIDCache)()
 
-      MatchIDsLabel.Text = "Number of Match IDs: " & MatchIDCache.NumMatchesPendingLoad & "/" & MatchIDCache.MatchIDCount
+      TotalMatchIDsLabel.Text = "" & MatchIDCache.MatchIDCount
       DateLabel.Text = MatchIDCache.NextURFBucketTimeToLoad.ToString
-      LoadedMatchesLabel.Text = "Number of Loaded Matches: " & MatchIDCache.TotalMatchesLoaded
+      UnloadedMatchesLabel.Text = "" & MatchIDCache.NumMatchesPendingLoad
+      LoadedMatchesLabel.Text = "" & MatchIDCache.TotalMatchesLoaded
    End Sub
 
    Private Sub MatchLoaderBackgroundWorker_ProgressChanged(sender As Object, e As System.ComponentModel.ProgressChangedEventArgs) Handles MatchLoaderBackgroundWorker.ProgressChanged
@@ -102,26 +106,19 @@
             StatusLabel.Text = "Loading in new URF match IDs using the API..."
          Case ProgressState.UpdatedMatchIDs
             StatusLabel.Text = "Loaded in new URF match IDs."
-            MatchIDsLabel.Text = "Number of Match IDs: " & MatchIDCache.TotalMatchesLoaded & "/" & MatchIDCache.MatchIDCount
+            TotalMatchIDsLabel.Text = "" & MatchIDCache.MatchIDCount
+            UnloadedMatchesLabel.Text = "" & MatchIDCache.NumMatchesPendingLoad
             DateLabel.Text = MatchIDCache.NextURFBucketTimeToLoad.ToString
          Case ProgressState.GoingToLoadMatch
             StatusLabel.Text = "Loading a match using the API..."
          Case ProgressState.LoadedMatch
             StatusLabel.Text = "Loaded in a new match."
-            LoadedMatchesLabel.Text = "Number of Loaded Matches: " & MatchIDCache.TotalMatchesLoaded
-            MatchIDsLabel.Text = "Number of Match IDs: " & MatchIDCache.TotalMatchesLoaded & "/" & MatchIDCache.MatchIDCount
+            UnloadedMatchesLabel.Text = "" & MatchIDCache.NumMatchesPendingLoad
+            LoadedMatchesLabel.Text = "" & MatchIDCache.TotalMatchesLoaded
          Case ProgressState.WaitingForAPI
             StatusLabel.Text = "Waiting for API rate limit..."
+            MainWindow.refreshPanels()
       End Select
-   End Sub
-
-   Private Sub MatchIDsChanged()
-      MatchIDsLabel.Text = "Number of Match IDs: " & MatchIDCache.TotalMatchesLoaded & "/" & MatchIDCache.MatchIDCount
-      DateLabel.Text = MatchIDCache.NextURFBucketTimeToLoad.ToString
-   End Sub
-
-   Private Sub NewMatchesLoaded()
-      LoadedMatchesLabel.Text = "Number of Loaded Matches: " & MatchIDCache.TotalMatchesLoaded
    End Sub
 
    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles StartButton.Click
