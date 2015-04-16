@@ -29,7 +29,7 @@ Public Class MainWindow
          Dim comboBoxItem As New ImageComboBox.ImageComboBoxItem(_ChampionImageList1.Images.Count - 1, c.Name, New Font("Microsoft Sans Serif", 18.0), 0)
          FirstImageComboBox.Items.Add(comboBoxItem)
       Next
-      FirstImageComboBox.SelectedIndex = 23
+      FirstImageComboBox.SelectedIndex = 0
    End Sub
 
    Private Sub MainWindow_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
@@ -101,25 +101,29 @@ Public Class MainWindow
       '    Console.WriteLine(Me.Size)
    End Sub
 
+   Private Sub DisplayGeneralWinRates()
+      Dim allWinRates = GetWinRatesForAllChampions()
+
+      WinRateFlowLayoutPanel.Controls.Clear()
+      TopWinRateLabel.Parent = WinRateFlowLayoutPanel
+      For i = 0 To Math.Min(9, allWinRates.Count - 1)
+         Dim wR As New WinRateMatchup(allWinRates(i).champID, 0, allWinRates(i).gamesWon, allWinRates(i).gamesPlayed)
+         WinRateFlowLayoutPanel.Controls.Add(New WinRateUserControl(wR))
+      Next
+
+      Dim lossRates = GetWinRatesForAllChampions(False)
+
+      LossRateFlowLayoutPanel.Controls.Clear()
+      LowestWinRateLabel.Parent = LossRateFlowLayoutPanel
+      For i = 0 To Math.Min(9, lossRates.Count - 1)
+         Dim lR As New WinRateMatchup(lossRates(i).champID, 0, lossRates(i).gamesWon, lossRates(i).gamesPlayed)
+         LossRateFlowLayoutPanel.Controls.Add(New WinRateUserControl(lR))
+      Next
+   End Sub
+
    Private Sub ImageComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles FirstImageComboBox.SelectedIndexChanged
       If FirstImageComboBox.Text = "" Or FirstImageComboBox.Text = " " Then
-         Dim allWinRates = GetWinRatesForAllChampions()
-
-         WinRateFlowLayoutPanel.Controls.Clear()
-         TopWinRateLabel.Parent = WinRateFlowLayoutPanel
-         For i = 0 To Math.Min(9, allWinRates.Count - 1)
-            Dim wR As New WinRateMatchup(allWinRates(i).champID, 0, allWinRates(i).gamesWon, allWinRates(i).gamesPlayed)
-            WinRateFlowLayoutPanel.Controls.Add(New WinRateUserControl(wR))
-         Next
-
-         Dim lossRates = GetWinRatesForAllChampions(False)
-
-         LossRateFlowLayoutPanel.Controls.Clear()
-         LowestWinRateLabel.Parent = LossRateFlowLayoutPanel
-         For i = 0 To Math.Min(9, lossRates.Count - 1)
-            Dim lR As New WinRateMatchup(allWinRates(i).champID, 0, allWinRates(i).gamesWon, allWinRates(i).gamesPlayed)
-            LossRateFlowLayoutPanel.Controls.Add(New WinRateUserControl(lR))
-         Next
+         DisplayGeneralWinRates()
          Return
       End If
 
@@ -245,6 +249,7 @@ Public Class MainWindow
 
    Private Sub ClearButton_Click(sender As Object, e As EventArgs) Handles ClearButton.Click
       If FirstImageComboBox.SelectedIndex = 0 Then
+         DisplayGeneralWinRates()
          Return
       End If
       ClearChampionData()

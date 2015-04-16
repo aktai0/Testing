@@ -96,12 +96,12 @@ Partial Class WinRateUserControl
       '
       Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
       Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+      Me.Controls.Add(Me.ChampionLabel)
       Me.Controls.Add(Me.WinRateLabel)
       Me.Controls.Add(Me.VSLabel)
       Me.Controls.Add(Me.EnemyLabel)
       Me.Controls.Add(Me.ChampionPictureBox)
       Me.Controls.Add(Me.EnemyPictureBox)
-      Me.Controls.Add(Me.ChampionLabel)
       Me.Name = "WinRateUserControl"
       Me.Size = New System.Drawing.Size(443, 120)
       CType(Me.ChampionPictureBox, System.ComponentModel.ISupportInitialize).EndInit()

@@ -28,8 +28,6 @@ Partial Class MatchLoadingWindow
       Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
       Me.StatusLabel = New System.Windows.Forms.ToolStripStatusLabel()
       Me.ToolStripStatusLabel3 = New System.Windows.Forms.ToolStripStatusLabel()
-      Me.ToolStripProgressBar1 = New System.Windows.Forms.ToolStripProgressBar()
-      Me.ToolStripStatusLabel2 = New System.Windows.Forms.ToolStripStatusLabel()
       Me.MatchIDsLabel = New System.Windows.Forms.Label()
       Me.LoadedMatchesLabel = New System.Windows.Forms.Label()
       Me.MatchLoaderBackgroundWorker = New System.ComponentModel.BackgroundWorker()
@@ -66,7 +64,7 @@ Partial Class MatchLoadingWindow
       '
       'StatusStrip1
       '
-      Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusLabel, Me.ToolStripStatusLabel3, Me.ToolStripProgressBar1, Me.ToolStripStatusLabel2})
+      Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusLabel, Me.ToolStripStatusLabel3})
       Me.StatusStrip1.Location = New System.Drawing.Point(0, 238)
       Me.StatusStrip1.Name = "StatusStrip1"
       Me.StatusStrip1.Size = New System.Drawing.Size(782, 25)
@@ -76,30 +74,19 @@ Partial Class MatchLoadingWindow
       'StatusLabel
       '
       Me.StatusLabel.Name = "StatusLabel"
-      Me.StatusLabel.Size = New System.Drawing.Size(154, 20)
-      Me.StatusLabel.Text = "ToolStripStatusLabel1"
+      Me.StatusLabel.Size = New System.Drawing.Size(61, 20)
+      Me.StatusLabel.Text = "Waiting"
       '
       'ToolStripStatusLabel3
       '
       Me.ToolStripStatusLabel3.Name = "ToolStripStatusLabel3"
-      Me.ToolStripStatusLabel3.Size = New System.Drawing.Size(357, 20)
+      Me.ToolStripStatusLabel3.Size = New System.Drawing.Size(706, 20)
       Me.ToolStripStatusLabel3.Spring = True
-      '
-      'ToolStripProgressBar1
-      '
-      Me.ToolStripProgressBar1.Name = "ToolStripProgressBar1"
-      Me.ToolStripProgressBar1.Size = New System.Drawing.Size(100, 19)
-      '
-      'ToolStripStatusLabel2
-      '
-      Me.ToolStripStatusLabel2.Name = "ToolStripStatusLabel2"
-      Me.ToolStripStatusLabel2.Size = New System.Drawing.Size(154, 20)
-      Me.ToolStripStatusLabel2.Text = "ToolStripStatusLabel2"
       '
       'MatchIDsLabel
       '
       Me.MatchIDsLabel.AutoSize = True
-      Me.MatchIDsLabel.Location = New System.Drawing.Point(320, 49)
+      Me.MatchIDsLabel.Location = New System.Drawing.Point(12, 62)
       Me.MatchIDsLabel.Name = "MatchIDsLabel"
       Me.MatchIDsLabel.Size = New System.Drawing.Size(148, 17)
       Me.MatchIDsLabel.TabIndex = 4
@@ -108,7 +95,7 @@ Partial Class MatchLoadingWindow
       'LoadedMatchesLabel
       '
       Me.LoadedMatchesLabel.AutoSize = True
-      Me.LoadedMatchesLabel.Location = New System.Drawing.Point(320, 66)
+      Me.LoadedMatchesLabel.Location = New System.Drawing.Point(12, 79)
       Me.LoadedMatchesLabel.Name = "LoadedMatchesLabel"
       Me.LoadedMatchesLabel.Size = New System.Drawing.Size(191, 17)
       Me.LoadedMatchesLabel.TabIndex = 5
@@ -143,8 +130,6 @@ Partial Class MatchLoadingWindow
    Friend WithEvents Button2 As System.Windows.Forms.Button
    Friend WithEvents StatusStrip1 As System.Windows.Forms.StatusStrip
    Friend WithEvents StatusLabel As System.Windows.Forms.ToolStripStatusLabel
-   Friend WithEvents ToolStripProgressBar1 As System.Windows.Forms.ToolStripProgressBar
-   Friend WithEvents ToolStripStatusLabel2 As System.Windows.Forms.ToolStripStatusLabel
    Friend WithEvents MatchIDsLabel As System.Windows.Forms.Label
    Friend WithEvents LoadedMatchesLabel As System.Windows.Forms.Label
    Friend WithEvents ToolStripStatusLabel3 As System.Windows.Forms.ToolStripStatusLabel

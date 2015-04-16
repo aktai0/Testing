@@ -8,16 +8,21 @@
       WinRateMatchup = givenWinRateMatchup
 
       ChampionLabel.Text = APIHelper.GetChampName(WinRateMatchup.ChampionID)
-      ChampionPictureBox.Image = RetrieveCache(Of StaticCache).Images(WinRateMatchup.ChampionID)
 
       If WinRateMatchup.EnemyChampionID > 0 Then
+         ChampionPictureBox.Image = RetrieveCache(Of StaticCache).Images(WinRateMatchup.ChampionID)
          EnemyLabel.Text = APIHelper.GetChampName(WinRateMatchup.EnemyChampionID)
          EnemyPictureBox.Image = RetrieveCache(Of StaticCache).Images(WinRateMatchup.EnemyChampionID)
          VSLabel.Visible = True
       Else
+         EnemyPictureBox.Image = RetrieveCache(Of StaticCache).Images(WinRateMatchup.ChampionID)
          EnemyLabel.Text = Nothing
-         EnemyPictureBox.Image = Nothing
+         ChampionPictureBox.Image = Nothing
          VSLabel.Visible = False
+
+         EnemyPictureBox.Left -= 25
+         ChampionLabel.Left = 59
+
       End If
 
       WinRateLabel.Text = "Win Rate: " & String.Format("{0:0.00}%", WinRateMatchup.WinRate * 100) & " (from " & WinRateMatchup.TotalGames & " game" & If(WinRateMatchup.TotalGames > 1, "s", "") & ")"

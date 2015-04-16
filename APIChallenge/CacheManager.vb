@@ -271,6 +271,12 @@ Class MatchIDCache
       End Get
    End Property
 
+   Public ReadOnly Property NumMatchesPendingLoad As Integer
+      Get
+         Return MatchIDQueue.Count
+      End Get
+   End Property
+
    ' Queue  
    Private MatchIDQueue As New Queue(Of Integer)
 

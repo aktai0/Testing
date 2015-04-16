@@ -1,5 +1,13 @@
 ﻿Public Class MatchLoadingWindow
 
+   Private Sub SleepBreak(ByVal milliseconds As Integer)
+      Dim i = 0
+      While i < milliseconds And Not MatchLoaderBackgroundWorker.CancellationPending
+         Threading.Thread.Sleep(200)
+         i += 200
+      End While
+   End Sub
+
    Private Sub MatchLoaderBackgroundWorker_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles MatchLoaderBackgroundWorker.DoWork
       While True
          Dim i = 0
@@ -19,7 +27,12 @@
             If i = 10 Then
                i = 0
                MatchLoaderBackgroundWorker.ReportProgress(0, ProgressState.WaitingForAPI)
-               Threading.Thread.Sleep(APIHelper.API_FULL_DELAY)
+               SleepBreak(APIHelper.API_FULL_DELAY)
+
+               If MatchLoaderBackgroundWorker.CancellationPending Then
+                  e.Result = MatchIDCache.ErrorPending
+                  Return
+               End If
             Else
                Threading.Thread.Sleep(100)
             End If
@@ -31,7 +44,7 @@
          End If
 
          MatchLoaderBackgroundWorker.ReportProgress(0, ProgressState.WaitingForAPI)
-         Threading.Thread.Sleep(APIHelper.API_FULL_DELAY)
+         SleepBreak(APIHelper.API_FULL_DELAY)
 
          If MatchLoaderBackgroundWorker.CancellationPending Then
             e.Result = MatchIDCache.ErrorPending
@@ -57,7 +70,7 @@
             End If
          Next
 
-         Threading.Thread.Sleep(APIHelper.API_FULL_DELAY)
+         SleepBreak(APIHelper.API_FULL_DELAY)
 
          If MatchLoaderBackgroundWorker.CancellationPending Then
             e.Result = MatchIDCache.ErrorPending
@@ -78,7 +91,7 @@
    Private Sub MatchLoadingWindow_Load(sender As Object, e As EventArgs) Handles MyBase.Load
       MatchIDCache = RetrieveCache(Of MatchIDCache)()
 
-      MatchIDsLabel.Text = "Number of Match IDs: " & MatchIDCache.MatchIDCount
+      MatchIDsLabel.Text = "Number of Match IDs: " & MatchIDCache.NumMatchesPendingLoad & "/" & MatchIDCache.MatchIDCount
       URFTimeLabel.Text = "Next URF Match Bucket to Load: " & MatchIDCache.NextURFBucketTimeToLoad.ToString
       LoadedMatchesLabel.Text = "Number of Loaded Matches: " & MatchIDCache.TotalMatchesLoaded
    End Sub
@@ -89,13 +102,14 @@
             StatusLabel.Text = "Loading in new URF match IDs using the API..."
          Case ProgressState.UpdatedMatchIDs
             StatusLabel.Text = "Loaded in new URF match IDs."
-            MatchIDsLabel.Text = "Number of Match IDs: " & MatchIDCache.MatchIDCount
+            MatchIDsLabel.Text = "Number of Match IDs: " & MatchIDCache.NumMatchesPendingLoad & "/" & MatchIDCache.MatchIDCount
             URFTimeLabel.Text = "Last URF Match Bucket Loaded: " & MatchIDCache.NextURFBucketTimeToLoad.ToString
          Case ProgressState.GoingToLoadMatch
             StatusLabel.Text = "Loading a match using the API..."
          Case ProgressState.LoadedMatch
             StatusLabel.Text = "Loaded in a new match."
             LoadedMatchesLabel.Text = "Number of Loaded Matches: " & MatchIDCache.TotalMatchesLoaded
+            MatchIDsLabel.Text = "Number of Match IDs: " & MatchIDCache.NumMatchesPendingLoad & "/" & MatchIDCache.MatchIDCount
          Case ProgressState.WaitingForAPI
             StatusLabel.Text = "Waiting for API rate limit..."
       End Select
@@ -121,8 +135,6 @@
       If MatchLoaderBackgroundWorker.IsBusy Then
          Console.WriteLine("Attempting to stop")
          MatchLoaderBackgroundWorker.CancelAsync()
-         Button1.Enabled = True
-         Button2.Enabled = False
          Console.WriteLine("After CancelAsync()")
       End If
    End Sub
