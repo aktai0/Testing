@@ -1,4 +1,4 @@
-# VS - Lookup Matches! 
+# VS - Lookup Matchups! 
 
 Check matchup data to see which champions had the most favorable lane matchups in URF mode! See highest and lowest win rates overall or for a specific lane matchup, or see which champions were most popular.
 
@@ -34,4 +34,4 @@ or
 See LICENSE file.
 
 ##Disclaimer
-VS - Lookup Matches! isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.
+VS - Lookup Matchups! isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.
