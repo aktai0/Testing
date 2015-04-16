@@ -178,7 +178,7 @@ Class StaticCache
    <NonSerialized>
    Private WithEvents AsynchronousStaticLoader As System.ComponentModel.BackgroundWorker
 
-   Public Champions As Dictionary(Of Integer, StaticDataEndpoint.ChampionStatic)
+   Public Champions As New Dictionary(Of Integer, StaticDataEndpoint.ChampionStatic)
    Public ChampionsRaw As StaticDataEndpoint.ChampionListStatic
 
    Private Sub AsynchronousStaticLoader_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs)

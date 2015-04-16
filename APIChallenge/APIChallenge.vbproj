@@ -6,9 +6,9 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{44F5FDCB-26F3-4F1E-B77D-B8B382A26441}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <StartupObject>APIChallenge.My.MyApplication</StartupObject>
-    <RootNamespace>APIChallenge</RootNamespace>
-    <AssemblyName>APIChallenge</AssemblyName>
+    <StartupObject>VSLookupMatches.My.MyApplication</StartupObject>
+    <RootNamespace>VSLookupMatches</RootNamespace>
+    <AssemblyName>VS</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>WindowsForms</MyType>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -20,7 +20,7 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\Debug\</OutputPath>
-    <DocumentationFile>APIChallenge.xml</DocumentationFile>
+    <DocumentationFile>VS.xml</DocumentationFile>
     <NoWarn>
     </NoWarn>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
@@ -32,7 +32,7 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile>APIChallenge.xml</DocumentationFile>
+    <DocumentationFile>VS.xml</DocumentationFile>
     <NoWarn>
     </NoWarn>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
@@ -143,7 +143,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>

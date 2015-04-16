@@ -81,7 +81,9 @@ Public Class APIHelper
 
    Public Shared Sub API_STATIC_LOAD_CHAMPION_INFO()
       If Champions IsNot Nothing Then
-         Return
+         If Champions.Count > 0 Then
+            Return
+         End If
       End If
 
       If CDN_URL = Nothing Or CDN_URL = "" Then

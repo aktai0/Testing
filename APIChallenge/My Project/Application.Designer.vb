@@ -32,7 +32,7 @@ Namespace My
         
         <Global.System.Diagnostics.DebuggerStepThroughAttribute()>  _
         Protected Overrides Sub OnCreateMainForm()
-         Me.MainForm = Global.APIChallenge.MainWindow
+         Me.MainForm = Global.VSLookupMatches.MainWindow
         End Sub
     End Class
 End Namespace
