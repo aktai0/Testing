@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{44F5FDCB-26F3-4F1E-B77D-B8B382A26441}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <StartupObject>VSLookupMatches.My.MyApplication</StartupObject>
-    <RootNamespace>VSLookupMatches</RootNamespace>
+    <StartupObject>VSLookupMatchups.My.MyApplication</StartupObject>
+    <RootNamespace>VSLookupMatchups</RootNamespace>
     <AssemblyName>VS</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>WindowsForms</MyType>
