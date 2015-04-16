@@ -133,11 +133,11 @@ Public Class MainWindow
 
       Dim popular = GetWinRatesForAllChampions(SortMode.Popularity)
 
-      MatchupFlowLayoutPanel.Controls.Clear()
-      PopularChampionsLabel.Parent = MatchupFlowLayoutPanel
+      PopularityFlowLayoutPanel.Controls.Clear()
+      PopularChampionsLabel.Parent = PopularityFlowLayoutPanel
       For i = 0 To Math.Min(9, lossRates.Count - 1)
          Dim lR As New WinRateMatchup(popular(i).champID, 0, popular(i).gamesWon, popular(i).gamesPlayed)
-         MatchupFlowLayoutPanel.Controls.Add(New WinRateUserControl(lR))
+         PopularityFlowLayoutPanel.Controls.Add(New WinRateUserControl(lR))
       Next
    End Sub
 
@@ -223,11 +223,11 @@ Public Class MainWindow
       Dim c2 = Aggregate m In q
               Into Count()
 
-      MatchupFlowLayoutPanel.Controls.Clear()
+      PopularityFlowLayoutPanel.Controls.Clear()
       For Each m In q
          Dim matchupUC As New MatchupUserControl(m)
-         MatchupFlowLayoutPanel.Controls.Add(matchupUC)
-         matchupUC.Location = New Point(12, 100 + MatchupFlowLayoutPanel.Controls.Count * (150 + 10))
+         PopularityFlowLayoutPanel.Controls.Add(matchupUC)
+         matchupUC.Location = New Point(12, 100 + PopularityFlowLayoutPanel.Controls.Count * (150 + 10))
       Next
 
       WinRateLabel.Text = "Win Rate: " & String.Format("{0:0.00}%", CSng(c) * 100 / c2) & " (from " & c2 & " games)"
@@ -259,7 +259,7 @@ Public Class MainWindow
 
       End If
 
-      MatchupFlowLayoutPanel.Controls.Clear()
+      PopularityFlowLayoutPanel.Controls.Clear()
    End Sub
 
    ' For champions who haven't loaded in a match yet

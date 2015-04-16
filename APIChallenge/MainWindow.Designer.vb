@@ -23,11 +23,13 @@ Partial Class MainWindow
    <System.Diagnostics.DebuggerStepThrough()> _
    Private Sub InitializeComponent()
       Me.components = New System.ComponentModel.Container()
+      Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(MainWindow))
       Me._ChampionImageList2 = New System.Windows.Forms.ImageList(Me.components)
       Me._ChampionImageList1 = New System.Windows.Forms.ImageList(Me.components)
       Me.SecondImageComboBox = New ImageComboBox.ImageComboBox()
       Me.FirstImageComboBox = New ImageComboBox.ImageComboBox()
-      Me.MatchupFlowLayoutPanel = New System.Windows.Forms.FlowLayoutPanel()
+      Me.PopularChampionsLabel = New System.Windows.Forms.Label()
+      Me.AllMatchupsLabel = New System.Windows.Forms.Label()
       Me.SelectorPanel = New System.Windows.Forms.Panel()
       Me.ClearButton = New System.Windows.Forms.Button()
       Me.ShowMatchesButton = New System.Windows.Forms.Button()
@@ -49,8 +51,7 @@ Partial Class MainWindow
       Me.BottomRightPanel = New System.Windows.Forms.Panel()
       Me.LossRateFlowLayoutPanel = New System.Windows.Forms.FlowLayoutPanel()
       Me.LowestWinRateLabel = New System.Windows.Forms.Label()
-      Me.PopularChampionsLabel = New System.Windows.Forms.Label()
-      Me.MatchupFlowLayoutPanel.SuspendLayout()
+      Me.PopularityFlowLayoutPanel = New System.Windows.Forms.FlowLayoutPanel()
       Me.SelectorPanel.SuspendLayout()
       Me.LeftSidePanel.SuspendLayout()
       CType(Me.EnemyPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -62,6 +63,7 @@ Partial Class MainWindow
       Me.TopRightPanel.SuspendLayout()
       Me.BottomRightPanel.SuspendLayout()
       Me.LossRateFlowLayoutPanel.SuspendLayout()
+      Me.PopularityFlowLayoutPanel.SuspendLayout()
       Me.SuspendLayout()
       '
       '_ChampionImageList2
@@ -86,11 +88,11 @@ Partial Class MainWindow
       Me.SecondImageComboBox.Indent = 20
       Me.SecondImageComboBox.IntegralHeight = False
       Me.SecondImageComboBox.ItemHeight = 30
-      Me.SecondImageComboBox.Location = New System.Drawing.Point(315, 45)
+      Me.SecondImageComboBox.Location = New System.Drawing.Point(9, 87)
       Me.SecondImageComboBox.MaxDropDownItems = 12
       Me.SecondImageComboBox.Name = "SecondImageComboBox"
       Me.SecondImageComboBox.Size = New System.Drawing.Size(300, 36)
-      Me.SecondImageComboBox.TabIndex = 19
+      Me.SecondImageComboBox.TabIndex = 3
       '
       'FirstImageComboBox
       '
@@ -107,22 +109,31 @@ Partial Class MainWindow
       Me.FirstImageComboBox.MaxDropDownItems = 12
       Me.FirstImageComboBox.Name = "FirstImageComboBox"
       Me.FirstImageComboBox.Size = New System.Drawing.Size(300, 36)
-      Me.FirstImageComboBox.TabIndex = 18
+      Me.FirstImageComboBox.TabIndex = 2
       '
-      'MatchupFlowLayoutPanel
+      'PopularChampionsLabel
       '
-      Me.MatchupFlowLayoutPanel.AutoScroll = True
-      Me.MatchupFlowLayoutPanel.AutoSize = True
-      Me.MatchupFlowLayoutPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-      Me.MatchupFlowLayoutPanel.Controls.Add(Me.PopularChampionsLabel)
-      Me.MatchupFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill
-      Me.MatchupFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-      Me.MatchupFlowLayoutPanel.Location = New System.Drawing.Point(0, 129)
-      Me.MatchupFlowLayoutPanel.Name = "MatchupFlowLayoutPanel"
-      Me.MatchupFlowLayoutPanel.Padding = New System.Windows.Forms.Padding(32, 20, 0, 0)
-      Me.MatchupFlowLayoutPanel.Size = New System.Drawing.Size(629, 585)
-      Me.MatchupFlowLayoutPanel.TabIndex = 21
-      Me.MatchupFlowLayoutPanel.WrapContents = False
+      Me.PopularChampionsLabel.Dock = System.Windows.Forms.DockStyle.Top
+      Me.PopularChampionsLabel.Font = New System.Drawing.Font("Garamond", 18.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+      Me.PopularChampionsLabel.Location = New System.Drawing.Point(3, 45)
+      Me.PopularChampionsLabel.Name = "PopularChampionsLabel"
+      Me.PopularChampionsLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes
+      Me.PopularChampionsLabel.Size = New System.Drawing.Size(0, 45)
+      Me.PopularChampionsLabel.TabIndex = 19
+      Me.PopularChampionsLabel.Text = "Most Popular Champions"
+      Me.PopularChampionsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+      '
+      'AllMatchupsLabel
+      '
+      Me.AllMatchupsLabel.Dock = System.Windows.Forms.DockStyle.Top
+      Me.AllMatchupsLabel.Font = New System.Drawing.Font("Garamond", 18.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+      Me.AllMatchupsLabel.Location = New System.Drawing.Point(3, 0)
+      Me.AllMatchupsLabel.Name = "AllMatchupsLabel"
+      Me.AllMatchupsLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes
+      Me.AllMatchupsLabel.Size = New System.Drawing.Size(0, 45)
+      Me.AllMatchupsLabel.TabIndex = 20
+      Me.AllMatchupsLabel.Text = "All Matchups"
+      Me.AllMatchupsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
       '
       'SelectorPanel
       '
@@ -134,44 +145,42 @@ Partial Class MainWindow
       Me.SelectorPanel.Dock = System.Windows.Forms.DockStyle.Top
       Me.SelectorPanel.Location = New System.Drawing.Point(0, 0)
       Me.SelectorPanel.Name = "SelectorPanel"
-      Me.SelectorPanel.Size = New System.Drawing.Size(629, 129)
+      Me.SelectorPanel.Size = New System.Drawing.Size(470, 129)
       Me.SelectorPanel.TabIndex = 22
       '
       'ClearButton
       '
-      Me.ClearButton.Dock = System.Windows.Forms.DockStyle.Bottom
-      Me.ClearButton.Location = New System.Drawing.Point(0, 92)
+      Me.ClearButton.Location = New System.Drawing.Point(315, 46)
       Me.ClearButton.Name = "ClearButton"
-      Me.ClearButton.Size = New System.Drawing.Size(627, 35)
-      Me.ClearButton.TabIndex = 22
+      Me.ClearButton.Size = New System.Drawing.Size(143, 35)
+      Me.ClearButton.TabIndex = 4
       Me.ClearButton.Text = "Clear"
       Me.ClearButton.UseVisualStyleBackColor = True
       '
       'ShowMatchesButton
       '
-      Me.ShowMatchesButton.Dock = System.Windows.Forms.DockStyle.Top
-      Me.ShowMatchesButton.Location = New System.Drawing.Point(0, 0)
+      Me.ShowMatchesButton.Location = New System.Drawing.Point(9, 4)
       Me.ShowMatchesButton.Name = "ShowMatchesButton"
-      Me.ShowMatchesButton.Size = New System.Drawing.Size(627, 35)
-      Me.ShowMatchesButton.TabIndex = 21
+      Me.ShowMatchesButton.Size = New System.Drawing.Size(449, 35)
+      Me.ShowMatchesButton.TabIndex = 1
       Me.ShowMatchesButton.Text = "Load Matches"
       Me.ShowMatchesButton.UseVisualStyleBackColor = True
       '
       'LeftSidePanel
       '
-      Me.LeftSidePanel.Controls.Add(Me.MatchupFlowLayoutPanel)
+      Me.LeftSidePanel.Controls.Add(Me.PopularityFlowLayoutPanel)
       Me.LeftSidePanel.Controls.Add(Me.SelectorPanel)
       Me.LeftSidePanel.Dock = System.Windows.Forms.DockStyle.Left
       Me.LeftSidePanel.Location = New System.Drawing.Point(0, 0)
       Me.LeftSidePanel.Name = "LeftSidePanel"
-      Me.LeftSidePanel.Size = New System.Drawing.Size(629, 714)
+      Me.LeftSidePanel.Size = New System.Drawing.Size(470, 714)
       Me.LeftSidePanel.TabIndex = 0
       '
       'EnemyLabel
       '
       Me.EnemyLabel.AutoSize = True
       Me.EnemyLabel.Font = New System.Drawing.Font("Garamond", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-      Me.EnemyLabel.Location = New System.Drawing.Point(336, 29)
+      Me.EnemyLabel.Location = New System.Drawing.Point(324, 29)
       Me.EnemyLabel.Name = "EnemyLabel"
       Me.EnemyLabel.Size = New System.Drawing.Size(0, 29)
       Me.EnemyLabel.TabIndex = 12
@@ -179,7 +188,7 @@ Partial Class MainWindow
       '
       'EnemyPictureBox
       '
-      Me.EnemyPictureBox.Location = New System.Drawing.Point(270, 14)
+      Me.EnemyPictureBox.Location = New System.Drawing.Point(258, 14)
       Me.EnemyPictureBox.Name = "EnemyPictureBox"
       Me.EnemyPictureBox.Size = New System.Drawing.Size(60, 60)
       Me.EnemyPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
@@ -189,15 +198,15 @@ Partial Class MainWindow
       'ChampionLabel
       '
       Me.ChampionLabel.Font = New System.Drawing.Font("Garamond", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-      Me.ChampionLabel.Location = New System.Drawing.Point(6, 29)
+      Me.ChampionLabel.Location = New System.Drawing.Point(5, 29)
       Me.ChampionLabel.Name = "ChampionLabel"
-      Me.ChampionLabel.Size = New System.Drawing.Size(155, 29)
+      Me.ChampionLabel.Size = New System.Drawing.Size(144, 29)
       Me.ChampionLabel.TabIndex = 10
       Me.ChampionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
       '
       'ChampionPictureBox
       '
-      Me.ChampionPictureBox.Location = New System.Drawing.Point(165, 14)
+      Me.ChampionPictureBox.Location = New System.Drawing.Point(153, 14)
       Me.ChampionPictureBox.Name = "ChampionPictureBox"
       Me.ChampionPictureBox.Size = New System.Drawing.Size(60, 60)
       Me.ChampionPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
@@ -208,7 +217,7 @@ Partial Class MainWindow
       '
       Me.VSLabel.AutoSize = True
       Me.VSLabel.Font = New System.Drawing.Font("Algerian", 14.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-      Me.VSLabel.Location = New System.Drawing.Point(227, 31)
+      Me.VSLabel.Location = New System.Drawing.Point(215, 31)
       Me.VSLabel.Name = "VSLabel"
       Me.VSLabel.Size = New System.Drawing.Size(40, 26)
       Me.VSLabel.TabIndex = 13
@@ -218,10 +227,10 @@ Partial Class MainWindow
       'WinRateLabel
       '
       Me.WinRateLabel.Font = New System.Drawing.Font("Garamond", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-      Me.WinRateLabel.Location = New System.Drawing.Point(22, 77)
+      Me.WinRateLabel.Location = New System.Drawing.Point(10, 77)
       Me.WinRateLabel.Name = "WinRateLabel"
       Me.WinRateLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes
-      Me.WinRateLabel.Size = New System.Drawing.Size(423, 52)
+      Me.WinRateLabel.Size = New System.Drawing.Size(447, 52)
       Me.WinRateLabel.TabIndex = 14
       Me.WinRateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
       '
@@ -313,7 +322,7 @@ Partial Class MainWindow
       Me.TopRightPanel.Controls.Add(Me.ChampVsChampWinRatePanel)
       Me.TopRightPanel.Controls.Add(Me.ChampWinRatePanel)
       Me.TopRightPanel.Dock = System.Windows.Forms.DockStyle.Top
-      Me.TopRightPanel.Location = New System.Drawing.Point(629, 0)
+      Me.TopRightPanel.Location = New System.Drawing.Point(470, 0)
       Me.TopRightPanel.Name = "TopRightPanel"
       Me.TopRightPanel.Size = New System.Drawing.Size(940, 129)
       Me.TopRightPanel.TabIndex = 18
@@ -323,7 +332,7 @@ Partial Class MainWindow
       Me.BottomRightPanel.Controls.Add(Me.LossRateFlowLayoutPanel)
       Me.BottomRightPanel.Controls.Add(Me.WinRateFlowLayoutPanel)
       Me.BottomRightPanel.Dock = System.Windows.Forms.DockStyle.Fill
-      Me.BottomRightPanel.Location = New System.Drawing.Point(629, 129)
+      Me.BottomRightPanel.Location = New System.Drawing.Point(470, 129)
       Me.BottomRightPanel.Name = "BottomRightPanel"
       Me.BottomRightPanel.Size = New System.Drawing.Size(940, 585)
       Me.BottomRightPanel.TabIndex = 19
@@ -353,32 +362,33 @@ Partial Class MainWindow
       Me.LowestWinRateLabel.Text = "Lowest Win Rates"
       Me.LowestWinRateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
       '
-      'PopularChampionsLabel
+      'PopularityFlowLayoutPanel
       '
-      Me.PopularChampionsLabel.Dock = System.Windows.Forms.DockStyle.Top
-      Me.PopularChampionsLabel.Font = New System.Drawing.Font("Garamond", 18.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-      Me.PopularChampionsLabel.Location = New System.Drawing.Point(35, 20)
-      Me.PopularChampionsLabel.Name = "PopularChampionsLabel"
-      Me.PopularChampionsLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes
-      Me.PopularChampionsLabel.Size = New System.Drawing.Size(0, 45)
-      Me.PopularChampionsLabel.TabIndex = 19
-      Me.PopularChampionsLabel.Text = "Most Popular Champions"
-      Me.PopularChampionsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+      Me.PopularityFlowLayoutPanel.AutoScroll = True
+      Me.PopularityFlowLayoutPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+      Me.PopularityFlowLayoutPanel.Controls.Add(Me.AllMatchupsLabel)
+      Me.PopularityFlowLayoutPanel.Controls.Add(Me.PopularChampionsLabel)
+      Me.PopularityFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Left
+      Me.PopularityFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
+      Me.PopularityFlowLayoutPanel.Location = New System.Drawing.Point(0, 129)
+      Me.PopularityFlowLayoutPanel.Name = "PopularityFlowLayoutPanel"
+      Me.PopularityFlowLayoutPanel.Size = New System.Drawing.Size(470, 585)
+      Me.PopularityFlowLayoutPanel.TabIndex = 21
+      Me.PopularityFlowLayoutPanel.WrapContents = False
       '
       'MainWindow
       '
       Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
       Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-      Me.ClientSize = New System.Drawing.Size(1569, 714)
+      Me.ClientSize = New System.Drawing.Size(1410, 714)
       Me.Controls.Add(Me.BottomRightPanel)
       Me.Controls.Add(Me.TopRightPanel)
       Me.Controls.Add(Me.LeftSidePanel)
+      Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
       Me.Name = "MainWindow"
       Me.Text = "Main Window"
-      Me.MatchupFlowLayoutPanel.ResumeLayout(False)
       Me.SelectorPanel.ResumeLayout(False)
       Me.LeftSidePanel.ResumeLayout(False)
-      Me.LeftSidePanel.PerformLayout()
       CType(Me.EnemyPictureBox, System.ComponentModel.ISupportInitialize).EndInit()
       CType(Me.ChampionPictureBox, System.ComponentModel.ISupportInitialize).EndInit()
       Me.ChampVsChampWinRatePanel.ResumeLayout(False)
@@ -389,6 +399,7 @@ Partial Class MainWindow
       Me.TopRightPanel.ResumeLayout(False)
       Me.BottomRightPanel.ResumeLayout(False)
       Me.LossRateFlowLayoutPanel.ResumeLayout(False)
+      Me.PopularityFlowLayoutPanel.ResumeLayout(False)
       Me.ResumeLayout(False)
 
    End Sub
@@ -396,7 +407,6 @@ Partial Class MainWindow
    Friend WithEvents _ChampionImageList2 As System.Windows.Forms.ImageList
    Private WithEvents SecondImageComboBox As ImageComboBox.ImageComboBox
    Private WithEvents FirstImageComboBox As ImageComboBox.ImageComboBox
-   Friend WithEvents MatchupFlowLayoutPanel As System.Windows.Forms.FlowLayoutPanel
    Friend WithEvents SelectorPanel As System.Windows.Forms.Panel
    Friend WithEvents LeftSidePanel As System.Windows.Forms.Panel
    Friend WithEvents EnemyLabel As System.Windows.Forms.Label
@@ -419,5 +429,7 @@ Partial Class MainWindow
    Friend WithEvents ShowMatchesButton As System.Windows.Forms.Button
    Friend WithEvents ClearButton As System.Windows.Forms.Button
    Friend WithEvents PopularChampionsLabel As System.Windows.Forms.Label
+   Friend WithEvents AllMatchupsLabel As System.Windows.Forms.Label
+   Friend WithEvents PopularityFlowLayoutPanel As System.Windows.Forms.FlowLayoutPanel
 
 End Class
