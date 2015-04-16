@@ -185,7 +185,11 @@ Public Class MainWindow
    End Sub
 
    Private Sub ShowMatchesButton_Click(sender As Object, e As EventArgs) Handles ShowMatchesButton.Click
-      MatchLoadingWindow.Show()
+      If MatchLoadingWindow.Visible Then
+         MatchLoadingWindow.BringToFront()
+      Else
+         MatchLoadingWindow.Show()
+      End If
    End Sub
 
    Private Sub ClearMatchupDataPanels(Optional ByVal clearSecondList As Boolean = True, Optional ByVal clearPopularityPanel As Boolean = True)
