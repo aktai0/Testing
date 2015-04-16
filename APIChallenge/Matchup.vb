@@ -112,10 +112,12 @@ Public Class WinRateMatchup
 
       If orderDesc Then
          Return (From w In winRates
+                 Where w.EnemyChampionID <> 0
                  Order By w.WinRate Descending, w.TotalGames Descending, APIHelper.GetChampName(w.EnemyChampionID) Ascending
                  Select w)
       Else
          Return (From w In winRates
+                 Where w.EnemyChampionID <> 0
                  Order By w.WinRate Ascending, w.TotalGames Descending, APIHelper.GetChampName(w.EnemyChampionID) Ascending
                  Select w)
       End If

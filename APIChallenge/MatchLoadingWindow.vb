@@ -146,6 +146,8 @@
          End If
          StartButton.Enabled = True
          StopButton.Enabled = False
+
+         StoreAllCaches()
       End If
    End Sub
 End Class

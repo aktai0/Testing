@@ -36,22 +36,33 @@ Public Class MainWindow
       CacheManager.StoreAllCaches()
    End Sub
 
-   Public Function GetWinRatesForAllChampions(Optional ByVal sortDescending As Boolean = True) As IEnumerable(Of ChampHistory)
+   Private Enum SortMode
+      WinRate
+      LossRate
+      Popularity
+   End Enum
+
+   Private Function GetWinRatesForAllChampions(Optional ByVal sortMode As SortMode = SortMode.WinRate) As IEnumerable(Of ChampHistory)
       Dim champHistoryList As New List(Of ChampHistory)
       For Each champ In APIHelper.Champions.Keys
          champHistoryList.Add(GetWinRateOfChamp(champ))
       Next
 
       Dim query As IEnumerable(Of ChampHistory)
-      If sortDescending Then
+      If sortMode = MainWindow.SortMode.WinRate Then
          query = From c In champHistoryList, names In APIHelper.Champions.Values
                      Where c.champID = names.Id
                      Order By c.GetWinRate() Descending, c.gamesPlayed Descending, c.champName Ascending
                      Select c
-      Else
+      ElseIf sortMode = MainWindow.SortMode.LossRate Then
          query = From c In champHistoryList, names In APIHelper.Champions.Values
                      Where c.champID = names.Id
                      Order By c.GetWinRate() Ascending, c.gamesPlayed Descending, c.champName Ascending
+                     Select c
+      Else
+         query = From c In champHistoryList, names In APIHelper.Champions.Values
+                     Where c.champID = names.Id
+                     Order By c.gamesPlayed Descending, c.GetWinRate Descending, c.champName Ascending
                      Select c
       End If
       Return query
@@ -101,8 +112,8 @@ Public Class MainWindow
       '    Console.WriteLine(Me.Size)
    End Sub
 
-   Private Sub DisplayGeneralWinRates()
-      Dim allWinRates = GetWinRatesForAllChampions()
+   Private Sub DisplayGeneralRates()
+      Dim allWinRates = GetWinRatesForAllChampions(SortMode.WinRate)
 
       WinRateFlowLayoutPanel.Controls.Clear()
       TopWinRateLabel.Parent = WinRateFlowLayoutPanel
@@ -111,7 +122,7 @@ Public Class MainWindow
          WinRateFlowLayoutPanel.Controls.Add(New WinRateUserControl(wR))
       Next
 
-      Dim lossRates = GetWinRatesForAllChampions(False)
+      Dim lossRates = GetWinRatesForAllChampions(SortMode.LossRate)
 
       LossRateFlowLayoutPanel.Controls.Clear()
       LowestWinRateLabel.Parent = LossRateFlowLayoutPanel
@@ -119,11 +130,20 @@ Public Class MainWindow
          Dim lR As New WinRateMatchup(lossRates(i).champID, 0, lossRates(i).gamesWon, lossRates(i).gamesPlayed)
          LossRateFlowLayoutPanel.Controls.Add(New WinRateUserControl(lR))
       Next
+
+      Dim popular = GetWinRatesForAllChampions(SortMode.Popularity)
+
+      MatchupFlowLayoutPanel.Controls.Clear()
+      PopularChampionsLabel.Parent = MatchupFlowLayoutPanel
+      For i = 0 To Math.Min(9, lossRates.Count - 1)
+         Dim lR As New WinRateMatchup(popular(i).champID, 0, popular(i).gamesWon, popular(i).gamesPlayed)
+         MatchupFlowLayoutPanel.Controls.Add(New WinRateUserControl(lR))
+      Next
    End Sub
 
    Private Sub ImageComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles FirstImageComboBox.SelectedIndexChanged
       If FirstImageComboBox.Text = "" Or FirstImageComboBox.Text = " " Then
-         DisplayGeneralWinRates()
+         DisplayGeneralRates()
          Return
       End If
 
@@ -134,6 +154,7 @@ Public Class MainWindow
       End If
 
       Dim names = (From m In CurrentMatchups
+                   Where m.EnemyChampionID <> 0
                    Order By APIHelper.GetChampName(m.EnemyChampionID)
                    Select APIHelper.GetChampName(m.EnemyChampionID)).Distinct()
 
@@ -173,7 +194,7 @@ Public Class MainWindow
 
       Dim games = CurrentMatchups.Count
 
-      WinRateLabelInitial.Text = "Overall Win Rate: " & String.Format("{0:0.00}%", CSng(wins) * 100 / games)
+      WinRateLabelInitial.Text = "Overall Win Rate: " & String.Format("{0:0.00}%", CSng(wins) * 100 / games) & " (from " & games & " games)"
 
    End Sub
 
@@ -209,7 +230,7 @@ Public Class MainWindow
          matchupUC.Location = New Point(12, 100 + MatchupFlowLayoutPanel.Controls.Count * (150 + 10))
       Next
 
-      WinRateLabel.Text = "Win Rate: " & String.Format("{0:0.00}%", CSng(c) * 100 / c2)
+      WinRateLabel.Text = "Win Rate: " & String.Format("{0:0.00}%", CSng(c) * 100 / c2) & " (from " & c2 & " games)"
 
       ChampionLabel.Text = FirstImageComboBox.Text
       EnemyLabel.Text = SecondImageComboBox.Text
@@ -224,9 +245,9 @@ Public Class MainWindow
 
    Private Sub ClearMatchupData(Optional ByVal clearSecondList As Boolean = True)
       WinRateLabel.Text = ""
-
       ChampionLabel.Text = ""
       EnemyLabel.Text = ""
+
       ChampionPictureBox.Image = Nothing
       EnemyPictureBox.Image = Nothing
       VSLabel.Visible = False
@@ -255,7 +276,7 @@ Public Class MainWindow
 
    Private Sub ClearButton_Click(sender As Object, e As EventArgs) Handles ClearButton.Click
       If FirstImageComboBox.SelectedIndex = 0 Then
-         DisplayGeneralWinRates()
+         DisplayGeneralRates()
          Return
       End If
       ClearChampionData()

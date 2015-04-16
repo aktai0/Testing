@@ -49,6 +49,8 @@ Partial Class MainWindow
       Me.BottomRightPanel = New System.Windows.Forms.Panel()
       Me.LossRateFlowLayoutPanel = New System.Windows.Forms.FlowLayoutPanel()
       Me.LowestWinRateLabel = New System.Windows.Forms.Label()
+      Me.PopularChampionsLabel = New System.Windows.Forms.Label()
+      Me.MatchupFlowLayoutPanel.SuspendLayout()
       Me.SelectorPanel.SuspendLayout()
       Me.LeftSidePanel.SuspendLayout()
       CType(Me.EnemyPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -112,6 +114,7 @@ Partial Class MainWindow
       Me.MatchupFlowLayoutPanel.AutoScroll = True
       Me.MatchupFlowLayoutPanel.AutoSize = True
       Me.MatchupFlowLayoutPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+      Me.MatchupFlowLayoutPanel.Controls.Add(Me.PopularChampionsLabel)
       Me.MatchupFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill
       Me.MatchupFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
       Me.MatchupFlowLayoutPanel.Location = New System.Drawing.Point(0, 129)
@@ -168,7 +171,7 @@ Partial Class MainWindow
       '
       Me.EnemyLabel.AutoSize = True
       Me.EnemyLabel.Font = New System.Drawing.Font("Garamond", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-      Me.EnemyLabel.Location = New System.Drawing.Point(348, 29)
+      Me.EnemyLabel.Location = New System.Drawing.Point(336, 29)
       Me.EnemyLabel.Name = "EnemyLabel"
       Me.EnemyLabel.Size = New System.Drawing.Size(0, 29)
       Me.EnemyLabel.TabIndex = 12
@@ -176,7 +179,7 @@ Partial Class MainWindow
       '
       'EnemyPictureBox
       '
-      Me.EnemyPictureBox.Location = New System.Drawing.Point(282, 14)
+      Me.EnemyPictureBox.Location = New System.Drawing.Point(270, 14)
       Me.EnemyPictureBox.Name = "EnemyPictureBox"
       Me.EnemyPictureBox.Size = New System.Drawing.Size(60, 60)
       Me.EnemyPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
@@ -186,7 +189,7 @@ Partial Class MainWindow
       'ChampionLabel
       '
       Me.ChampionLabel.Font = New System.Drawing.Font("Garamond", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-      Me.ChampionLabel.Location = New System.Drawing.Point(18, 29)
+      Me.ChampionLabel.Location = New System.Drawing.Point(6, 29)
       Me.ChampionLabel.Name = "ChampionLabel"
       Me.ChampionLabel.Size = New System.Drawing.Size(155, 29)
       Me.ChampionLabel.TabIndex = 10
@@ -194,7 +197,7 @@ Partial Class MainWindow
       '
       'ChampionPictureBox
       '
-      Me.ChampionPictureBox.Location = New System.Drawing.Point(177, 14)
+      Me.ChampionPictureBox.Location = New System.Drawing.Point(165, 14)
       Me.ChampionPictureBox.Name = "ChampionPictureBox"
       Me.ChampionPictureBox.Size = New System.Drawing.Size(60, 60)
       Me.ChampionPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
@@ -205,7 +208,7 @@ Partial Class MainWindow
       '
       Me.VSLabel.AutoSize = True
       Me.VSLabel.Font = New System.Drawing.Font("Algerian", 14.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-      Me.VSLabel.Location = New System.Drawing.Point(239, 31)
+      Me.VSLabel.Location = New System.Drawing.Point(227, 31)
       Me.VSLabel.Name = "VSLabel"
       Me.VSLabel.Size = New System.Drawing.Size(40, 26)
       Me.VSLabel.TabIndex = 13
@@ -214,11 +217,11 @@ Partial Class MainWindow
       '
       'WinRateLabel
       '
-      Me.WinRateLabel.Font = New System.Drawing.Font("Garamond", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-      Me.WinRateLabel.Location = New System.Drawing.Point(89, 73)
+      Me.WinRateLabel.Font = New System.Drawing.Font("Garamond", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+      Me.WinRateLabel.Location = New System.Drawing.Point(22, 77)
       Me.WinRateLabel.Name = "WinRateLabel"
       Me.WinRateLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes
-      Me.WinRateLabel.Size = New System.Drawing.Size(343, 60)
+      Me.WinRateLabel.Size = New System.Drawing.Size(423, 52)
       Me.WinRateLabel.TabIndex = 14
       Me.WinRateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
       '
@@ -232,9 +235,9 @@ Partial Class MainWindow
       Me.ChampVsChampWinRatePanel.Controls.Add(Me.EnemyPictureBox)
       Me.ChampVsChampWinRatePanel.Controls.Add(Me.ChampionLabel)
       Me.ChampVsChampWinRatePanel.Dock = System.Windows.Forms.DockStyle.Fill
-      Me.ChampVsChampWinRatePanel.Location = New System.Drawing.Point(335, 0)
+      Me.ChampVsChampWinRatePanel.Location = New System.Drawing.Point(470, 0)
       Me.ChampVsChampWinRatePanel.Name = "ChampVsChampWinRatePanel"
-      Me.ChampVsChampWinRatePanel.Size = New System.Drawing.Size(605, 129)
+      Me.ChampVsChampWinRatePanel.Size = New System.Drawing.Size(470, 129)
       Me.ChampVsChampWinRatePanel.TabIndex = 15
       '
       'ChampWinRatePanel
@@ -246,13 +249,13 @@ Partial Class MainWindow
       Me.ChampWinRatePanel.Dock = System.Windows.Forms.DockStyle.Left
       Me.ChampWinRatePanel.Location = New System.Drawing.Point(0, 0)
       Me.ChampWinRatePanel.Name = "ChampWinRatePanel"
-      Me.ChampWinRatePanel.Size = New System.Drawing.Size(335, 129)
+      Me.ChampWinRatePanel.Size = New System.Drawing.Size(470, 129)
       Me.ChampWinRatePanel.TabIndex = 16
       '
       'ChampionPictureBoxInitial
       '
       Me.ChampionPictureBoxInitial.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-      Me.ChampionPictureBoxInitial.Location = New System.Drawing.Point(173, 13)
+      Me.ChampionPictureBoxInitial.Location = New System.Drawing.Point(243, 13)
       Me.ChampionPictureBoxInitial.Name = "ChampionPictureBoxInitial"
       Me.ChampionPictureBoxInitial.Size = New System.Drawing.Size(60, 60)
       Me.ChampionPictureBoxInitial.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
@@ -263,7 +266,7 @@ Partial Class MainWindow
       '
       Me.ChampionLabelInitial.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
       Me.ChampionLabelInitial.Font = New System.Drawing.Font("Garamond", 15.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-      Me.ChampionLabelInitial.Location = New System.Drawing.Point(-46, 28)
+      Me.ChampionLabelInitial.Location = New System.Drawing.Point(24, 28)
       Me.ChampionLabelInitial.Name = "ChampionLabelInitial"
       Me.ChampionLabelInitial.Size = New System.Drawing.Size(215, 29)
       Me.ChampionLabelInitial.TabIndex = 16
@@ -272,11 +275,11 @@ Partial Class MainWindow
       'WinRateLabelInitial
       '
       Me.WinRateLabelInitial.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-      Me.WinRateLabelInitial.Font = New System.Drawing.Font("Garamond", 16.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-      Me.WinRateLabelInitial.Location = New System.Drawing.Point(5, 65)
+      Me.WinRateLabelInitial.Font = New System.Drawing.Font("Garamond", 13.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+      Me.WinRateLabelInitial.Location = New System.Drawing.Point(18, 76)
       Me.WinRateLabelInitial.Name = "WinRateLabelInitial"
       Me.WinRateLabelInitial.RightToLeft = System.Windows.Forms.RightToLeft.Yes
-      Me.WinRateLabelInitial.Size = New System.Drawing.Size(325, 60)
+      Me.WinRateLabelInitial.Size = New System.Drawing.Size(432, 49)
       Me.WinRateLabelInitial.TabIndex = 17
       Me.WinRateLabelInitial.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
       '
@@ -350,6 +353,18 @@ Partial Class MainWindow
       Me.LowestWinRateLabel.Text = "Lowest Win Rates"
       Me.LowestWinRateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
       '
+      'PopularChampionsLabel
+      '
+      Me.PopularChampionsLabel.Dock = System.Windows.Forms.DockStyle.Top
+      Me.PopularChampionsLabel.Font = New System.Drawing.Font("Garamond", 18.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+      Me.PopularChampionsLabel.Location = New System.Drawing.Point(35, 20)
+      Me.PopularChampionsLabel.Name = "PopularChampionsLabel"
+      Me.PopularChampionsLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes
+      Me.PopularChampionsLabel.Size = New System.Drawing.Size(0, 45)
+      Me.PopularChampionsLabel.TabIndex = 19
+      Me.PopularChampionsLabel.Text = "Most Popular Champions"
+      Me.PopularChampionsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+      '
       'MainWindow
       '
       Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
@@ -360,6 +375,7 @@ Partial Class MainWindow
       Me.Controls.Add(Me.LeftSidePanel)
       Me.Name = "MainWindow"
       Me.Text = "Main Window"
+      Me.MatchupFlowLayoutPanel.ResumeLayout(False)
       Me.SelectorPanel.ResumeLayout(False)
       Me.LeftSidePanel.ResumeLayout(False)
       Me.LeftSidePanel.PerformLayout()
@@ -402,5 +418,6 @@ Partial Class MainWindow
    Friend WithEvents LowestWinRateLabel As System.Windows.Forms.Label
    Friend WithEvents ShowMatchesButton As System.Windows.Forms.Button
    Friend WithEvents ClearButton As System.Windows.Forms.Button
+   Friend WithEvents PopularChampionsLabel As System.Windows.Forms.Label
 
 End Class

@@ -370,10 +370,6 @@ Class MatchIDCache
 
             ' We create a matchup for each champion in the lane (allies and enemies). 4 matchups if 2v2
             Dim newMatchup As New Matchup(matchID, myChampion, myAlly, myEnemy, myEnemy2, item.Lane, wonLane, i.TeamId)
-            ' Discard Xv0 matchups
-            If newMatchup.EnemyChampionID = 0 Then
-               Continue For
-            End If
 
             matchupList.Add(newMatchup)
             Next
