@@ -124,18 +124,16 @@
       LoadedMatchesLabel.Text = "Number of Loaded Matches: " & MatchIDCache.TotalMatchesLoaded
    End Sub
 
-   Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+   Private Sub Button1_Click(sender As Object, e As EventArgs) Handles StartButton.Click
       MatchLoaderBackgroundWorker.RunWorkerAsync()
-      Button1.Enabled = False
-      Button2.Enabled = True
+      StartButton.Enabled = False
+      StopButton.Enabled = True
    End Sub
 
-   Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
-      Console.WriteLine("Stop button clicked")
+   Private Sub Button2_Click(sender As Object, e As EventArgs) Handles StopButton.Click
       If MatchLoaderBackgroundWorker.IsBusy Then
-         Console.WriteLine("Attempting to stop")
          MatchLoaderBackgroundWorker.CancelAsync()
-         Console.WriteLine("After CancelAsync()")
+         StopButton.Enabled = False
       End If
    End Sub
 
@@ -146,8 +144,8 @@
          Else
             StatusLabel.Text = "Standby"
          End If
-         Button1.Enabled = True
-         Button2.Enabled = False
+         StartButton.Enabled = True
+         StopButton.Enabled = False
       End If
    End Sub
 End Class

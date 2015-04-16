@@ -374,6 +374,7 @@ Class MatchIDCache
             If newMatchup.EnemyChampionID = 0 Then
                Continue For
             End If
+
             matchupList.Add(newMatchup)
             Next
       Next

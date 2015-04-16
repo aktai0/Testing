@@ -23,8 +23,8 @@ Partial Class MatchLoadingWindow
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
       Me.URFTimeLabel = New System.Windows.Forms.Label()
-      Me.Button1 = New System.Windows.Forms.Button()
-      Me.Button2 = New System.Windows.Forms.Button()
+      Me.StartButton = New System.Windows.Forms.Button()
+      Me.StopButton = New System.Windows.Forms.Button()
       Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
       Me.StatusLabel = New System.Windows.Forms.ToolStripStatusLabel()
       Me.ToolStripStatusLabel3 = New System.Windows.Forms.ToolStripStatusLabel()
@@ -45,22 +45,22 @@ Partial Class MatchLoadingWindow
       '
       'Button1
       '
-      Me.Button1.Location = New System.Drawing.Point(15, 29)
-      Me.Button1.Name = "Button1"
-      Me.Button1.Size = New System.Drawing.Size(75, 23)
-      Me.Button1.TabIndex = 1
-      Me.Button1.Text = "Start"
-      Me.Button1.UseVisualStyleBackColor = True
+      Me.StartButton.Location = New System.Drawing.Point(15, 29)
+      Me.StartButton.Name = "Button1"
+      Me.StartButton.Size = New System.Drawing.Size(75, 23)
+      Me.StartButton.TabIndex = 1
+      Me.StartButton.Text = "Start"
+      Me.StartButton.UseVisualStyleBackColor = True
       '
       'Button2
       '
-      Me.Button2.Enabled = False
-      Me.Button2.Location = New System.Drawing.Point(96, 29)
-      Me.Button2.Name = "Button2"
-      Me.Button2.Size = New System.Drawing.Size(75, 23)
-      Me.Button2.TabIndex = 2
-      Me.Button2.Text = "Stop"
-      Me.Button2.UseVisualStyleBackColor = True
+      Me.StopButton.Enabled = False
+      Me.StopButton.Location = New System.Drawing.Point(96, 29)
+      Me.StopButton.Name = "Button2"
+      Me.StopButton.Size = New System.Drawing.Size(75, 23)
+      Me.StopButton.TabIndex = 2
+      Me.StopButton.Text = "Stop"
+      Me.StopButton.UseVisualStyleBackColor = True
       '
       'StatusStrip1
       '
@@ -114,8 +114,8 @@ Partial Class MatchLoadingWindow
       Me.Controls.Add(Me.LoadedMatchesLabel)
       Me.Controls.Add(Me.MatchIDsLabel)
       Me.Controls.Add(Me.StatusStrip1)
-      Me.Controls.Add(Me.Button2)
-      Me.Controls.Add(Me.Button1)
+      Me.Controls.Add(Me.StopButton)
+      Me.Controls.Add(Me.StartButton)
       Me.Controls.Add(Me.URFTimeLabel)
       Me.Name = "MatchLoadingWindow"
       Me.Text = "MatchLoadingWindow"
@@ -126,8 +126,8 @@ Partial Class MatchLoadingWindow
 
    End Sub
    Friend WithEvents URFTimeLabel As System.Windows.Forms.Label
-   Friend WithEvents Button1 As System.Windows.Forms.Button
-   Friend WithEvents Button2 As System.Windows.Forms.Button
+   Friend WithEvents StartButton As System.Windows.Forms.Button
+   Friend WithEvents StopButton As System.Windows.Forms.Button
    Friend WithEvents StatusStrip1 As System.Windows.Forms.StatusStrip
    Friend WithEvents StatusLabel As System.Windows.Forms.ToolStripStatusLabel
    Friend WithEvents MatchIDsLabel As System.Windows.Forms.Label

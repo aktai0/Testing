@@ -163,7 +163,6 @@ Public Class MainWindow
          Dim comboBoxItem As New ImageComboBox.ImageComboBoxItem(_ChampionImageList2.Images.Count - 1, c, New Font("Microsoft Sans Serif", 18.0), 0)
          SecondImageComboBox.Items.Add(comboBoxItem)
       Next
-      SecondImageComboBox.SelectedIndex = -1
 
       ChampionLabelInitial.Text = FirstImageComboBox.Text
       ChampionPictureBoxInitial.Image = StaticCache.Images(APIHelper.GetChampID(FirstImageComboBox.Text))
@@ -179,6 +178,10 @@ Public Class MainWindow
    End Sub
 
    Private Sub ImageComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles SecondImageComboBox.SelectedIndexChanged
+      If SecondImageComboBox.Text = "" Or SecondImageComboBox.Text = " " Then
+         ClearMatchupData(False)
+         Return
+      End If
       If SecondImageComboBox.Text = Nothing Then
          Return
       End If
@@ -219,7 +222,7 @@ Public Class MainWindow
       MatchLoadingWindow.Show()
    End Sub
 
-   Private Sub ClearMatchupData()
+   Private Sub ClearMatchupData(Optional ByVal clearSecondList As Boolean = True)
       WinRateLabel.Text = ""
 
       ChampionLabel.Text = ""
@@ -228,9 +231,12 @@ Public Class MainWindow
       EnemyPictureBox.Image = Nothing
       VSLabel.Visible = False
 
-      SecondImageComboBox.Items.Clear()
-      _ChampionImageList2.Images.Clear()
-      SecondImageComboBox.SelectedIndex = -1
+      If clearSecondList Then
+         SecondImageComboBox.Items.Clear()
+         _ChampionImageList2.Images.Clear()
+      Else
+
+      End If
 
       MatchupFlowLayoutPanel.Controls.Clear()
    End Sub
