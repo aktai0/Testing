@@ -15,6 +15,8 @@ Public Class MainWindow
       StaticCache = RetrieveCache(Of StaticCache)()
       DataCache = RetrieveCache(Of DataCache)()
 
+      'RetrieveCache(Of MatchIDCache).LoadSpecificMatch(1778688282)
+
       'Dim matchupUC As New MatchupUserControl(New Matchup(0, 17, 60, 33, 0, MatchEndpoint.Lane.Top, True, 100))
       'matchupUC.Parent = Me
       'matchupUC.Location = New Point(12, 150)

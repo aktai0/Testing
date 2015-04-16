@@ -7,9 +7,7 @@ Public Class Matchup
    Public MatchID As Integer
 
    Public ChampionID As Integer
-   Public AllyChampionID As Integer
    Public EnemyChampionID As Integer
-   Public EnemyChampionID2 As Integer
 
    Public Team As Integer
    Public Lane As MatchEndpoint.Lane
@@ -24,55 +22,27 @@ Public Class Matchup
       End If
 
       Dim other As Matchup = CType(obj, Matchup)
-      Return Me.MatchID = other.MatchID AndAlso Me.ChampionID = other.ChampionID AndAlso Me.AllyChampionID = other.AllyChampionID AndAlso Me.EnemyChampionID = other.EnemyChampionID
+      Return Me.MatchID = other.MatchID AndAlso Me.ChampionID = other.ChampionID AndAlso Me.EnemyChampionID = other.EnemyChampionID AndAlso Me.Team = other.Team
    End Function
 
-   Public Sub New(ByVal match As Integer, ByVal cID As Integer, ByVal acID As Integer, ByVal eID As Integer, ByVal eID2 As Integer, ByVal ln As MatchEndpoint.Lane, ByVal won As Boolean, ByVal tm As Integer)
+   Public Sub New(ByVal match As Integer, ByVal cID As Integer, ByVal eID As Integer, ByVal ln As MatchEndpoint.Lane, ByVal won As Boolean, ByVal tm As Integer)
       With Me
          .MatchID = match
          .ChampionID = cID
-         .AllyChampionID = acID
          .EnemyChampionID = eID
-         .EnemyChampionID2 = eID2
          .Lane = ln
          .WonLane = won
          .Team = tm
       End With
    End Sub
 
-   Private Sub OrganizeEnemies()
-      If EnemyChampionID > EnemyChampionID2 AndAlso EnemyChampionID2 <> 0 Then
-         Dim t As Integer = EnemyChampionID
-         EnemyChampionID = EnemyChampionID2
-         EnemyChampionID2 = t
-      End If
-   End Sub
-
    Public Overrides Function ToString() As String
-      Dim allyStr As String = ""
-      If AllyChampionID <> 0 Then
-         allyStr = " and " & APIHelper.GetChampName(AllyChampionID)
+      If EnemyChampionID <> 0 Then
+         Return APIHelper.GetChampName(ChampionID) & " vs " & APIHelper.GetChampName(EnemyChampionID) & " in " & Lane.ToString & ": " & If(WonLane, "Won!", "Lost!") & " (Match: " & MatchID & ")"
+      Else
+         Return APIHelper.GetChampName(ChampionID) & " vs Nobody in " & Lane.ToString & ": " & If(WonLane, "Won!", "Lost!") & " (Match: " & MatchID & ")"
       End If
-
-      Dim enemy2Str As String = ""
-      If EnemyChampionID2 <> 0 Then
-         enemy2Str = " and " & APIHelper.GetChampName(EnemyChampionID2)
-      End If
-
-      Return APIHelper.GetChampName(ChampionID) & allyStr & " vs " & APIHelper.GetChampName(EnemyChampionID) & enemy2Str & " in " & Lane.ToString & ": " & If(WonLane, "Won!", "Lost!") & " (Match: " & MatchID & ")"
    End Function
-
-   ' Returns a copy of the Matchup with enemies reversed if there's a match, and also sets
-   '  the enemy2 in this matchup
-   Public Function SetEnemy2IfSameMatch(ByVal givenMatchID As Integer, ByVal e2 As Integer, ByVal tm As Integer) As Matchup
-      If (givenMatchID = Me.MatchID AndAlso Me.Team = tm) Then
-         EnemyChampionID2 = e2
-         OrganizeEnemies()
-         Return New Matchup(Me.MatchID, Me.ChampionID, Me.AllyChampionID, EnemyChampionID2, Me.EnemyChampionID, Me.Lane, Me.WonLane, Me.Team)
-      End If
-      Return Nothing
-   End Function
-
 
    Public Shared Function GetWinRateOfChamp(ByVal champID As Integer) As ChampHistory
       If RetrieveCache(Of DataCache).GetMatchupDataFor(APIHelper.GetChampName(champID)) Is Nothing Then
@@ -168,16 +138,15 @@ Public Class WinRateMatchup
               Select OtherChampID, groups
 
       For Each championGroup In groupedMatches
+         ' Ignore Xv0 Matchups
+         If championGroup.OtherChampID = 0 Then
+            Continue For
+         End If
+
          Dim wonGames = Aggregate m In championGroup.groups
                         Where m.WonLane
                         Into Count()
          Dim totalGames = championGroup.groups.Count()
-
-         ' If it's a mirror matchup, only display as half the number of games (for obvious reasons).
-         If championGroup.OtherChampID = champID Then
-            totalGames = CInt(totalGames / 2)
-            wonGames = CInt(wonGames / 2)
-         End If
 
          If filterPopular Then
             If totalGames / currentMatchups.Count <= UNPOPULAR_MATCHUP_CUTOFF Then

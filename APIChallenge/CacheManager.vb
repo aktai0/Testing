@@ -308,6 +308,11 @@ Class MatchIDCache
       IncrementTime()
    End Sub
 
+   Public Sub LoadSpecificMatch(ByVal matchid As Integer)
+      Dim matchups = LoadMatch(matchid)
+      Console.WriteLine("Break here")
+   End Sub
+
    <NonSerialized>
    Public ErrorPending As Boolean = False
 
@@ -321,7 +326,6 @@ Class MatchIDCache
          ErrorPending = True
          Return
       End If
-
 
       RetrieveCache(Of DataCache)().AddMatchupData(matchups)
       TotalMatchesLoaded += 1
@@ -348,32 +352,30 @@ Class MatchIDCache
       For Each item In participantsByLane
          For Each i In item.groups
             Dim myChampion As Integer = i.ChampionId
-            Dim myAlly As Integer = 0
             Dim myEnemy As Integer = 0
-            Dim myEnemy2 As Integer = 0
             Dim wonLane As Boolean = i.TeamId = winningTeam
+            Dim newMatchup As Matchup
 
+            Dim numEnemies As Integer = 0
+
+            ' Iterate through every other laner
             For Each a In item.groups
-               ' Participant on the same time with a different champion is an ally
-               If i.TeamId = a.TeamId AndAlso myChampion <> a.ChampionId Then
-                  myAlly = a.ChampionId
-               End If
-
-               ' Participant on the opposite team is an enemy, add both of them
+               ' Participant on the opposite team is an enemy, add all of them as new matchups
                If i.TeamId <> a.TeamId Then
-                  If myEnemy <> 0 Then
-                     myEnemy2 = a.ChampionId
-                  Else
-                     myEnemy = a.ChampionId
-                  End If
+                  numEnemies += 1
+                  myEnemy = a.ChampionId
+
+                  ' We create a matchup for each champion in the lane (allies and enemies). 4 matchups if 2v2
+                  newMatchup = New Matchup(matchID, myChampion, myEnemy, item.Lane, wonLane, i.TeamId)
+                  matchupList.Add(newMatchup)
                End If
             Next
 
-            ' We create a matchup for each champion in the lane (allies and enemies). 4 matchups if 2v2
-            Dim newMatchup As New Matchup(matchID, myChampion, myAlly, myEnemy, myEnemy2, item.Lane, wonLane, i.TeamId)
-
-            matchupList.Add(newMatchup)
-            Next
+            ' Xv0 Lane
+            If numEnemies = 0 Then
+               matchupList.Add(New Matchup(matchID, myChampion, 0, item.Lane, wonLane, i.TeamId))
+            End If
+         Next
       Next
 
       Return matchupList
@@ -409,8 +411,8 @@ Class DataCache
    <NonSerialized>
    Private _CacheChanged As Boolean = False
 
-   Private LoadedMatchupAdded As New Matchup(0, 0, 0, 0, 0, 0, False, 0)
-   Private LatestMatchupAdded As New Matchup(0, 0, 0, 0, 0, 0, False, 0)
+   Private LoadedMatchupAdded As New Matchup(0, 0, 0, 0, False, 0)
+   Private LatestMatchupAdded As New Matchup(0, 0, 0, 0, False, 0)
 
    ' Always save by default.
    Overrides ReadOnly Property CacheChanged() As Boolean
