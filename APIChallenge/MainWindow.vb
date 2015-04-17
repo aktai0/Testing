@@ -15,12 +15,15 @@ Public Class MainWindow
       StaticCache = RetrieveCache(Of StaticCache)()
       DataCache = RetrieveCache(Of DataCache)()
 
-      'RetrieveCache(Of MatchIDCache).LoadSpecificMatch(1778688282)
+      Me.MinimumSize = New Size(Me.Width, Me.MinimumSize.Height)
+      Me.MaximumSize = New Size(Me.Width, Me.MaximumSize.Height)
+   End Sub
 
-      'Dim matchupUC As New MatchupUserControl(New Matchup(0, 17, 60, 33, 0, MatchEndpoint.Lane.Top, True, 100))
-      'matchupUC.Parent = Me
-      'matchupUC.Location = New Point(12, 150)
+   Private Sub MainWindow_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
+      CacheManager.StoreAllCaches()
+   End Sub
 
+   Public Sub ReloadChampionList()
       FirstImageComboBox.Items.Clear()
       _ChampionImageList1.Images.Clear()
       Dim temp = New ImageComboBox.ImageComboBoxItem("", 0)
@@ -32,13 +35,6 @@ Public Class MainWindow
          FirstImageComboBox.Items.Add(comboBoxItem)
       Next
       FirstImageComboBox.SelectedIndex = 0
-
-      Me.MinimumSize = New Size(Me.Width, Me.MinimumSize.Height)
-      Me.MaximumSize = New Size(Me.Width, Me.MaximumSize.Height)
-   End Sub
-
-   Private Sub MainWindow_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
-      CacheManager.StoreAllCaches()
    End Sub
 
    Private Sub DisplayGeneralRates()
@@ -271,6 +267,13 @@ Public Class MainWindow
 
    Private Sub FilterUnpopularCheckbox_CheckedChanged(sender As Object, e As EventArgs) Handles FilterUnpopularCheckbox.CheckedChanged
       RefreshPanels()
+   End Sub
+
+   Private Sub StaticImageLoadTimer_Tick(sender As Object, e As EventArgs) Handles StaticImageLoadTimer.Tick
+      If StaticCache.Champions.Count > 0 AndAlso StaticCache.Champions.Count = StaticCache.Images.Count Then
+         ReloadChampionList()
+         StaticImageLoadTimer.Enabled = False
+      End If
    End Sub
 End Class
 

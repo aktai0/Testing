@@ -53,6 +53,7 @@ Partial Class MainWindow
       Me.BottomRightPanel = New System.Windows.Forms.Panel()
       Me.LossRateFlowLayoutPanel = New System.Windows.Forms.FlowLayoutPanel()
       Me.LowestWinRateLabel = New System.Windows.Forms.Label()
+      Me.StaticImageLoadTimer = New System.Windows.Forms.Timer(Me.components)
       Me.SelectorPanel.SuspendLayout()
       Me.LeftSidePanel.SuspendLayout()
       Me.WinRateFlowLayoutPanel.SuspendLayout()
@@ -387,6 +388,10 @@ Partial Class MainWindow
       Me.LowestWinRateLabel.Text = "Lowest Win Rates"
       Me.LowestWinRateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
       '
+      'StaticImageLoadTimer
+      '
+      Me.StaticImageLoadTimer.Enabled = True
+      '
       'MainWindow
       '
       Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
@@ -399,6 +404,7 @@ Partial Class MainWindow
       Me.MaximizeBox = False
       Me.MaximumSize = New System.Drawing.Size(2000, 2000)
       Me.Name = "MainWindow"
+      Me.StartPosition = System.Windows.Forms.FormStartPosition.Manual
       Me.Text = "VS - Lookup Matchups!"
       Me.SelectorPanel.ResumeLayout(False)
       Me.LeftSidePanel.ResumeLayout(False)
@@ -445,5 +451,6 @@ Partial Class MainWindow
    Friend WithEvents AllMatchupsLabel As System.Windows.Forms.Label
    Friend WithEvents PopularityFlowLayoutPanel As System.Windows.Forms.FlowLayoutPanel
    Friend WithEvents FilterUnpopularCheckbox As System.Windows.Forms.CheckBox
+   Friend WithEvents StaticImageLoadTimer As System.Windows.Forms.Timer
 
 End Class
