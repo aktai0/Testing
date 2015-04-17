@@ -8,6 +8,9 @@ Public Class APIHelper
    Private Shared API_KEY As String = ""
    Private Shared CDN_URL As String = ""
 
+   Public Const SLOW_API_LIMIT As Integer = 10
+   Public Const FAST_API_LIMIT As Integer = 1000
+
 
    Private Shared Sub API_LOAD_FILE()
       Using reader As New IO.StreamReader(APIHelper.API_KEY_FILE)
@@ -15,8 +18,8 @@ Public Class APIHelper
       End Using
    End Sub
 
-   Public Shared Function API_GET_URF_MATCHES(ByVal arg1 As String) As IEnumerable(Of Integer)
-      Dim request As Net.WebRequest = Net.WebRequest.Create("https://na.api.pvp.net/api/lol/na/v4.1/game/ids?beginDate=" & arg1 & "&api_key=" & API_KEY)
+   Public Shared Function API_GET_URF_MATCHES(ByVal epochTime As String) As IEnumerable(Of Integer)
+      Dim request As Net.WebRequest = Net.WebRequest.Create("https://na.api.pvp.net/api/lol/na/v4.1/game/ids?beginDate=" & epochTime & "&api_key=" & API_KEY)
       Dim response As Net.WebResponse
       Try
          response = request.GetResponse()
@@ -42,10 +45,15 @@ Public Class APIHelper
       Return gameList
    End Function
 
-   Public Shared Function API_GET_MATCH_INFO(ByVal arg1 As Integer) As MatchEndpoint.MatchDetail
-      Dim api = RiotApi.GetInstance(API_KEY)
+   Public Shared Function API_GET_MATCH_INFO(ByVal matchID As Integer, Optional ByVal fast As Boolean = False) As MatchEndpoint.MatchDetail
+      Dim api As RiotApi
+      If Not fast Then
+         api = RiotApi.GetInstance(API_KEY)
+      Else
+         api = RiotApi.GetInstance(API_KEY, FAST_API_LIMIT, FAST_API_LIMIT * 10)
+      End If
       Try
-         Dim match = api.GetMatch(RiotSharp.Region.na, arg1, False)
+         Dim match = api.GetMatch(RiotSharp.Region.na, matchID, False)
          Return match
       Catch ex As RiotSharpException
          Console.WriteLine("Riot Sharp Error: " & ex.Message)

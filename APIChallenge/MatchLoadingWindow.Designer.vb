@@ -37,6 +37,8 @@ Partial Class MatchLoadingWindow
       Me.TotalMatchIDsLabel = New System.Windows.Forms.Label()
       Me.UnloadedMatchesLabel = New System.Windows.Forms.Label()
       Me.LoadedMatchesLabel = New System.Windows.Forms.Label()
+      Me.SlowRadioButton = New System.Windows.Forms.RadioButton()
+      Me.FastRadioButton = New System.Windows.Forms.RadioButton()
       Me.StatusStrip1.SuspendLayout()
       Me.SuspendLayout()
       '
@@ -52,7 +54,7 @@ Partial Class MatchLoadingWindow
       '
       'StartButton
       '
-      Me.StartButton.Location = New System.Drawing.Point(15, 123)
+      Me.StartButton.Location = New System.Drawing.Point(32, 139)
       Me.StartButton.Name = "StartButton"
       Me.StartButton.Size = New System.Drawing.Size(105, 23)
       Me.StartButton.TabIndex = 1
@@ -62,7 +64,7 @@ Partial Class MatchLoadingWindow
       'StopButton
       '
       Me.StopButton.Enabled = False
-      Me.StopButton.Location = New System.Drawing.Point(153, 123)
+      Me.StopButton.Location = New System.Drawing.Point(143, 139)
       Me.StopButton.Name = "StopButton"
       Me.StopButton.Size = New System.Drawing.Size(105, 23)
       Me.StopButton.TabIndex = 2
@@ -72,7 +74,7 @@ Partial Class MatchLoadingWindow
       'StatusStrip1
       '
       Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusLabel, Me.ToolStripStatusLabel3})
-      Me.StatusStrip1.Location = New System.Drawing.Point(0, 159)
+      Me.StatusStrip1.Location = New System.Drawing.Point(0, 171)
       Me.StatusStrip1.Name = "StatusStrip1"
       Me.StatusStrip1.Size = New System.Drawing.Size(275, 25)
       Me.StatusStrip1.TabIndex = 3
@@ -161,11 +163,35 @@ Partial Class MatchLoadingWindow
       Me.LoadedMatchesLabel.TabIndex = 10
       Me.LoadedMatchesLabel.Text = "Label3"
       '
+      'SlowRadioButton
+      '
+      Me.SlowRadioButton.AutoSize = True
+      Me.SlowRadioButton.Location = New System.Drawing.Point(54, 112)
+      Me.SlowRadioButton.Name = "SlowRadioButton"
+      Me.SlowRadioButton.Size = New System.Drawing.Size(83, 21)
+      Me.SlowRadioButton.TabIndex = 11
+      Me.SlowRadioButton.Text = "Slow API"
+      Me.SlowRadioButton.UseVisualStyleBackColor = True
+      '
+      'FastRadioButton
+      '
+      Me.FastRadioButton.AutoSize = True
+      Me.FastRadioButton.Checked = True
+      Me.FastRadioButton.Location = New System.Drawing.Point(143, 112)
+      Me.FastRadioButton.Name = "FastRadioButton"
+      Me.FastRadioButton.Size = New System.Drawing.Size(81, 21)
+      Me.FastRadioButton.TabIndex = 12
+      Me.FastRadioButton.TabStop = True
+      Me.FastRadioButton.Text = "Fast API"
+      Me.FastRadioButton.UseVisualStyleBackColor = True
+      '
       'MatchLoadingWindow
       '
       Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
       Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-      Me.ClientSize = New System.Drawing.Size(275, 184)
+      Me.ClientSize = New System.Drawing.Size(275, 196)
+      Me.Controls.Add(Me.FastRadioButton)
+      Me.Controls.Add(Me.SlowRadioButton)
       Me.Controls.Add(Me.LoadedMatchesLabel)
       Me.Controls.Add(Me.UnloadedMatchesLabel)
       Me.Controls.Add(Me.TotalMatchIDsLabel)
@@ -200,4 +226,6 @@ Partial Class MatchLoadingWindow
    Friend WithEvents TotalMatchIDsLabel As System.Windows.Forms.Label
    Friend WithEvents UnloadedMatchesLabel As System.Windows.Forms.Label
    Friend WithEvents LoadedMatchesLabel As System.Windows.Forms.Label
+   Friend WithEvents SlowRadioButton As System.Windows.Forms.RadioButton
+   Friend WithEvents FastRadioButton As System.Windows.Forms.RadioButton
 End Class

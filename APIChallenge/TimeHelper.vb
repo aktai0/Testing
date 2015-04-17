@@ -9,6 +9,13 @@
       End Get
    End Property
 
+   Private ReadOnly _FINAL_EPOCH As Integer = 1428918000
+   Public ReadOnly Property FINAL_EPOCH() As Integer
+      Get
+         Return _FINAL_EPOCH
+      End Get
+   End Property
+
    Public ReadOnly Property FIRST_URF_DATETIME() As DateTime
       Get
          Return EpochToDateTime(1427865900)

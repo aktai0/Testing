@@ -45,15 +45,23 @@ Public Class Matchup
    End Function
 
    Public Shared Function GetWinRateOfChamp(ByVal champID As Integer) As ChampHistory
-      If RetrieveCache(Of DataCache).GetMatchupDataFor(APIHelper.GetChampName(champID)) Is Nothing Then
+      Dim _CurrentMatchups = RetrieveCache(Of DataCache).GetMatchupDataFor(APIHelper.GetChampName(champID))
+      If _CurrentMatchups Is Nothing Then
          Return New ChampHistory(champID, 0, 0)
       End If
+
+      Dim CurrentMatchups = _CurrentMatchups.ToArray
+
+      Dim winNum As Integer = 0
+      Dim totalGames As Integer = 0
       ' Count how many matches the champion won in
-      Dim winNum = (From matches In RetrieveCache(Of DataCache).GetMatchupDataFor(APIHelper.GetChampName(champID))
-                    Where matches.WonLane
-                    Select matches).Count()
-      ' Count how many matches the champion was in
-      Dim totalGames = RetrieveCache(Of DataCache).GetMatchupDataFor(APIHelper.GetChampName(champID)).Count
+      SyncLock currentMatchups
+         winNum = (From matches In currentMatchups
+                       Where matches.WonLane
+                       Select matches).Count()
+         ' Count how many matches the champion was in
+         totalGames = currentMatchups.Count
+      End SyncLock
       Return New ChampHistory(champID, winNum, totalGames)
    End Function
 
@@ -130,10 +138,12 @@ Public Class WinRateMatchup
       WinRate = CSng(WinNum) / TotalGames
    End Sub
 
-   Public Shared Function GetWinRateDataFor(ByVal champID As Integer, ByRef currentMatchups As List(Of Matchup), ByVal sortMode As ListSortMode, ByVal filterPopular As Boolean) As IEnumerable(Of WinRateMatchup)
+   Public Shared Function GetWinRateDataFor(ByVal champID As Integer, ByRef givenMatchups() As Matchup, ByVal sortMode As ListSortMode, ByVal filterPopular As Boolean) As IEnumerable(Of WinRateMatchup)
       Dim winRates As New List(Of WinRateMatchup)
 
-      Dim groupedMatches = From m In currentMatchups
+      Dim CurrentMatchups = givenMatchups.ToArray
+
+      Dim groupedMatches = From m In CurrentMatchups
               Group m By OtherChampID = m.EnemyChampionID Into groups = Group
               Select OtherChampID, groups
 
@@ -149,7 +159,7 @@ Public Class WinRateMatchup
          Dim totalGames = championGroup.groups.Count()
 
          If filterPopular Then
-            If totalGames / currentMatchups.Count <= UNPOPULAR_MATCHUP_CUTOFF Then
+            If totalGames / CurrentMatchups.Count <= UNPOPULAR_MATCHUP_CUTOFF Then
                Continue For
             End If
          End If

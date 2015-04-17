@@ -33,8 +33,9 @@
       If WinRateMatchup.EnemyChampionID = 0 Then
          PlayRateLabel.Text = "Played in " & String.Format("{0:0.00}%", WinRateMatchup.TotalGames * 100 / RetrieveCache(Of MatchIDCache).TotalMatchesLoaded) & " (" & WinRateMatchup.TotalGames & "/" & RetrieveCache(Of MatchIDCache).TotalMatchesLoaded & ") matches"
       Else
-         ' Popularity for matchup
-         PlayRateLabel.Text = "Played in " & String.Format("{0:0.00}%", WinRateMatchup.TotalGames * 100 / RetrieveCache(Of DataCache).GetMatchupDataFor(APIHelper.GetChampName(WinRateMatchup.ChampionID)).Count) & " (" & WinRateMatchup.TotalGames & "/" & RetrieveCache(Of DataCache).GetMatchupDataFor(APIHelper.GetChampName(WinRateMatchup.ChampionID)).Count & ") matchups"
+            Dim totalGames = RetrieveCache(Of DataCache).GetMatchupDataFor(APIHelper.GetChampName(WinRateMatchup.ChampionID)).Count
+            ' Popularity for matchup
+            PlayRateLabel.Text = "Played in " & String.Format("{0:0.00}%", WinRateMatchup.TotalGames * 100 / totalGames) & " (" & WinRateMatchup.TotalGames & "/" & totalGames & ") matchups"
       End If
    End Sub
 

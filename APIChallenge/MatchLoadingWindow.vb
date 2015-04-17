@@ -1,10 +1,13 @@
 ﻿Public Class MatchLoadingWindow
+   Private Const SLOW_DELAY As Integer = 200
+   Private Const FAST_DELAY As Integer = 20
+
 
    Private Sub SleepBreak(ByVal milliseconds As Integer)
       Dim i = 0
       While i < milliseconds And Not MatchLoaderBackgroundWorker.CancellationPending
-         Threading.Thread.Sleep(200)
-         i += 200
+         Threading.Thread.Sleep(SLOW_DELAY)
+         i += SLOW_DELAY
       End While
    End Sub
 
@@ -25,7 +28,7 @@
             End If
 
             i += 1
-            If i = 10 Then
+            If i = If(FastRadioButton.Checked, APIHelper.FAST_API_LIMIT, APIHelper.SLOW_API_LIMIT) Then
                i = 0
                MatchLoaderBackgroundWorker.ReportProgress(0, ProgressState.WaitingForAPI)
                SleepBreak(APIHelper.API_FULL_DELAY)
@@ -35,7 +38,7 @@
                   Return
                End If
             Else
-               Threading.Thread.Sleep(100)
+               Threading.Thread.Sleep(If(FastRadioButton.Checked, FAST_DELAY, SLOW_DELAY))
             End If
          End While
 
@@ -54,25 +57,35 @@
             Return
          End If
 
-         For i = 0 To 9
-            Console.WriteLine("Loading match IDs")
-            MatchLoaderBackgroundWorker.ReportProgress(0, ProgressState.GoingToUpdateMatchIDs)
-            MatchIDCache.LoadMatchIDs()
-            MatchLoaderBackgroundWorker.ReportProgress(0, ProgressState.UpdatedMatchIDs)
+         ' Load in 10 match ID buckets
+         For i = 1 To APIHelper.SLOW_API_LIMIT * If(FastRadioButton.Checked, 5, 1)
+            If MatchIDCache.HasMatchIDsAvailable Then
+               MatchLoaderBackgroundWorker.ReportProgress(0, ProgressState.GoingToUpdateMatchIDs)
+               MatchIDCache.LoadMatchIDs()
+               MatchLoaderBackgroundWorker.ReportProgress(0, ProgressState.UpdatedMatchIDs)
 
-            If MatchLoaderBackgroundWorker.CancellationPending Or MatchIDCache.ErrorPending Then
-               e.Result = MatchIDCache.ErrorPending
-               Return
-            End If
+               If MatchLoaderBackgroundWorker.CancellationPending Or MatchIDCache.ErrorPending Then
+                  e.Result = MatchIDCache.ErrorPending
+                  Return
+               End If
 
-            Threading.Thread.Sleep(200)
+               Threading.Thread.Sleep(200)
 
-            If MatchLoaderBackgroundWorker.CancellationPending Then
-               e.Result = MatchIDCache.ErrorPending
-               Return
+               If MatchLoaderBackgroundWorker.CancellationPending Then
+                  e.Result = MatchIDCache.ErrorPending
+                  Return
+               End If
+            Else
+               ' If we reach the last epoch time and we have no more Match IDs, then we end
+               If Not MatchIDCache.MatchesPendingLoad Then
+                  MatchLoaderBackgroundWorker.ReportProgress(0, ProgressState.NoMoreMatchIDs)
+                  e.Result = False
+                  Return
+               End If
             End If
          Next
 
+         MatchLoaderBackgroundWorker.ReportProgress(0, ProgressState.WaitingForAPI)
          SleepBreak(APIHelper.API_FULL_DELAY)
 
          If MatchLoaderBackgroundWorker.CancellationPending Then
@@ -88,8 +101,10 @@
       GoingToLoadMatch
       LoadedMatch
       WaitingForAPI
+      NoMoreMatchIDs
    End Enum
 
+   Private Loaded As Boolean = False
    Private WithEvents MatchIDCache As MatchIDCache
    Private Sub MatchLoadingWindow_Load(sender As Object, e As EventArgs) Handles MyBase.Load
       MatchIDCache = RetrieveCache(Of MatchIDCache)()
@@ -98,6 +113,11 @@
       DateLabel.Text = MatchIDCache.NextURFBucketTimeToLoad.ToString
       UnloadedMatchesLabel.Text = "" & MatchIDCache.NumMatchesPendingLoad
       LoadedMatchesLabel.Text = "" & MatchIDCache.TotalMatchesLoaded
+
+      ' Default fast load on
+      MatchIDCache.LoadFast = True
+
+      Loaded = True
    End Sub
 
    Private Sub MatchLoaderBackgroundWorker_ProgressChanged(sender As Object, e As System.ComponentModel.ProgressChangedEventArgs) Handles MatchLoaderBackgroundWorker.ProgressChanged
@@ -117,17 +137,24 @@
             LoadedMatchesLabel.Text = "" & MatchIDCache.TotalMatchesLoaded
          Case ProgressState.WaitingForAPI
             StatusLabel.Text = "Waiting for API rate limit..."
-            MainWindow.refreshPanels()
+            MainWindow.RefreshPanels()
+         Case ProgressState.NoMoreMatchIDs
+            StatusLabel.Text = "Reached end of URF buckets."
+            TotalMatchIDsLabel.Text = "" & MatchIDCache.MatchIDCount
+            UnloadedMatchesLabel.Text = "" & MatchIDCache.NumMatchesPendingLoad
+            LoadedMatchesLabel.Text = "" & MatchIDCache.TotalMatchesLoaded
       End Select
    End Sub
 
-   Private Sub Button1_Click(sender As Object, e As EventArgs) Handles StartButton.Click
+   Private Sub StartButton_Click(sender As Object, e As EventArgs) Handles StartButton.Click
       MatchLoaderBackgroundWorker.RunWorkerAsync()
+      SlowRadioButton.Enabled = False
+      FastRadioButton.Enabled = False
       StartButton.Enabled = False
       StopButton.Enabled = True
    End Sub
 
-   Private Sub Button2_Click(sender As Object, e As EventArgs) Handles StopButton.Click
+   Private Sub StopButton_Click(sender As Object, e As EventArgs) Handles StopButton.Click
       If MatchLoaderBackgroundWorker.IsBusy Then
          MatchLoaderBackgroundWorker.CancelAsync()
          StopButton.Enabled = False
@@ -144,7 +171,16 @@
          StartButton.Enabled = True
          StopButton.Enabled = False
 
+         SlowRadioButton.Enabled = True
+         FastRadioButton.Enabled = True
+
          StoreAllCaches()
+      End If
+   End Sub
+
+   Private Sub SlowRadioButton_CheckedChanged(sender As Object, e As EventArgs) Handles SlowRadioButton.CheckedChanged, FastRadioButton.CheckedChanged
+      If Loaded Then
+         MatchIDCache.LoadFast = FastRadioButton.Checked
       End If
    End Sub
 End Class

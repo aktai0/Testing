@@ -74,13 +74,16 @@ Public Class MainWindow
    End Sub
 
    Private Sub DisplayChampionRates(ByVal champName As String)
-      Dim CurrentMatchups = DataCache.GetMatchupDataFor(FirstImageComboBox.Text)
+      Dim _CurrentMatchups = DataCache.GetMatchupDataFor(FirstImageComboBox.Text)
       ' If we don't have any data for that champion, clear everything.
-      If CurrentMatchups Is Nothing Then
+      If _CurrentMatchups Is Nothing Then
          ClearChampionDataPanels()
          Return
       End If
 
+      Dim CurrentMatchups = _CurrentMatchups.ToArray
+
+      SyncLock CurrentMatchups
       ' Display Most Favorable Matchups
       Dim names = (From m In CurrentMatchups
                    Where m.EnemyChampionID <> 0
@@ -135,7 +138,9 @@ Public Class MainWindow
 
       Dim games = CurrentMatchups.Count
 
-      WinRateLabelInitial.Text = "Overall Win Rate: " & String.Format("{0:0.00}%", CSng(wins) * 100 / games) & " (from " & games & " games)"
+         WinRateLabelInitial.Text = "Overall Win Rate: " & String.Format("{0:0.00}%", CSng(wins) * 100 / games) & " (from " & games & " games)"
+
+      End SyncLock
    End Sub
 
    Private Sub ImageComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles FirstImageComboBox.SelectedIndexChanged
@@ -148,21 +153,27 @@ Public Class MainWindow
    End Sub
 
    Private Sub DisplayMatchupWinRate(ByVal champName As String, ByVal enemyName As String)
-      Dim CurrentMatchups = DataCache.GetMatchupDataFor(FirstImageComboBox.Text)
+      Dim _CurrentMatchups = DataCache.GetMatchupDataFor(FirstImageComboBox.Text)
+      Dim CurrentMatchups = _CurrentMatchups.ToArray
 
-      Dim enemyChampID As Integer = APIHelper.GetChampID(CStr(SecondImageComboBox.Text))
-      Dim q = From m In CurrentMatchups
-              Where m.ChampionID = APIHelper.GetChampID(FirstImageComboBox.Text) AndAlso m.EnemyChampionID = enemyChampID
-              Select m
+      SyncLock CurrentMatchups
 
-      Dim c = Aggregate m In q
-              Where m.WonLane
-              Into Count()
+         Dim winNum As Integer = 0
+         Dim totalGames As Integer = 0
 
-      Dim c2 = Aggregate m In q
-               Into Count()
+         Dim enemyChampID As Integer = APIHelper.GetChampID(CStr(SecondImageComboBox.Text))
+         Dim q = From m In CurrentMatchups
+                 Where m.ChampionID = APIHelper.GetChampID(FirstImageComboBox.Text) AndAlso m.EnemyChampionID = enemyChampID
+                 Select m
 
-      WinRateLabel.Text = "Win Rate: " & String.Format("{0:0.00}%", CSng(c) * 100 / c2) & " (from " & c2 & " games)"
+         winNum = Aggregate m In q
+                  Where m.WonLane
+                  Into Count()
+
+         totalGames = q.Count
+
+      WinRateLabel.Text = "Win Rate: " & String.Format("{0:0.00}%", CSng(winNum) * 100 / totalGames) & " (from " & totalGames & " games)"
+      End SyncLock
 
       ChampionLabel.Text = FirstImageComboBox.Text
       EnemyLabel.Text = SecondImageComboBox.Text
