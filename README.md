@@ -1,28 +1,29 @@
 # VS - Lookup Matchups! 
 
-Check matchup data to see which champions had the most favorable lane matchups in URF mode! See highest and lowest win rates overall or for a specific lane matchup, or see which champions were most popular.
+Versus - Lookup Matchups! is an entry for the [Riot Games API Challenge 2015](https://developer.riotgames.com/discussion/riot-games-api/show/bX8Z86bm). This tool gives you a simple, easy-to-use interface to display any champion's best and worst matchups in URF mode. See the popularity and win/loss rates of all champions, or select a specific champion to see their most and least favorable lane matchups.
 
-This program uses the Match endpoint's Participants.Timeline.Lane property to determine which champions are laning against each other in a game, instead of only calculating based on whether two champions are on opposite teams.
+Unlike existing tools, this program uses the Match endpoint's Participants.Timeline.Lane property to determine which champions are laning against each other in a game, instead of only calculating based on whether two champions are on opposite teams. However, since URF mode's lanes are not too concrete, this data will probably be more useful when applied to normal Summoner's Rift games.
 
 ##Features
 
 - View champions with the highest or lowest win rates as well as champions with the most popularity.
-- Check out lists of a champion's favorable/unfavorable matchups: which enemy laners give lower/higher win rates? Which champions should you choose if you hate laning against a certain champion in URF mode?
+- Check out lists of a champion's most favorable/unfavorable matchups: which enemy laners give lower/higher win rates? Which champions should you choose if you hate laning against a certain champion in URF mode?
 - See how well others have done in a lane with a specific champion and specific enemy laner.
 - Filter out unpopular champions (played less than 5% of the time).
 
 ##Media
 
 - [Screenshots](http://imgur.com/a/4n1L1)
-- [Video](http://www.google.com)
+- [Demo Video](http://www.google.com)
 
 ##Requirements
 
 - [Microsoft .NET Framework 4.5](http://www.microsoft.com/en-us/download/details.aspx?id=30653)
+- Windows (Tested on Windows 8)
 
 ##Installation
 
-1. Download and extract compiled application [here](https://github.com/aktai0/VS---Lookup-Matchups-/releases) into a folder.
+1. Download and extract the compiled application [here](https://github.com/aktai0/VS---Lookup-Matchups-/releases) into a folder.
 
 or
 
