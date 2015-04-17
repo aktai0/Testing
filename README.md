@@ -9,6 +9,7 @@ This program uses the Match endpoint's Participants.Timeline.Lane property to de
 - View champions with the highest or lowest win rates as well as champions with the most popularity.
 - Check out lists of a champion's favorable/unfavorable matchups: which enemy laners give lower/higher win rates? Which champions should you choose if you hate laning against a certain champion in URF mode?
 - See how well others have done in a lane with a specific champion and specific enemy laner.
+- Filter out unpopular champions (played less than 5% of the time).
 
 ##Media
 
