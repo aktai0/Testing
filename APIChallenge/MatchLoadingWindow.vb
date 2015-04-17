@@ -222,6 +222,8 @@
          FastRadioButton.Enabled = True
 
          StoreAllCaches()
+
+         MainWindow.RefreshPanels()
       End If
    End Sub
 

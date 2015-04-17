@@ -270,9 +270,11 @@ Public Class MainWindow
    End Sub
 
    Private Sub StaticImageLoadTimer_Tick(sender As Object, e As EventArgs) Handles StaticImageLoadTimer.Tick
-      If StaticCache.Champions.Count > 0 AndAlso StaticCache.Champions.Count = StaticCache.Images.Count Then
-         ReloadChampionList()
-         StaticImageLoadTimer.Enabled = False
+      If StaticCache IsNot Nothing Then
+         If StaticCache.Champions.Count > 0 AndAlso StaticCache.Champions.Count = StaticCache.Images.Count Then
+            ReloadChampionList()
+            StaticImageLoadTimer.Enabled = False
+         End If
       End If
    End Sub
 End Class
