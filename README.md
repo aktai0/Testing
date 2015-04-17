@@ -2,7 +2,7 @@
 
 Check matchup data to see which champions had the most favorable lane matchups in URF mode! See highest and lowest win rates overall or for a specific lane matchup, or see which champions were most popular.
 
-This program uses the Match endpoint's Participants.Timeline.Lane property to determine which champions are laning against each other, instead of calculating based on whether two champions are on opposite teams.
+This program uses the Match endpoint's Participants.Timeline.Lane property to determine which champions are laning against each other in a game, instead of only calculating based on whether two champions are on opposite teams.
 
 ##Features
 
@@ -31,7 +31,7 @@ or
 
 ##Usage
 
-- Create a file named `riot_key` (no extension) with a Riot API key and save it in the same output folder as VS.exe.
+- Create a file named `riot_key` (no extension) with a Riot API key and save it in the same folder as VS.exe.
 
 - Click "Load Matches" and "Start" to begin loading in match data. Click Slow API if using a developer API key (up to 10 calls / 10 seconds), or Fast API if using a production API key (up to 3000 calls / 10 seconds).
 
