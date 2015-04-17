@@ -404,7 +404,6 @@ Partial Class MainWindow
       Me.MaximizeBox = False
       Me.MaximumSize = New System.Drawing.Size(2000, 2000)
       Me.Name = "MainWindow"
-      Me.StartPosition = System.Windows.Forms.FormStartPosition.Manual
       Me.Text = "VS - Lookup Matchups!"
       Me.SelectorPanel.ResumeLayout(False)
       Me.LeftSidePanel.ResumeLayout(False)
