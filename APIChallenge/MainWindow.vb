@@ -252,6 +252,9 @@ Public Class MainWindow
    End Sub
 
    Public Sub RefreshPanels()
+      If Not StaticIsLoaded() Then
+         Return
+      End If
       If FirstImageComboBox.SelectedIndex = 0 Then
          DisplayGeneralRates()
          Return
@@ -269,12 +272,20 @@ Public Class MainWindow
       RefreshPanels()
    End Sub
 
-   Private Sub StaticImageLoadTimer_Tick(sender As Object, e As EventArgs) Handles StaticImageLoadTimer.Tick
+   Private Function StaticIsLoaded() As Boolean
       If StaticCache IsNot Nothing Then
          If StaticCache.Champions.Count > 0 AndAlso StaticCache.Champions.Count = StaticCache.Images.Count Then
-            ReloadChampionList()
-            StaticImageLoadTimer.Enabled = False
+            Return True
          End If
+      End If
+      Return False
+   End Function
+
+   Private Sub StaticImageLoadTimer_Tick(sender As Object, e As EventArgs) Handles StaticImageLoadTimer.Tick
+      If StaticIsLoaded() Then
+         ReloadChampionList()
+         StaticImageLoadTimer.Enabled = False
+         RefreshPanels()
       End If
    End Sub
 End Class
