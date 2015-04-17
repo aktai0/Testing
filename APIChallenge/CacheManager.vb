@@ -50,13 +50,6 @@ Module CacheManager
       Next
    End Sub
 
-   Public Sub StoreAllCaches()
-      For Each cache In CacheList.Values
-         If cache.CacheChanged Then
-            StoreCacheFile(cache.CACHE_FILE_NAME, cache)
-         End If
-      Next
-   End Sub
 
    Private Function LoadCacheFile(ByVal cacheFileName As String) As EasyCache
       Dim newCache As EasyCache = Nothing
@@ -75,6 +68,15 @@ Module CacheManager
       End If
       Return newCache
    End Function
+
+   Public Sub StoreAllCaches()
+      For Each cache In CacheList.Values
+         If cache.CacheChanged Then
+            cache.StartedStoring()
+            StoreCacheFile(cache.CACHE_FILE_NAME, cache)
+         End If
+      Next
+   End Sub
 
    Public Sub StoreCacheFile(ByVal cacheFileName As String, ByRef givenCache As EasyCache)
       ' SyncLock to avoid corruption.
@@ -259,13 +261,17 @@ Class MatchIDCache
       End Set
    End Property
 
-   Public ReadOnly Property MatchIDCount As Integer
+   Private _TotallMatchIDs As Integer = 0
+   Public Property TotalMatchIDs As Integer
       Get
-         Return MatchIDQueue.Count + TotalMatchesLoaded
+         Return _TotallMatchIDs
       End Get
+      Private Set(value As Integer)
+         _TotallMatchIDs = value
+      End Set
    End Property
 
-   Public ReadOnly Property MatchesPendingLoad As Boolean
+   Public ReadOnly Property HasMatchesPendingLoad As Boolean
       Get
          Return MatchIDQueue.Count > 0
       End Get
@@ -309,15 +315,118 @@ Class MatchIDCache
       SyncLock MatchIDQueue
          For Each m In matches
             MatchIDQueue.Enqueue(m)
+            TotalMatchIDs += 1
          Next
       End SyncLock
       IncrementTime()
    End Sub
 
-   Public Sub LoadSpecificMatch(ByVal matchid As Integer)
-      Dim matchups = LoadMatch(matchid)
-      Console.WriteLine("Break here")
+   Public Sub LoadMatchesAsync(ByVal numMatches As Integer)
+      ErrorPending = False
+      If NumMatchesPendingLoad < numMatches Then
+         ErrorPending = True
+         Return
+      End If
+
+
+      Dim list As New List(Of System.ComponentModel.BackgroundWorker)
+
+      For i = 1 To numMatches
+         Dim matchLoaderBackgroundWorker As New System.ComponentModel.BackgroundWorker()
+         AddHandler matchLoaderBackgroundWorker.DoWork, AddressOf MatchLoadingBackgroundWorker_DoWork
+         AddHandler matchLoaderBackgroundWorker.RunWorkerCompleted, AddressOf MatchLoadingBackgroundWorker_Completed
+
+         Dim container As New MatchupContainer
+         container.MatchID = MatchIDQueue.Dequeue
+
+         matchLoaderBackgroundWorker.RunWorkerAsync(container)
+         list.Add(matchLoaderBackgroundWorker)
+      Next
+
+      While True
+         Dim oneStillBusy As Boolean = False
+         For Each bg In list
+            If bg.IsBusy Then
+               oneStillBusy = True
+               Exit For
+            End If
+         Next
+         If Not oneStillBusy Then
+            Exit While
+         End If
+         Threading.Thread.Sleep(100)
+      End While
    End Sub
+
+   Private Sub MatchLoadingBackgroundWorker_DoWork(ByVal sender As Object, ByVal e As System.ComponentModel.DoWorkEventArgs)
+      'Dim matchupList = sender.
+      Dim container As MatchupContainer = CType(e.Argument, MatchupContainer)
+      e.Result = container
+      container.LoadMatch()
+   End Sub
+
+   Private Sub MatchLoadingBackgroundWorker_Completed(ByVal sender As Object, ByVal e As System.ComponentModel.RunWorkerCompletedEventArgs)
+      Dim container As MatchupContainer = CType(e.Result, MatchupContainer)
+      If container Is Nothing OrElse container.Matchups Is Nothing Then
+         ErrorPending = True
+         Return
+      End If
+
+      RetrieveCache(Of DataCache)().AddMatchupData(container.Matchups)
+      TotalMatchesLoaded += 1
+   End Sub
+
+
+   Private Class MatchupContainer
+      Public Matchups As IEnumerable(Of Matchup) = Nothing
+      Public MatchID As Integer = 0
+
+      Public Sub LoadMatch()
+         Dim matchDetail As MatchEndpoint.MatchDetail = APIHelper.API_GET_MATCH_INFO(MatchID, True)
+
+         If matchDetail Is Nothing Then
+            Return
+         End If
+
+         Dim participantsByLane = From p In matchDetail.Participants
+                                  Group p By Lane = p.Timeline.Lane Into groups = Group
+                                  Select Lane, groups
+         Dim winningTeam = If(matchDetail.Teams(0).Winner, matchDetail.Teams(0).TeamId, matchDetail.Teams(1).TeamId)
+         Dim matchupList As New List(Of Matchup)
+
+         For Each item In participantsByLane
+            For Each i In item.groups
+               Dim myChampion As Integer = i.ChampionId
+               Dim myEnemy As Integer = 0
+               Dim wonLane As Boolean = i.TeamId = winningTeam
+               Dim newMatchup As Matchup
+
+               Dim numEnemies As Integer = 0
+
+               ' Iterate through every other laner
+               For Each a In item.groups
+                  ' Participant on the opposite team is an enemy, add all of them as new matchups
+                  If i.TeamId <> a.TeamId Then
+                     numEnemies += 1
+                     myEnemy = a.ChampionId
+
+                     ' We create a matchup for each champion in the lane (allies and enemies). 4 matchups if 2v2
+                     newMatchup = New Matchup(MatchID, myChampion, myEnemy, item.Lane, wonLane, i.TeamId)
+                     matchupList.Add(newMatchup)
+                  End If
+               Next
+
+               ' Xv0 Lane
+               If numEnemies = 0 Then
+                  matchupList.Add(New Matchup(MatchID, myChampion, 0, item.Lane, wonLane, i.TeamId))
+               End If
+            Next
+         Next
+
+         Matchups = matchupList
+         Return
+      End Sub
+   End Class
 
    <NonSerialized>
    Public ErrorPending As Boolean = False
@@ -429,6 +538,10 @@ Class DataCache
          Return Not LatestMatchupAdded.Equals(LoadedMatchupAdded)
       End Get
    End Property
+
+   Public Overrides Sub StartedStoring()
+      LoadedMatchupAdded = LatestMatchupAdded
+   End Sub
 
    Sub New()
    End Sub

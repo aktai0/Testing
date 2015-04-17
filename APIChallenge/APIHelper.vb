@@ -9,13 +9,18 @@ Public Class APIHelper
    Private Shared CDN_URL As String = ""
 
    Public Const SLOW_API_LIMIT As Integer = 10
-   Public Const FAST_API_LIMIT As Integer = 1000
-
+   Public Const FAST_API_LIMIT As Integer = 2800
+   Public Const FAST_API_LIMIT_PER_10_M As Integer = 180000
 
    Private Shared Sub API_LOAD_FILE()
-      Using reader As New IO.StreamReader(APIHelper.API_KEY_FILE)
-         APIHelper.API_KEY = reader.ReadLine().Trim
-      End Using
+      Try
+         Using reader As New IO.StreamReader(APIHelper.API_KEY_FILE)
+            APIHelper.API_KEY = reader.ReadLine().Trim
+         End Using
+      Catch ex As Exception
+         MsgBox("Error reading riot_key file. Please check README for instructions.")
+         MainWindow.Close()
+      End Try
    End Sub
 
    Public Shared Function API_GET_URF_MATCHES(ByVal epochTime As String) As IEnumerable(Of Integer)
@@ -50,7 +55,7 @@ Public Class APIHelper
       If Not fast Then
          api = RiotApi.GetInstance(API_KEY)
       Else
-         api = RiotApi.GetInstance(API_KEY, FAST_API_LIMIT, FAST_API_LIMIT * 10)
+         api = RiotApi.GetInstance(API_KEY, FAST_API_LIMIT, FAST_API_LIMIT_PER_10_M)
       End If
       Try
          Dim match = api.GetMatch(RiotSharp.Region.na, matchID, False)

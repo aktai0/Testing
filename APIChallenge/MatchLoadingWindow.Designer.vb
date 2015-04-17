@@ -22,6 +22,7 @@ Partial Class MatchLoadingWindow
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+      Me.components = New System.ComponentModel.Container()
       Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(MatchLoadingWindow))
       Me.URFTimeLabel = New System.Windows.Forms.Label()
       Me.StartButton = New System.Windows.Forms.Button()
@@ -39,6 +40,7 @@ Partial Class MatchLoadingWindow
       Me.LoadedMatchesLabel = New System.Windows.Forms.Label()
       Me.SlowRadioButton = New System.Windows.Forms.RadioButton()
       Me.FastRadioButton = New System.Windows.Forms.RadioButton()
+      Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
       Me.StatusStrip1.SuspendLayout()
       Me.SuspendLayout()
       '
@@ -48,9 +50,9 @@ Partial Class MatchLoadingWindow
       Me.URFTimeLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 7.8!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
       Me.URFTimeLabel.Location = New System.Drawing.Point(12, 9)
       Me.URFTimeLabel.Name = "URFTimeLabel"
-      Me.URFTimeLabel.Size = New System.Drawing.Size(246, 17)
+      Me.URFTimeLabel.Size = New System.Drawing.Size(243, 17)
       Me.URFTimeLabel.TabIndex = 0
-      Me.URFTimeLabel.Text = "Last URF Match Bucket Loaded: "
+      Me.URFTimeLabel.Text = "Next URF Match Bucket to Load:"
       '
       'StartButton
       '
@@ -74,7 +76,7 @@ Partial Class MatchLoadingWindow
       'StatusStrip1
       '
       Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusLabel, Me.ToolStripStatusLabel3})
-      Me.StatusStrip1.Location = New System.Drawing.Point(0, 171)
+      Me.StatusStrip1.Location = New System.Drawing.Point(0, 174)
       Me.StatusStrip1.Name = "StatusStrip1"
       Me.StatusStrip1.Size = New System.Drawing.Size(275, 25)
       Me.StatusStrip1.TabIndex = 3
@@ -185,11 +187,15 @@ Partial Class MatchLoadingWindow
       Me.FastRadioButton.Text = "Fast API"
       Me.FastRadioButton.UseVisualStyleBackColor = True
       '
+      'Timer1
+      '
+      Me.Timer1.Enabled = True
+      '
       'MatchLoadingWindow
       '
       Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
       Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-      Me.ClientSize = New System.Drawing.Size(275, 196)
+      Me.ClientSize = New System.Drawing.Size(275, 199)
       Me.Controls.Add(Me.FastRadioButton)
       Me.Controls.Add(Me.SlowRadioButton)
       Me.Controls.Add(Me.LoadedMatchesLabel)
@@ -204,7 +210,10 @@ Partial Class MatchLoadingWindow
       Me.Controls.Add(Me.StartButton)
       Me.Controls.Add(Me.URFTimeLabel)
       Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+      Me.MaximizeBox = False
+      Me.MinimizeBox = False
       Me.Name = "MatchLoadingWindow"
+      Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide
       Me.Text = "Match Loading"
       Me.StatusStrip1.ResumeLayout(False)
       Me.StatusStrip1.PerformLayout()
@@ -228,4 +237,5 @@ Partial Class MatchLoadingWindow
    Friend WithEvents LoadedMatchesLabel As System.Windows.Forms.Label
    Friend WithEvents SlowRadioButton As System.Windows.Forms.RadioButton
    Friend WithEvents FastRadioButton As System.Windows.Forms.RadioButton
+   Friend WithEvents Timer1 As System.Windows.Forms.Timer
 End Class

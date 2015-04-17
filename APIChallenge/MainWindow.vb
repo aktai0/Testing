@@ -66,6 +66,7 @@ Public Class MainWindow
       Dim popular = Matchup.GetWinRatesForAllChampions(FilterUnpopularCheckbox.Checked, ListSortMode.Popularity)
 
       PopularityFlowLayoutPanel.Controls.Clear()
+      PopularChampionsLabel.Text = "Most Popular Champions"
       PopularChampionsLabel.Parent = PopularityFlowLayoutPanel
       For i = 0 To Math.Min(9, lossRates.Count - 1)
          Dim lR As New WinRateMatchup(popular(i).champID, 0, popular(i).gamesWon, popular(i).gamesPlayed)
@@ -112,7 +113,8 @@ Public Class MainWindow
       ' Display Most Popular Matchups
       Dim popular = WinRateMatchup.GetWinRateDataFor(APIHelper.GetChampID(FirstImageComboBox.Text), CurrentMatchups, ListSortMode.Popularity, FilterUnpopularCheckbox.Checked)
 
-      PopularityFlowLayoutPanel.Controls.Clear()
+         PopularityFlowLayoutPanel.Controls.Clear()
+         PopularChampionsLabel.Text = "Most Common Matchups"
       PopularChampionsLabel.Parent = PopularityFlowLayoutPanel
       For i = 0 To Math.Min(9, popular.Count - 1)
          PopularityFlowLayoutPanel.Controls.Add(New WinRateUserControl(popular(i)))
@@ -145,7 +147,7 @@ Public Class MainWindow
 
    Private Sub ImageComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles FirstImageComboBox.SelectedIndexChanged
       If FirstImageComboBox.Text = "" Or FirstImageComboBox.Text = " " Then
-         DisplayGeneralRates()
+         ToDefault()
          Return
       End If
 
@@ -236,8 +238,9 @@ Public Class MainWindow
       SecondImageComboBox.Items.Clear()
    End Sub
 
-   Private Sub ClearButton_Click(sender As Object, e As EventArgs) Handles ClearButton.Click
+   Private Sub ToDefault()
       If FirstImageComboBox.SelectedIndex = 0 Then
+         ClearChampionDataPanels()
          DisplayGeneralRates()
          Return
       End If
@@ -246,6 +249,10 @@ Public Class MainWindow
       FirstImageComboBox.SelectedIndex = 0
 
       FilterUnpopularCheckbox.Checked = False
+   End Sub
+
+   Private Sub ClearButton_Click(sender As Object, e As EventArgs) Handles ClearButton.Click
+      ToDefault()
    End Sub
 
    Public Sub RefreshPanels()
